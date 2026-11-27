@@ -847,6 +847,9 @@ details.params.has:not([open]){border-color:color-mix(in srgb,var(--warn) 45%,va
 @media (max-width:1480px) and (min-width:1181px){.searchbtn .kbd{display:none}}
 details.params>summary .chev{display:inline-block}
 details.params[open]>summary .chev{transform:rotate(90deg)}
+.frhint{margin:-4px 0 8px 64px;font-size:12px;line-height:1.35;color:var(--warn);background:var(--warnSoft);border-radius:var(--r3);padding:5px 9px}
+.frhint.ok{color:var(--ok);background:var(--okSoft)}
+@media (max-width:700px){.frhint{margin-left:0}}
 
 /* Pantalla de bloqueo con clave numérica */
 .acclock{position:fixed;inset:0;z-index:20000;display:flex;align-items:center;justify-content:center;padding:16px;
@@ -11002,10 +11005,10 @@ try{(function(){
     kind: 'body',
     locations: LOC_EDA,
     fields: [
-      { id: 'ureasa', label: 'Test de ureasa', type: 'chips', options: UREASA, default: 'no' },
-      { id: 'ureasa_sitio', label: 'Toma (ureasa)', type: 'multi', options: ['antro', 'cuerpo'], default: ['antro', 'cuerpo'],
+      { id: 'ureasa', label: 'Test de ureasa', type: 'chips', options: UREASA, default: 'no', pin: true },
+      { id: 'ureasa_sitio', label: 'Toma (ureasa)', type: 'multi', options: ['antro', 'cuerpo'], default: ['antro', 'cuerpo'], pin: true,
         show: function (v) { return v.ureasa && v.ureasa !== 'no'; } },
-      { id: 'lactasa', label: 'Test de lactasa', type: 'chips', options: LACTASA, default: 'no',
+      { id: 'lactasa', label: 'Test de lactasa', type: 'chips', options: LACTASA, default: 'no', pin: true,
         hint: 'Test rápido Quick-Lactasa en biopsia de segunda porción duodenal (lectura a los 20 min)' },
       { id: 'tiempo', label: 'Tiempo de examen', type: 'num', unit: 'min', min: 1, max: 240, step: 1 },
     ],
@@ -13391,7 +13394,7 @@ if (typeof module !== 'undefined') module.exports = EndoScales;
       if ((s.fields.length > 2 && !isHdr && s.kind !== 'footer' && s.kind !== 'proc') || (isHdr && s.fields.length > 8 && !settings.allOpen)) {
         sumEl = el('span', { class: 'sum' });
         host = el('details', { class: 'params' }, [el('summary', {}, [el('span', { class: 'chev', html: '&#9656;' }), el('span', { class: 'lbl', text: isHdr ? (s.exam === 'colono' ? 'Preparación, alcance y calidad' : 'Consentimiento, equipo y tolerancia') : s.fields.length > 6 ? 'Técnica y parámetros' : 'Descripción normal' }), sumEl])]);
-        if (ss._open) host.open = true;
+        if (ss._open || (ss._open === undefined && advChanged(s.fields, ss.v, fieldCtx(s, ex)))) host.open = true; // con datos distintos de lo normal: se ve abierto
         host.addEventListener('toggle', function () { ss._open = host.open; save(); });
         bd.appendChild(host);
       }
@@ -13496,6 +13499,23 @@ if (typeof module !== 'undefined') module.exports = EndoScales;
     [a, b].forEach(function (x) { if (x) x.classList.toggle('hl', on); });
     if (on && a && pp.scrollHeight > pp.clientHeight) { var r = a.getBoundingClientRect(), R0 = pp.getBoundingClientRect(); if (r.top < R0.top || r.bottom > R0.bottom) pp.scrollTo({ top: pp.scrollTop + r.top - R0.top - 40, behavior: 'smooth' }); }
   }
+  // Frascos inteligentes: consejos según lo que se escribió en el frasco + indicación (solo avisos, nunca cambia nada solo)
+  function frHint(f) {
+    var t = norm(f.sitio), n = parseInt(f.n, 10) || 0; if (!t) return '';
+    var E = (state.sections.eda_datos || {}).v || {}, ind = Array.isArray(E.indicacion) ? E.indicacion : [], io = norm(E.indicacion_otra);
+    var sum = function (re) { return state.frascos.reduce(function (a, x) { return a + (re.test(norm(x.sitio)) ? (parseInt(x.n, 10) || 0) : 0); }, 0); };
+    if (/esofag/.test(t) && (/eosin|\beoe\b/.test(t) || ind.indexOf('disfagia') >= 0 || /eosin|\beoe\b|impactaci/.test(io))) {
+      var tot = sum(/esofag/), lev = /distal/.test(t) && /(medio|proximal)/.test(t) || state.frascos.filter(function (x) { return /esofag/.test(norm(x.sitio)); }).length > 1;
+      if (tot < 6) return 'Esofagitis eosinofílica: se recomiendan ≥ 6 biopsias (llevas ' + tot + ') de al menos dos niveles (distal y medio/proximal).';
+      if (!lev) return 'Esofagitis eosinofílica: idealmente dos niveles (distal y medio/proximal), en frascos separados o rotulados.';
+      return '✓ Cumple recomendación EoE (≥ 6 biopsias, dos niveles).';
+    }
+    if (/eosin|\beoe\b/.test(t) && n < 6) return 'Esofagitis eosinofílica: se recomiendan ≥ 6 biopsias de al menos dos niveles.';
+    if (/segunda porcion|\bd2\b/.test(t) && (ind.indexOf('celiaca') >= 0 || /celiac/.test(t)) && n < 4) return 'Sospecha celíaca: se recomiendan ≥ 4 biopsias de segunda porción + 1-2 de bulbo en frasco aparte.';
+    if (/barrett/.test(t)) return 'Barrett: protocolo Seattle (4 cuadrantes cada 2 cm) y lesiones visibles en frasco aparte.';
+    if (/microscop/.test(t) && n < 2) return 'Colitis microscópica: ≥ 2 biopsias de colon derecho y ≥ 2 de colon izquierdo.';
+    return '';
+  }
   function frascosCard() {
     var on = frOn();
     var card = el('div', { class: 'card sec' + (on ? '' : ' bxoff'), id: 'sec-frascos' });
@@ -13509,12 +13529,12 @@ if (typeof module !== 'undefined') module.exports = EndoScales;
     }
     state.frascos.forEach(function (f, i) {
       var inp = el('input', { class: 's', type: 'text', value: f.sitio || '', placeholder: 'Sitio / contenido del frasco' });
-      inp.oninput = function () { f.sitio = inp.value; f.manual = true; refresh(); openFrDD(inp, f); };
+      inp.oninput = function () { f.sitio = inp.value; f.manual = true; refresh(); openFrDD(inp, f); var c = document.querySelector('#sec-frascos .bd'); if (c && c._updHints) c._updHints(); };
       inp.onfocus = function () { openFrDD(inp, f); }; inp.onclick = function () { if (!frDD) openFrDD(inp, f); }; inp.onblur = function () { setTimeout(closeFrDD, 120); };
       inp.onkeydown = function (e) { if (e.key === 'Escape') closeFrDD(); else navFrDD(e); };
       var n = el('input', { type: 'number', inputmode: 'numeric', pattern: '[0-9]*', value: f.n, min: 0, style: 'width:46px;text-align:center', title: 'Nº de muestras' });
-      n.oninput = function () { f.n = n.value; f.manual = true; refresh(); };
-      var bump = function (d) { var x = Math.max(0, Math.min(99, (parseInt(f.n, 10) || 0) + d)); f.n = x; n.value = x; refresh(); };
+      n.oninput = function () { f.n = n.value; f.manual = true; refresh(); var c = document.querySelector('#sec-frascos .bd'); if (c && c._updHints) c._updHints(); };
+      var bump = function (d) { var x = Math.max(0, Math.min(99, (parseInt(f.n, 10) || 0) + d)); f.n = x; n.value = x; refresh(); var c = document.querySelector('#sec-frascos .bd'); if (c && c._updHints) c._updHints(); };
       bd.appendChild(el('div', { class: 'fr', id: 'fr-' + f.uid }, [el('span', { class: 'n', text: 'Frasco ' + (i + 1) }), inp, el('span', { class: 'row numrow', style: 'gap:3px;flex-wrap:nowrap' }, [
         el('button', { class: 'step', type: 'button', text: '−', title: 'Una muestra menos', onclick: function () { bump(-1); } }), n,
         el('button', { class: 'step', type: 'button', text: '+', title: 'Una muestra más', onclick: function () { bump(1); } }),
@@ -13522,7 +13542,10 @@ if (typeof module !== 'undefined') module.exports = EndoScales;
         el('span', { class: 'row', style: 'gap:0' }, [
           el('button', { class: 'btn ghost sm', type: 'button', text: '↑', title: 'Subir', onclick: function () { if (!i) return; snapshot(); var a = state.frascos; a.splice(i - 1, 0, a.splice(i, 1)[0]); renderAll(); } }),
           el('button', { class: 'btn ghost sm danger', type: 'button', html: SVG.x, title: 'Quitar frasco', onclick: function () { snapshot(); if (f.src) { state._frOff = isObj(state._frOff) ? state._frOff : {}; state._frOff[f.src] = 1; } state.frascos.splice(i, 1); renderAll(); } })])]));
+      var hn = el('div', { class: 'frhint', 'data-fr': f.uid }); bd.appendChild(hn);
     });
+    var updHints = function () { Array.prototype.forEach.call(bd.querySelectorAll('.frhint'), function (x) { var fr = state.frascos.filter(function (y) { return y.uid === x.getAttribute('data-fr'); })[0], tx = fr ? frHint(fr) : ''; x.textContent = tx; x.style.display = tx ? '' : 'none'; x.classList.toggle('ok', /^✓/.test(tx)); }); };
+    bd._updHints = updHints; setTimeout(updHints, 0);
     var exams = examList(state.exam), two = exams.length > 1;
     var sg = el('div', { id: 'frsug', class: 'frsug' }); bd.appendChild(sg); renderFrSug(sg);
     // Botones rápidos separados por examen: Sydney y sitios altos solo en EDA; escalonadas y segmentos solo en colonoscopía
@@ -13625,9 +13648,12 @@ if (typeof module !== 'undefined') module.exports = EndoScales;
     FR_SUG.forEach(function (g) {
       if (exs.indexOf(g.ex) < 0) return;
       var why = [];
-      if (g.ex === 'eda') { eInd.forEach(function (v) { if ((g.eda || []).indexOf(v) >= 0) why.push(lab('eda_datos', 'indicacion', v)); }); if (g.re && g.re.test(eTxt)) why.push('otra indicación'); }
+      if (g.ex === 'eda') { eInd.forEach(function (v) { if ((g.eda || []).indexOf(v) >= 0) why.push(lab('eda_datos', 'indicacion', v)); }); if (g.re && g.re.test(eTxt)) why.push('otra indicación'); if (g.k === 'eoe' && !why.length && state.frascos.some(function (f) { return /eosin|\beoe\b/.test(norm(f.sitio)); })) why.push('sospecha de EoE'); }
       else { cInd.forEach(function (v) { if ((g.col || []).indexOf(v) >= 0) why.push(lab('col_datos', 'indic', v)); }); if (g.re && g.re.test(cTxt)) why.push('otra indicación'); }
       if (!why.length) return;
+      // respeta lo que el médico ya escribió: si sus frascos (de este examen) son de otro sitio, no insistir con Sydney
+      if (g.k === 'sydney') { var own = state.frascos.filter(function (f) { return String(f.sitio || '').trim() && frEx(f) === 'eda'; }); if (own.length && !own.some(function (f) { return /antr|cuerpo|incisur|[aá]ngulo|g[aá]str|fondo|sydney/i.test(f.sitio); })) return; }
+      if (g.k === 'eoe' && state.frascos.reduce(function (a, x) { return a + (/esofag/.test(norm(x.sitio)) ? (parseInt(x.n, 10) || 0) : 0); }, 0) >= 6) { out.push({ g: g, why: why, done: true }); return; }
       var done = g.k === 'sydney' ? state.frascos.some(function (f) { return /\(Sydney [1-5]|sydney/i.test(f.sitio || ''); }) : g.fr.every(function (x) { return findFrasco(x[0]) >= 0; });
       out.push({ g: g, why: why, done: done });
     });
@@ -14003,7 +14029,7 @@ if (typeof module !== 'undefined') module.exports = EndoScales;
       var ss = state.sections[id], s = SEC[id], b = secEls[id].badge, k = ss.findings.length; nF += k;
       if (s.kind === 'footer') { b.className = 'badge' + (ss.on ? '' : ' off'); b.textContent = ss.on ? 'incluidas' : 'no incluidas'; }
       else if (s.kind === 'header') { b.className = 'badge off'; b.textContent = 'datos'; }
-      else { b.className = 'badge' + (k ? ' f' : ''); b.textContent = k ? k + ' hallazgo' + (k > 1 ? 's' : '') : 'normal'; }
+      else { var ed0 = 0; if (!k && s.kind === 'body') { try { ed0 = advChanged(s.fields || [], ss.v, fieldCtx(s)); } catch (e) { } } b.className = 'badge' + (k || ed0 ? ' f' : ''); b.textContent = k ? k + ' hallazgo' + (k > 1 ? 's' : '') : ed0 ? 'editado' : 'normal'; b.title = ed0 ? 'Hay datos distintos de lo normal en esta sección' : ''; }
     });
     renderRail();
     renderConclEditor(m);
@@ -19110,7 +19136,7 @@ new MutationObserver(scanHome).observe(document.body, { childList: true });
 scanHome();
 
 })();}catch(e){console.error("Feature rapido.js",e);}
-window.ENDO_VERSION="202611271300";window.ENDO_WEB_URL="";</script>
+window.ENDO_VERSION="202611271351";window.ENDO_WEB_URL="";</script>
 <script>
 if ('serviceWorker' in navigator && location.protocol.indexOf('http') === 0) { navigator.serviceWorker.register('sw.js').catch(function(){}); }
 </script>
