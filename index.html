@@ -15164,7 +15164,11 @@ if (typeof module !== 'undefined') module.exports = EndoScales;
       var file = el('input', { type: 'file', accept: '.json,application/json', style: 'display:none' });
       file.onchange = function () {
         var f = file.files[0]; if (!f) return; var rd = new FileReader();
-        rd.onload = function () { try { var data = JSON.parse(rd.result); var arr = Array.isArray(data) ? data : data.templates; if (!Array.isArray(arr)) throw 0; var T2 = templates(), seen = {}, ok = 0, dup = 0; T2.forEach(function (t) { seen[t.name + '|' + JSON.stringify(t.state)] = 1; }); arr.forEach(function (t) { if (!isObj(t) || !isObj(t.state) || typeof t.name !== 'string' || !t.name.trim()) return; if (!EXAMS[t.exam] && t.exam !== 'ambos') t.exam = (EXAMS[t.state.exam] || t.state.exam === 'ambos') ? t.state.exam : 'eda'; var k = t.name + '|' + JSON.stringify(t.state); if (seen[k]) { dup++; return; } seen[k] = 1; t.id = uid(); T2.push(t); ok++; }); lsSet(LS.tpl, T2); toast(ok + ' plantilla' + (ok === 1 ? '' : 's') + ' importada' + (ok === 1 ? '' : 's') + (dup ? ' (' + dup + ' ya existía' + (dup === 1 ? '' : 'n') + ')' : '')); draw(); } catch (e) { toast('Archivo no válido'); } };
+        rd.onload = function () { try { var data = JSON.parse(rd.result), arr = Array.isArray(data) ? data : isObj(data) ? data.templates : null;
+            // también acepta: una sola plantilla suelta, o un archivo de Respaldo completo (toma solo sus plantillas)
+            if (!Array.isArray(arr) && isObj(data) && isObj(data.state) && typeof data.name === 'string') arr = [data];
+            if (!Array.isArray(arr) && isObj(data) && isObj(data.datos) && typeof data.datos[LS.tpl] === 'string') { try { arr = JSON.parse(data.datos[LS.tpl]); } catch (e2) { arr = null; } }
+            if (!Array.isArray(arr)) throw 0; var T2 = templates(), seen = {}, ok = 0, dup = 0; T2.forEach(function (t) { seen[t.name + '|' + JSON.stringify(t.state)] = 1; }); arr.forEach(function (t) { if (!isObj(t) || !isObj(t.state) || typeof t.name !== 'string' || !t.name.trim()) return; if (!EXAMS[t.exam] && t.exam !== 'ambos') t.exam = (EXAMS[t.state.exam] || t.state.exam === 'ambos') ? t.state.exam : 'eda'; var k = t.name + '|' + JSON.stringify(t.state); if (seen[k]) { dup++; return; } seen[k] = 1; t.id = uid(); T2.push(t); ok++; }); lsSet(LS.tpl, T2); toast(ok || dup ? ok + ' plantilla' + (ok === 1 ? '' : 's') + ' importada' + (ok === 1 ? '' : 's') + (dup ? ' (' + dup + ' ya existía' + (dup === 1 ? '' : 'n') + ')' : '') : 'El archivo no trae plantillas'); draw(); } catch (e) { toast('Archivo no válido: usa un .json exportado desde Plantillas o desde Respaldo'); } file.value = ''; };
         rd.readAsText(f);
       };
       box.appendChild(el('div', { class: 'row', style: 'margin-top:16px;border-top:1px solid var(--line);padding-top:12px' }, [
@@ -20572,7 +20576,7 @@ document.addEventListener('endo:settings', function (e) { try { section(e.detail
 window.EndoRespaldo = { exportar: exportar, importar: importar, deshacer: deshacer, resumen: function () { return resumen(snapshotAll()); }, validar: function (x) { var v = validar(x); return v.error ? { error: v.error } : { ok: true, resumen: v.res }; } };
 
 })();}catch(e){console.error("Feature respaldo.js",e);}
-window.ENDO_VERSION="202611272011";window.ENDO_WEB_URL="https://saluvel.github.io/EndoInforme/";</script>
+window.ENDO_VERSION="202611272103";window.ENDO_WEB_URL="https://saluvel.github.io/EndoInforme/";</script>
 <script>
 if ('serviceWorker' in navigator && location.protocol.indexOf('http') === 0) { navigator.serviceWorker.register('sw.js').catch(function(){}); }
 </script>
