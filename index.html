@@ -11722,6 +11722,7 @@ try{(function(){
             else out.push('Consultar en Servicio de Urgencias en caso de dolor abdominal o torácico intenso, vómitos con sangre, deposiciones negras o fiebre' + (ei && ei.lig ? ' (puede presentarse sangrado por úlcera post-ligadura hasta 2 semanas después)' : '') + '.');
             break;
           case 'biopsias':
+            if (patSum()) break; // ya se ingresó el resultado de Anatomía Patológica: no pedir retirarlo
             if (hosp) { out.push(histo && !(eda && nFr) ? 'Resultado del estudio histológico a seguimiento por equipo tratante.' : 'Resultado de biopsias a seguimiento por equipo tratante.'); break; }
             out.push(histo && !(eda && nFr) ? 'Retirar resultado del estudio histológico en 10 días hábiles y controlar con médico tratante.' : 'Retirar resultado de biopsias en 10 días hábiles y controlar con médico tratante.'); break;
           case 'ibp': if (has_('ulcera_ar') && !h.has(v.ibp_dosis)) break; out.push(h.has(v.ibp_dosis) ? h.sent('Inhibidor de bomba de protones:', String(v.ibp_dosis).replace(/\.\s*$/, '')) : 'Inhibidor de bomba de protones según indicación de médico tratante.'); break;
@@ -20442,7 +20443,7 @@ document.addEventListener('endo:settings', function (e) { try { section(e.detail
 window.EndoRespaldo = { exportar: exportar, importar: importar, deshacer: deshacer, resumen: function () { return resumen(snapshotAll()); }, validar: function (x) { var v = validar(x); return v.error ? { error: v.error } : { ok: true, resumen: v.res }; } };
 
 })();}catch(e){console.error("Feature respaldo.js",e);}
-window.ENDO_VERSION="202611271838";window.ENDO_WEB_URL="https://saluvel.github.io/EndoInforme/";</script>
+window.ENDO_VERSION="202611271946";window.ENDO_WEB_URL="https://saluvel.github.io/EndoInforme/";</script>
 <script>
 if ('serviceWorker' in navigator && location.protocol.indexOf('http') === 0) { navigator.serviceWorker.register('sw.js').catch(function(){}); }
 </script>
