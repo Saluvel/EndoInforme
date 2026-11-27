@@ -782,6 +782,20 @@ a.scl .sci{font-size:.85em;margin-left:3px;text-decoration:none;display:inline-b
 @media print{
   ::highlight(endochg){background-color:transparent}
 }
+/* Logo de la institución */
+.mlogoadd{display:inline-flex;align-items:center;gap:4px;height:40px;padding:0 12px;border:1.5px dashed color-mix(in srgb,var(--accent) 55%,transparent);border-radius:10px;background:transparent;color:var(--accent);font:inherit;font-size:12px;font-weight:600;cursor:pointer;flex:none}
+.mlogoadd span{font-size:16px;line-height:1}
+.mlogoadd:hover{background:color-mix(in srgb,var(--accent) 8%,transparent)}
+.mlogo{cursor:pointer}
+@media print{.mlogoadd{display:none!important}.mlogo{cursor:default}}
+.logozone{display:flex;align-items:center;gap:14px;margin-top:10px;padding:14px 16px;min-height:72px;border:1.5px dashed color-mix(in srgb,var(--accent) 45%,var(--line));border-radius:12px;cursor:pointer;transition:background-color .12s,border-color .12s}
+.logozone:hover,.logozone.drag,.logozone:focus-visible{background:color-mix(in srgb,var(--accent) 7%,transparent);border-color:var(--accent)}
+.logozone img{max-height:56px;max-width:180px;object-fit:contain;background:#fff;border-radius:6px;padding:4px}
+.logozone .lzt{display:flex;flex-direction:column;gap:2px;flex:1}
+.logozone .lzt small{color:var(--muted);font-size:12px}
+.logozone .lzplus{font-size:22px;color:var(--accent);line-height:1}
+.memb .mlogo,.sheet .memb .mlogo{height:48px;max-width:200px}
+@media print{.memb .mlogo,.sheet .memb .mlogo{height:9mm;max-width:45mm}}
 
 .credh{margin:14px auto 0;text-align:center;font-size:12px;line-height:1.55;color:var(--muted,#64748b);max-width:720px}
 .credh b{color:var(--ink,#0f172a);font-weight:600}
@@ -11373,13 +11387,34 @@ if (typeof module !== 'undefined') module.exports = EndoScales;
       '@bottom-right{content:"Página " counter(page) " de " counter(pages);font:7.5pt Arial,sans-serif;color:#333}}@page:first{@top-left{content:none}}}';
   }
   function todayStr() { var d = new Date(); return ('0' + d.getDate()).slice(-2) + '-' + ('0' + (d.getMonth() + 1)).slice(-2) + '-' + d.getFullYear(); }
+  // Logo de la institución: se achica en el navegador (máx. 600×240 px) y se guarda solo en este computador.
+  function loadLogo(f, done) {
+    if (!f || !/^image\//.test(f.type)) { toast('Elige una imagen (PNG, JPG o SVG)'); return; }
+    var rd = new FileReader();
+    rd.onload = function () {
+      var url = rd.result;
+      if (/svg/.test(f.type)) { if (url.length > 300000) { toast('Logo SVG muy pesado (máx. 300 KB)'); return; } settings.logo = url; lsSet(LS.set, settings); renderMemb(); toast('Logo guardado ✓'); if (done) done(); return; }
+      var im = new Image();
+      im.onload = function () {
+        var k = Math.min(1, 600 / im.width, 240 / im.height), c = document.createElement('canvas');
+        c.width = Math.max(1, Math.round(im.width * k)); c.height = Math.max(1, Math.round(im.height * k));
+        c.getContext('2d').drawImage(im, 0, 0, c.width, c.height);
+        settings.logo = c.toDataURL('image/png'); if (settings.logo.length > 450000) settings.logo = c.toDataURL('image/jpeg', 0.9);
+        lsSet(LS.set, settings); renderMemb(); toast('Logo guardado ✓'); if (done) done();
+      };
+      im.onerror = function () { toast('No se pudo leer la imagen'); };
+      im.src = url;
+    };
+    rd.readAsDataURL(f);
+  }
+  function pickLogo(done) { var i = el('input', { type: 'file', accept: 'image/png,image/jpeg,image/svg+xml,image/webp', style: 'display:none' }); i.onchange = function () { loadLogo(i.files[0], done); i.remove(); }; document.body.appendChild(i); i.click(); }
   function resetPatient() { patient = { nombre: '', rut: '', edad: '', fecha: todayStr(), nexam: '' }; renderMemb(); }
   function renderMemb() {
     var m = $('#memb'); if (!m) return;
     m.innerHTML = '';
     if (!patient.fecha) patient.fecha = todayStr();
     var top = el('div', { class: 'mtop' }, [
-      settings.logo ? el('img', { class: 'mlogo', src: settings.logo, alt: '' }) : null,
+      settings.logo ? el('img', { class: 'mlogo', src: settings.logo, alt: 'Logo de la institución', title: 'Clic para cambiar el logo', onclick: function () { pickLogo(); } }) : el('button', { class: 'mlogoadd', type: 'button', title: 'Agregar el logo de tu institución (se guarda solo en este computador)', html: '<span>+</span>Logo', onclick: function () { pickLogo(); } }),
       el('div', { class: 'minst' }, [el('b', { text: settings.inst || 'Unidad de Endoscopía' }), settings.inst2 ? el('small', { text: settings.inst2 }) : null]),
       el('button', { class: 'btn ghost sm mcfg', type: 'button', html: SVG.gear, title: 'Editar institución y logo (Ajustes)', onclick: openSettings })]);
     m.appendChild(top);
@@ -12990,10 +13025,19 @@ if (typeof module !== 'undefined') module.exports = EndoScales;
     inst.oninput = function () { settings.inst = inst.value; lsSet(LS.set, settings); renderMemb(); };
     var inst2 = el('input', { type: 'text', value: settings.inst2 || '', placeholder: 'Ej: Servicio de Gastroenterología · dirección o teléfono', style: 'width:100%' });
     inst2.oninput = function () { settings.inst2 = inst2.value; lsSet(LS.set, settings); renderMemb(); };
-    var lf = el('input', { type: 'file', accept: 'image/*', style: 'display:none' });
-    lf.onchange = function () { var f = lf.files[0]; if (!f) return; if (f.size > 400000) { toast('Logo muy pesado (máx. 400 KB)'); return; } var rd = new FileReader(); rd.onload = function () { settings.logo = rd.result; lsSet(LS.set, settings); renderMemb(); toast('Logo guardado'); }; rd.readAsDataURL(f); };
-    box.appendChild(el('div', { class: 'fld', style: 'margin-bottom:12px' }, [el('label', { text: 'Membrete: institución / unidad' }), inst, inst2,
-      el('div', { class: 'row', style: 'margin-top:6px' }, [el('button', { class: 'btn sm', type: 'button', text: settings.logo ? 'Cambiar logo' : 'Subir logo', onclick: function () { lf.click(); } }), settings.logo ? el('button', { class: 'btn sm ghost', type: 'button', text: 'Quitar logo', onclick: function () { delete settings.logo; lsSet(LS.set, settings); renderMemb(); toast('Logo quitado'); } }) : null, lf])]));
+    var lz = el('div', { class: 'logozone', tabindex: '0', role: 'button', 'aria-label': 'Subir logo de la institución' });
+    var drawLZ = function () {
+      lz.innerHTML = '';
+      if (settings.logo) { lz.appendChild(el('img', { src: settings.logo, alt: 'Logo actual' })); lz.appendChild(el('div', { class: 'lzt', html: '<b>Logo de tu institución</b><small>Clic o arrastra otra imagen para cambiarlo</small>' })); lz.appendChild(el('button', { class: 'btn sm ghost', type: 'button', text: 'Quitar', onclick: function (e) { e.stopPropagation(); delete settings.logo; lsSet(LS.set, settings); renderMemb(); drawLZ(); toast('Logo quitado'); } })); }
+      else lz.appendChild(el('div', { class: 'lzt', html: '<span class="lzplus">+</span><b>Subir logo de tu institución</b><small>PNG, JPG o SVG · clic o arrastra la imagen aquí · aparece en el membrete y al imprimir</small>' }));
+    };
+    lz.onclick = function () { pickLogo(drawLZ); };
+    lz.onkeydown = function (e) { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); pickLogo(drawLZ); } };
+    lz.ondragover = function (e) { e.preventDefault(); lz.classList.add('drag'); };
+    lz.ondragleave = function () { lz.classList.remove('drag'); };
+    lz.ondrop = function (e) { e.preventDefault(); lz.classList.remove('drag'); loadLogo(e.dataTransfer.files[0], drawLZ); };
+    drawLZ();
+    box.appendChild(el('div', { class: 'fld', style: 'margin-bottom:12px' }, [el('label', { text: 'Membrete: institución / unidad' }), inst, inst2, lz]));
     box.appendChild(el('button', { class: 'btn sm ghost', type: 'button', style: 'margin:6px 0', text: 'Ver el tutorial de nuevo', onclick: function () { settings.noTour = false; lsSet(LS.set, settings); var o = $('.ov'); if (o) o.remove(); maybeTour(true); } }));
     [['scaleTip', 'Mostrar el recuadro de la escala al elegir una clasificación'], ['conclNum', 'Numerar las líneas de la conclusión'], ['titles', 'Incluir título del examen en el texto copiado'], ['altaDefault', 'Incluir indicaciones al alta por defecto en informes nuevos'], ['rich', 'Copiar con formato (títulos en negrita al pegar en Word) además de texto plano'], ['confirmCopy', 'Pedir confirmación antes de copiar si hay datos sin confirmar']].forEach(function (o) {
       var tg = el('span', { class: 'tgl' + (settings[o[0]] ? ' on' : ''), style: 'display:flex;margin:8px 0' }, [el('i'), el('span', { text: o[1] })]);
@@ -14577,7 +14621,7 @@ new MutationObserver(scanHome).observe(document.body, { childList: true });
 scanHome();
 
 })();}catch(e){console.error("Feature rapido.js",e);}
-window.ENDO_VERSION="202611270221";window.ENDO_WEB_URL="https://saluvel.github.io/EndoInforme/";</script>
+window.ENDO_VERSION="202611270225";window.ENDO_WEB_URL="https://saluvel.github.io/EndoInforme/";</script>
 <script>
 if ('serviceWorker' in navigator && location.protocol.indexOf('http') === 0) { navigator.serviceWorker.register('sw.js').catch(function(){}); }
 </script>
