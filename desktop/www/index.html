@@ -864,6 +864,29 @@ html.acc-locked body>*:not(.acclock){filter:blur(14px);pointer-events:none;user-
 .accchg .accmsg{text-align:left;margin-bottom:8px}
 @media print{.acclock{display:none!important}html.acc-locked body>*{filter:none!important}html.acc-locked body>*:not(.acclock){display:none!important}}
 @media (prefers-reduced-motion:reduce){.acclock,.acclock.out,.accbox.shake{animation:none}}
+/* claves por usuario */
+.accusers{display:flex;gap:10px;flex-wrap:wrap;justify-content:center;margin:4px 0 2px;max-width:100%}
+.accu{display:flex;flex-direction:column;align-items:center;gap:4px;border:0;background:none;cursor:pointer;padding:4px;border-radius:12px;max-width:86px;color:var(--ink3)}
+.accu span{width:42px;height:42px;border-radius:50%;display:grid;place-items:center;font:700 14px/1 inherit;background:var(--panel2,var(--panel));border:2px solid var(--line);color:var(--ink2);transition:border-color .15s,background .15s}
+.accu small{font-size:11px;line-height:1.2;max-width:86px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.accu.on span{border-color:var(--accent);background:var(--accentSoft);color:var(--accent)}
+.accu.on small{color:var(--ink);font-weight:600}
+.accu:hover span{border-color:var(--accent)}
+.accfoot{display:flex;gap:14px;justify-content:center;margin-top:6px;flex-wrap:wrap}
+.acclink{border:0;background:none;color:var(--accent);font:600 13px/1.2 inherit;cursor:pointer;padding:6px 8px;border-radius:8px}
+.acclink:hover{background:var(--accentSoft)}
+.accsub{text-align:center;line-height:1.45}
+.accmsg.ok{color:var(--ok,#15803d)}
+.acckey{background:linear-gradient(145deg,#b45309,#d97706)}
+.acccode{font:700 26px/1.1 ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;letter-spacing:.12em;padding:14px 18px;border-radius:14px;border:2px dashed color-mix(in srgb,var(--accent) 55%,transparent);background:var(--accentSoft);color:var(--ink);margin:6px 0 2px;user-select:all;white-space:nowrap}
+.accrow{display:flex;gap:8px;justify-content:center}
+.accchk{display:flex;gap:8px;align-items:center;font-size:13px;color:var(--ink2);margin-top:6px;cursor:pointer}
+.accok{width:100%;margin-top:6px;padding:11px 14px}
+.accok:disabled{opacity:.45;cursor:not-allowed}
+.acccodein{width:100%;text-align:center;font:700 20px/1.2 ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;letter-spacing:.1em;text-transform:uppercase;padding:12px;border-radius:12px;border:1px solid var(--line2);background:var(--panel);color:var(--ink);margin-top:6px}
+.acccodein:focus{outline:2px solid var(--accent);outline-offset:1px}
+.accnote{font-size:11.5px;color:var(--ink3);text-align:center;margin:4px 0 0;line-height:1.4}
+@media (max-width:380px){.acccode{font-size:21px;padding:12px}}
 
 .updset{flex-wrap:wrap}
 .updst{flex:1 1 100%;font-size:12.5px;color:var(--ink3);line-height:1.45}
@@ -15001,8 +15024,8 @@ if (typeof module !== 'undefined') module.exports = EndoScales;
 ;
 /* ===== feature acceso.js ===== */
 try{(function(){
-// Clave de acceso (PIN numérico) al abrir la app + "Cambiar clave" en Ajustes.
-// Solo se guarda un hash con sal (SHA-256), nunca la clave. Protege contra el acceso casual, no es seguridad fuerte.
+// Clave de acceso por usuario (PIN numérico) al abrir la app, con código de recuperación, y "Mi clave" en Ajustes.
+// Solo se guardan hashes con sal (SHA-256), nunca la clave ni el código. Protege contra el acceso casual, no es seguridad fuerte.
 var KEY = 'endoinforme.v1.acceso', SKEY = 'endoinforme.v1.desbloqueo';
 var DEF = { salt: 'ff609f26586140ff', hash: 'fdc5591dded8f2578b925a45ee2577a6463a00143d656da42b305ee9ee6c2939' };
 var MIN = 4, MAX = 8;
@@ -15043,107 +15066,302 @@ function markUnlocked(on) { try { if (on) sessionStorage.setItem(SKEY, '1'); els
 function h(tag, cls, html) { var x = document.createElement(tag); if (cls) x.className = cls; if (html != null) x.innerHTML = html; return x; }
 var LOCK = '<svg viewBox="0 0 24 24" width="26" height="26" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="4" y="10.5" width="16" height="10" rx="2.5"/><path d="M8 10.5V7.5a4 4 0 0 1 8 0v3"/><circle cx="12" cy="15.5" r="1.4" fill="currentColor"/></svg>';
 
-// ---------- pantalla de bloqueo ----------
-var fails = 0, waitUntil = 0;
-function lock() {
-  if (document.querySelector('.acclock')) return;
-  markUnlocked(false);
-  var ov = h('div', 'acclock'), box = h('div', 'accbox');
-  ov.setAttribute('role', 'dialog'); ov.setAttribute('aria-modal', 'true'); ov.setAttribute('aria-label', 'Ingresar clave');
-  box.innerHTML = '<div class="acclogo">' + LOCK + '</div><h2>EndoInforme</h2><p class="accsub">Ingresa tu clave de acceso</p>' +
-    '<div class="accdots" aria-live="polite" aria-label="Clave numérica"></div>' +
-    '<div class="accmsg" role="alert"></div><div class="accpad"></div>';
+// ---------- claves por usuario + código de recuperación ----------
+// endoinforme.v1.claves = { <idUsuario>: { s, h (clave), rs, rh (código de recuperación) } }  — solo hashes con sal.
+// Modos: 'users' (alguien ya tiene clave propia), 'legacy' (instalación anterior: clave única), 'none' (instalación nueva).
+var CK = 'endoinforme.v1.claves', MK = 'endoinforme.v1.medicos';
+var ABC = 'ABCDEFGHJKMNPQRSTUVWXYZ23456789';
+function claves() { try { var c = JSON.parse(localStorage.getItem(CK) || 'null'); return c && typeof c === 'object' && !Array.isArray(c) ? c : {}; } catch (e) { return {}; } }
+function saveClaves(c) { try { localStorage.setItem(CK, JSON.stringify(c)); return true; } catch (e) { return false; } }
+function validK(e) { return !!(e && typeof e.s === 'string' && e.s && /^[0-9a-f]{64}$/.test(e.h)); }
+function usuarios() { try { var x = JSON.parse(localStorage.getItem(MK) || 'null'); var L = x && Array.isArray(x.list) ? x.list.filter(function (p) { return p && typeof p === 'object' && p.id; }) : []; return { list: L, active: x && x.active }; } catch (e) { return { list: [], active: '' }; } }
+function pinUsers() { var c = claves(); return usuarios().list.filter(function (u) { return validK(c[u.id]); }); }
+function hasPin(id) { return validK(claves()[id]); }
+function legacyCustom() { try { var c = JSON.parse(localStorage.getItem(KEY) || 'null'); return !!(c && typeof c.salt === 'string' && /^[0-9a-f]{64}$/.test(c.hash)); } catch (e) { return false; } }
+function mode() { if (pinUsers().length) return 'users'; if (legacyCustom() || usuarios().list.length) return 'legacy'; return 'none'; }
+function rndHex(n) { var a = new Uint8Array(n); try { crypto.getRandomValues(a); } catch (e) { for (var i = 0; i < n; i++) a[i] = Math.random() * 256 | 0; } return Array.prototype.map.call(a, function (x) { return ('0' + x.toString(16)).slice(-2); }).join(''); }
+function newCode() { var a = new Uint8Array(12); try { crypto.getRandomValues(a); } catch (e) { for (var i = 0; i < 12; i++) a[i] = Math.random() * 256 | 0; } var s = ''; for (var j = 0; j < 12; j++) s += ABC[a[j] % ABC.length]; return s; }
+function fmtCode(c) { return c.slice(0, 4) + '-' + c.slice(4, 8) + '-' + c.slice(8, 12); }
+function normCode(c) { return String(c || '').toUpperCase().replace(/[^A-Z0-9]/g, '').replace(/O/g, '0').replace(/[IL]/g, '1'); }
+function codeHash(code, salt) { return sha256('endoinforme-rec|' + salt + '|' + normCode(code)); }
+function checkUser(id, pin) { var e = claves()[id]; return validK(e) && hashOf(pin, e.s) === e.h; }
+function checkCode(id, code) { var e = claves()[id]; return !!(e && e.rs && e.rh && codeHash(code, e.rs) === e.rh); }
+function setUserPin(id, pin, keepCode) {
+  var c = claves(), old = c[id] || {}, s = rndHex(8), e = { s: s, h: hashOf(pin, s) }, code = null;
+  if (keepCode && old.rs && old.rh) { e.rs = old.rs; e.rh = old.rh; }
+  else { code = newCode(); e.rs = rndHex(8); e.rh = codeHash(code, e.rs); }
+  c[id] = e; return saveClaves(c) ? (code || true) : false;
+}
+function newRecovery(id) { var c = claves(), e = c[id]; if (!validK(e)) return null; var code = newCode(); e.rs = rndHex(8); e.rh = codeHash(code, e.rs); return saveClaves(c) ? code : null; }
+function setActiveUser(id) {
+  try { if (window.EndoPerfil && window.EndoPerfil.setActive) { window.EndoPerfil.setActive(id); return; } } catch (e) { }
+  try { var x = JSON.parse(localStorage.getItem(MK) || 'null'); if (x && Array.isArray(x.list)) { x.active = id; localStorage.setItem(MK, JSON.stringify(x)); } } catch (e) { }
+}
+function nameOf(id) { var u = usuarios().list.filter(function (x) { return x.id === id; })[0]; return u ? (u.nombre || 'Sin nombre') : ''; }
+function initials(n) { var w = String(n || '').replace(/^(dra?\.?|dr\.)\s+/i, '').trim().split(/\s+/).filter(Boolean); return ((w[0] || '?')[0] + (w.length > 1 ? w[w.length - 1][0] : '')).toUpperCase(); }
+function esc(t) { return String(t == null ? '' : t).replace(/[&<>"]/g, function (c) { return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]; }); }
+function toast(m) { try { window.EndoUI.rapido.toast(m); } catch (e) { } }
+
+// ---------- pantalla completa reutilizable (bloqueo, crear clave, verificar) ----------
+var curKey = null;
+window.addEventListener('keydown', function (e) { if (curKey && document.querySelector('.acclock')) curKey(e); }, true);
+function screen(opts) {
+  // opts: { cls, lockApp } → { ov, box, close(ok) }
+  var ov = h('div', 'acclock' + (opts.cls ? ' ' + opts.cls : '')), box = h('div', 'accbox');
+  ov.setAttribute('role', 'dialog'); ov.setAttribute('aria-modal', 'true');
   ov.appendChild(box); document.body.appendChild(ov);
+  var prevLocked = document.documentElement.classList.contains('acc-locked');
   document.documentElement.classList.add('acc-locked');
-  var dots = box.querySelector('.accdots'), msg = box.querySelector('.accmsg'), pad = box.querySelector('.accpad'), val = '';
-  var draw = function () { var n = Math.max(MIN, val.length), s = ''; for (var i = 0; i < n; i++) s += '<i class="' + (i < val.length ? 'on' : '') + '"></i>'; dots.innerHTML = s; };
-  var shake = function () { box.classList.remove('shake'); void box.offsetWidth; box.classList.add('shake'); };
-  var tryIt = function () {
-    if (Date.now() < waitUntil) { msg.textContent = 'Espera ' + Math.ceil((waitUntil - Date.now()) / 1000) + ' s para reintentar.'; return; }
-    if (val.length < MIN) return;
-    if (check(val)) {
-      markUnlocked(true); fails = 0; ov.classList.add('out');
-      document.documentElement.classList.remove('acc-locked');
-      window.removeEventListener('keydown', trap, true);
-      setTimeout(function () { ov.remove(); try { document.dispatchEvent(new CustomEvent('endo:desbloqueo')); } catch (e) { } }, 320);
-      return;
+  try { if (document.activeElement && document.activeElement.blur) document.activeElement.blur(); } catch (e) { }
+  return {
+    ov: ov, box: box, close: function () {
+      curKey = null; ov.classList.add('out');
+      if (!prevLocked || opts.lockApp) document.documentElement.classList.remove('acc-locked');
+      setTimeout(function () { ov.remove(); }, 300);
     }
-    fails++; val = ''; draw(); shake();
-    if (fails >= 5) { waitUntil = Date.now() + 30000; fails = 0; msg.textContent = 'Demasiados intentos. Espera 30 s.'; }
-    else msg.textContent = 'Clave incorrecta';
+  };
+}
+// vista de teclado numérico dentro de una caja: {title, sub, top(el), foot(el), min, onEnter(val, ui), auto(val)}
+function padView(box, o) {
+  box.innerHTML = '';
+  box.appendChild(h('div', 'acclogo', LOCK));
+  if (o.top) box.appendChild(o.top);
+  box.appendChild(h('h2', null, esc(o.title)));
+  if (o.sub) box.appendChild(h('p', 'accsub', o.sub));
+  var dots = h('div', 'accdots'), msg = h('div', 'accmsg'), pad = h('div', 'accpad'), val = '';
+  dots.setAttribute('aria-live', 'polite'); dots.setAttribute('aria-label', 'Clave numérica'); msg.setAttribute('role', 'alert');
+  box.appendChild(dots); box.appendChild(msg); box.appendChild(pad);
+  if (o.foot) box.appendChild(o.foot);
+  var draw = function () { var n = Math.max(MIN, val.length), s = ''; for (var i = 0; i < n; i++) s += '<i class="' + (i < val.length ? 'on' : '') + '"></i>'; dots.innerHTML = s; };
+  var ui = {
+    msg: function (t, ok) { msg.textContent = t || ''; msg.classList.toggle('ok', !!ok); },
+    clear: function () { val = ''; draw(); },
+    shake: function () { box.classList.remove('shake'); void box.offsetWidth; box.classList.add('shake'); }
   };
   var press = function (k) {
     if (k === 'del') val = val.slice(0, -1);
-    else if (k === 'ok') return tryIt();
+    else if (k === 'ok') { if (val.length < MIN) { ui.msg('La clave tiene de ' + MIN + ' a ' + MAX + ' números.'); return; } return o.onEnter(val, ui); }
     else if (val.length < MAX) val += k;
-    msg.textContent = ''; draw();
-    if (val.length >= MIN && check(val)) tryIt();
+    ui.msg(''); draw();
+    if (o.auto && val.length >= MIN && o.auto(val)) o.onEnter(val, ui);
   };
   '1 2 3 4 5 6 7 8 9 del 0 ok'.split(' ').forEach(function (k) {
     var b = h('button', 'acck' + (k === 'del' || k === 'ok' ? ' fn' : ''), k === 'del' ? '⌫' : k === 'ok' ? '✓' : k);
-    b.type = 'button'; b.setAttribute('aria-label', k === 'del' ? 'Borrar' : k === 'ok' ? 'Entrar' : k);
+    b.type = 'button'; b.setAttribute('aria-label', k === 'del' ? 'Borrar' : k === 'ok' ? 'Aceptar' : k);
     b.onclick = function () { press(k); };
     pad.appendChild(b);
   });
-  var trap = function (e) {
-    if (!document.body.contains(ov)) return window.removeEventListener('keydown', trap, true);
+  curKey = function (e) {
+    var t = e.target; if (t && (t.tagName === 'INPUT' || t.tagName === 'TEXTAREA')) return;
     var k = e.key;
-    if (/^[0-9]$/.test(k)) press(k);
-    else if (k === 'Backspace') press('del');
-    else if (k === 'Enter') press('ok');
-    else if (k === 'Tab') return;
+    if (/^[0-9]$/.test(k)) press(k); else if (k === 'Backspace') press('del'); else if (k === 'Enter') press('ok');
+    else if (k === 'Escape' && o.onEsc) o.onEsc(); else if (k === 'Tab') return;
     e.preventDefault(); e.stopPropagation();
   };
-  window.addEventListener('keydown', trap, true);
   draw();
-  // sin campo de texto: en celular no aparece el teclado del sistema; en PC se usa el teclado físico (captura arriba)
-  try { if (document.activeElement && document.activeElement.blur) document.activeElement.blur(); } catch (e) { }
+  return ui;
+}
+function linkBtn(txt, fn) { var b = h('button', 'acclink', esc(txt)); b.type = 'button'; b.onclick = fn; return b; }
+
+// Crear clave (2 pasos) y mostrar el código de recuperación. o: {title, sub, skip(bool), keepCode, done(ok)}
+function createFlow(sc, id, o) {
+  var first = '';
+  var foot = function () { var f = h('div', 'accfoot'); if (o.skip) f.appendChild(linkBtn('Más tarde', function () { sc.close(); o.done && o.done(false); })); return f; };
+  var step1 = function () {
+    padView(sc.box, {
+      title: o.title || 'Crea tu clave', sub: o.sub || ('Para <b>' + esc(nameOf(id)) + '</b>: de ' + MIN + ' a ' + MAX + ' números. La pedirá EndoInforme al abrir.'),
+      foot: foot(), onEsc: o.skip ? function () { sc.close(); o.done && o.done(false); } : null,
+      onEnter: function (v, ui) { if (/^(\d)\1+$/.test(v) || '0123456789'.indexOf(v) >= 0 || '9876543210'.indexOf(v) >= 0) { ui.clear(); ui.shake(); ui.msg('Muy fácil de adivinar: evita repetidos y secuencias.'); return; } first = v; step2(); }
+    });
+  };
+  var step2 = function () {
+    padView(sc.box, {
+      title: 'Repite tu clave', sub: 'Para confirmar.', foot: (function () { var f = h('div', 'accfoot'); f.appendChild(linkBtn('Volver', step1)); return f; })(),
+      onEnter: function (v, ui) {
+        if (v !== first) { ui.clear(); ui.shake(); ui.msg('No coincide. Inténtalo de nuevo.'); return; }
+        var r = setUserPin(id, v, o.keepCode);
+        if (!r) { ui.msg('No se pudo guardar en este equipo.'); return; }
+        if (r === true) { sc.close(); toast('Clave actualizada ✓'); o.done && o.done(true); return; }
+        showCode(sc, r, function () { sc.close(); toast('Clave creada ✓'); o.done && o.done(true); });
+      }
+    });
+  };
+  step1();
+}
+function showCode(sc, code, done) {
+  curKey = function (e) { var t = e.target; if (t && t.tagName === 'INPUT') return; if (e.key !== 'Tab') { e.stopPropagation(); } };
+  var b = sc.box; b.innerHTML = '';
+  b.appendChild(h('div', 'acclogo acckey', '<svg viewBox="0 0 24 24" width="26" height="26" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="8" cy="15" r="4"/><path d="M10.8 12.2 20 3M16 7l3 3M14 9l2 2"/></svg>'));
+  b.appendChild(h('h2', null, 'Tu código de recuperación'));
+  b.appendChild(h('p', 'accsub', 'Si olvidas tu clave, con este código creas una nueva. <b>Guárdalo fuera de este computador</b> (foto con tu celular o en papel). No se vuelve a mostrar.'));
+  var cd = h('div', 'acccode', fmtCode(code)); cd.setAttribute('aria-label', 'Código ' + code.split('').join(' ')); b.appendChild(cd);
+  var row = h('div', 'accrow');
+  var cp = h('button', 'btn sm', 'Copiar'); cp.type = 'button';
+  cp.onclick = function () { try { navigator.clipboard.writeText(fmtCode(code)).then(function () { cp.textContent = 'Copiado ✓'; }, function () { cp.textContent = 'Anótalo a mano'; }); } catch (e) { cp.textContent = 'Anótalo a mano'; } };
+  row.appendChild(cp); b.appendChild(row);
+  var lab = h('label', 'accchk', '<input type="checkbox"> Ya lo guardé en un lugar seguro'), chk = lab.querySelector('input');
+  b.appendChild(lab);
+  var ok = h('button', 'btn primary accok', 'Listo'); ok.type = 'button'; ok.disabled = true;
+  chk.onchange = function () { ok.disabled = !chk.checked; };
+  ok.onclick = function () { if (!chk.checked) return; done(); };
+  b.appendChild(ok);
+}
+// Recuperar con código → nueva clave
+function recoverFlow(sc, id, back, done) {
+  curKey = function (e) { if (e.key === 'Escape') { e.preventDefault(); e.stopPropagation(); back(); } };
+  var b = sc.box; b.innerHTML = '';
+  b.appendChild(h('div', 'acclogo', LOCK));
+  b.appendChild(h('h2', null, '¿Olvidaste tu clave?'));
+  b.appendChild(h('p', 'accsub', 'Escribe el código de recuperación de <b>' + esc(nameOf(id)) + '</b> (12 letras y números, el que guardaste al crear tu clave).'));
+  var inp = h('input', 'acccodein'); inp.type = 'text'; inp.placeholder = 'XXXX-XXXX-XXXX'; inp.autocomplete = 'off'; inp.spellcheck = false; inp.setAttribute('autocapitalize', 'characters'); inp.maxLength = 16;
+  var msg = h('div', 'accmsg'); msg.setAttribute('role', 'alert');
+  b.appendChild(inp); b.appendChild(msg);
+  var go = h('button', 'btn primary accok', 'Crear clave nueva'); go.type = 'button';
+  var tries = 0;
+  var run = function () {
+    if (Date.now() < waitUntil) { msg.textContent = 'Espera ' + Math.ceil((waitUntil - Date.now()) / 1000) + ' s para reintentar.'; return; }
+    if (normCode(inp.value).length !== 12) { msg.textContent = 'El código tiene 12 caracteres.'; return; }
+    if (!checkCode(id, inp.value)) { if (++tries >= 5) { waitUntil = Date.now() + 60000; tries = 0; } msg.textContent = 'Código incorrecto.'; b.classList.remove('shake'); void b.offsetWidth; b.classList.add('shake'); return; }
+    createFlow(sc, id, { title: 'Crea tu clave nueva', done: function (ok) { if (ok) done(); } });
+  };
+  inp.onkeydown = function (e) { if (e.key === 'Enter') { e.preventDefault(); run(); } else if (e.key === 'Escape') { e.preventDefault(); back(); } e.stopPropagation(); };
+  inp.oninput = function () { msg.textContent = ''; };
+  go.onclick = run; b.appendChild(go);
+  var f = h('div', 'accfoot'); f.appendChild(linkBtn('Volver', back)); b.appendChild(f);
+  b.appendChild(h('p', 'accnote', 'Si tampoco tienes el código, otro usuario con clave puede entrar y crearte una cuenta nueva.'));
+  setTimeout(function () { try { inp.focus(); } catch (e) { } }, 60);
 }
 
-// ---------- Ajustes: cambiar clave / bloquear ahora ----------
-function openChange() {
-  var ov = h('div', 'ov'), box = h('div', 'modal accchg');
-  box.setAttribute('role', 'dialog'); box.setAttribute('aria-modal', 'true'); box.setAttribute('aria-label', 'Cambiar clave');
-  box.innerHTML = '<h2>Cambiar clave de acceso</h2><div class="sub">Solo números, de ' + MIN + ' a ' + MAX + ' dígitos. Se guarda en este computador.</div>' +
-    '<label class="fld"><span>Clave actual</span><input type="password" inputmode="numeric" autocomplete="off" maxlength="' + MAX + '" data-k="a"></label>' +
-    '<label class="fld"><span>Nueva clave</span><input type="password" inputmode="numeric" autocomplete="off" maxlength="' + MAX + '" data-k="n"></label>' +
-    '<label class="fld"><span>Repite la nueva clave</span><input type="password" inputmode="numeric" autocomplete="off" maxlength="' + MAX + '" data-k="r"></label>' +
-    '<div class="accmsg" role="alert"></div><div class="row"><button type="button" class="btn" data-x>Cancelar</button><button type="button" class="btn primary" data-ok>Guardar clave</button></div>';
-  ov.appendChild(box); document.body.appendChild(ov);
-  var q = function (k) { return box.querySelector('[data-k="' + k + '"]'); }, msg = box.querySelector('.accmsg');
-  Array.prototype.forEach.call(box.querySelectorAll('input'), function (i) { i.addEventListener('input', function () { i.value = i.value.replace(/\D/g, ''); msg.textContent = ''; }); });
-  var close = function () { ov.remove(); document.removeEventListener('keydown', esc, true); };
-  var esc = function (e) { if (e.key === 'Escape') { e.stopPropagation(); close(); } else if (e.key === 'Enter') { e.preventDefault(); e.stopPropagation(); save(); } };
-  var save = function () {
-    var a = q('a').value, n = q('n').value, r = q('r').value;
-    if (!check(a)) { msg.textContent = 'La clave actual no es correcta.'; q('a').focus(); return; }
-    if (!/^\d+$/.test(n) || n.length < MIN || n.length > MAX) { msg.textContent = 'La nueva clave debe tener de ' + MIN + ' a ' + MAX + ' números.'; q('n').focus(); return; }
-    if (n !== r) { msg.textContent = 'Las claves nuevas no coinciden.'; q('r').focus(); return; }
-    if (!setPin(n)) { msg.textContent = 'No se pudo guardar en este navegador.'; return; }
-    close(); try { window.EndoUI.rapido.toast('Clave de acceso actualizada ✓'); } catch (e) { }
+// ---------- pantalla de bloqueo ----------
+var fails = 0, waitUntil = 0;
+function finishUnlock(sc, id) {
+  markUnlocked(true); fails = 0;
+  if (id) setActiveUser(id);
+  curKey = null; sc.ov.classList.add('out');
+  document.documentElement.classList.remove('acc-locked');
+  setTimeout(function () { sc.ov.remove(); try { document.dispatchEvent(new CustomEvent('endo:desbloqueo', { detail: { user: id || '' } })); } catch (e) { } afterUnlock(); }, 320);
+}
+function tryGate(ui, ok) {
+  if (Date.now() < waitUntil) { ui.clear(); ui.msg('Espera ' + Math.ceil((waitUntil - Date.now()) / 1000) + ' s para reintentar.'); return false; }
+  if (ok) return true;
+  fails++; ui.clear(); ui.shake();
+  if (fails >= 5) { waitUntil = Date.now() + 30000; fails = 0; ui.msg('Demasiados intentos. Espera 30 s.'); } else ui.msg('Clave incorrecta');
+  return false;
+}
+function lock() {
+  if (document.querySelector('.acclock.acclk')) return;
+  var m = mode();
+  if (m === 'none') { markUnlocked(true); return; }
+  markUnlocked(false);
+  var sc = screen({ cls: 'acclk', lockApp: true });
+  sc.ov.setAttribute('aria-label', 'Ingresar clave');
+  if (m === 'legacy') {
+    padView(sc.box, { title: 'EndoInforme', sub: 'Ingresa tu clave de acceso', auto: function (v) { return check(v); }, onEnter: function (v, ui) { if (tryGate(ui, check(v))) finishUnlock(sc, ''); } });
+    return;
+  }
+  var U = pinUsers(), act = usuarios().active, sel = U.filter(function (u) { return u.id === act; })[0] || U[0];
+  var view = function () {
+    var top = null;
+    if (U.length > 1) {
+      top = h('div', 'accusers');
+      U.forEach(function (u) {
+        var b = h('button', 'accu' + (u.id === sel.id ? ' on' : ''), '<span>' + esc(initials(u.nombre)) + '</span><small>' + esc(u.nombre || 'Sin nombre') + '</small>');
+        b.type = 'button'; b.title = u.nombre || ''; b.onclick = function () { sel = u; view(); };
+        top.appendChild(b);
+      });
+    }
+    var foot = h('div', 'accfoot'); foot.appendChild(linkBtn('¿Olvidaste tu clave?', function () { recoverFlow(sc, sel.id, view, function () { finishUnlock(sc, sel.id); }); }));
+    padView(sc.box, {
+      title: U.length > 1 ? 'EndoInforme' : 'Hola, ' + (sel.nombre || 'EndoInforme'), sub: U.length > 1 ? 'Elige tu usuario e ingresa tu clave' : 'Ingresa tu clave de acceso', top: top, foot: foot,
+      auto: function (v) { return checkUser(sel.id, v); },
+      onEnter: function (v, ui) { if (tryGate(ui, checkUser(sel.id, v))) finishUnlock(sc, sel.id); }
+    });
   };
-  box.querySelector('[data-x]').onclick = close; box.querySelector('[data-ok]').onclick = save;
-  ov.addEventListener('mousedown', function (e) { if (e.target === ov) close(); });
-  document.addEventListener('keydown', esc, true);
-  q('a').focus();
+  view();
+}
+// Tras entrar: si el usuario activo aún no tiene clave propia, se le pide crearla (una vez por sesión si la deja para más tarde)
+function afterUnlock() {
+  var a = usuarios(); if (!a.list.length) return;
+  var id = (a.list.filter(function (u) { return u.id === a.active; })[0] || a.list[0]).id;
+  if (hasPin(id)) return;
+  try { if (sessionStorage.getItem('endoinforme.v1.clavePend') === id) return; } catch (e) { }
+  setTimeout(function () {
+    if (document.querySelector('.acclock, .usrov')) return;
+    var sc = screen({});
+    createFlow(sc, id, {
+      skip: true, title: 'Crea tu clave personal',
+      sub: 'Ahora cada usuario tiene su propia clave. Para <b>' + esc(nameOf(id)) + '</b>: de ' + MIN + ' a ' + MAX + ' números.',
+      done: function (ok) { if (!ok) try { sessionStorage.setItem('endoinforme.v1.clavePend', id); } catch (e) { } }
+    });
+  }, 500);
+}
+// Crear la clave de un usuario recién creado (lo llama perfil.js)
+function crearPara(id, done) {
+  var sc = screen({});
+  createFlow(sc, id, { skip: true, title: 'Crea tu clave', sub: 'Para <b>' + esc(nameOf(id)) + '</b>: de ' + MIN + ' a ' + MAX + ' números. Se pedirá al abrir EndoInforme.', done: function (ok) { if (!ok) try { sessionStorage.setItem('endoinforme.v1.clavePend', id); } catch (e) { } done && done(ok); } });
+}
+// Cambiar de usuario: pide la clave del usuario elegido (si la tiene)
+function cambiarA(id, done) {
+  if (!hasPin(id)) { done(); setTimeout(afterUnlock, 50); return; }
+  var sc = screen({});
+  var view = function () {
+    var foot = h('div', 'accfoot');
+    foot.appendChild(linkBtn('Cancelar', function () { sc.close(); }));
+    foot.appendChild(linkBtn('¿Olvidaste tu clave?', function () { recoverFlow(sc, id, view, function () { sc.close(); done(); }); }));
+    padView(sc.box, {
+      title: nameOf(id), sub: 'Ingresa la clave de este usuario', foot: foot, onEsc: function () { sc.close(); },
+      auto: function (v) { return checkUser(id, v); },
+      onEnter: function (v, ui) { if (tryGate(ui, checkUser(id, v))) { sc.close(); done(); } }
+    });
+  };
+  view();
+}
+
+// ---------- Ajustes: mi clave ----------
+function activeId() { var a = usuarios(); var u = a.list.filter(function (x) { return x.id === a.active; })[0] || a.list[0]; return u ? u.id : ''; }
+function verifyThen(id, title, next) {
+  var sc = screen({});
+  padView(sc.box, {
+    title: title, sub: 'Primero ingresa tu clave actual.', onEsc: function () { sc.close(); },
+    foot: (function () { var f = h('div', 'accfoot'); f.appendChild(linkBtn('Cancelar', function () { sc.close(); })); return f; })(),
+    onEnter: function (v, ui) { if (tryGate(ui, checkUser(id, v))) next(sc); }
+  });
+}
+function openChange() {
+  var id = activeId();
+  if (!id) { try { window.EndoPerfil.addUser(); } catch (e) { } return; }
+  if (!hasPin(id)) { crearPara(id); return; }
+  verifyThen(id, 'Cambiar mi clave', function (sc) { createFlow(sc, id, { title: 'Nueva clave', keepCode: true, done: function () { } }); });
+}
+function openNewCode() {
+  var id = activeId(); if (!id || !hasPin(id)) return;
+  verifyThen(id, 'Nuevo código de recuperación', function (sc) { var c = newRecovery(id); if (!c) { sc.close(); toast('No se pudo guardar'); return; } showCode(sc, c, function () { sc.close(); toast('Código de recuperación nuevo ✓ (el anterior ya no sirve)'); }); });
 }
 function inject() {
   document.querySelectorAll('.modal').forEach(function (m) {
-    var t = m.querySelector('h2'); if (!t || t.textContent !== 'Ajustes' || m.querySelector('.accset')) return;
-    var sec = h('div', 'accset', '<div><b>Clave de acceso</b><span>Se pide al abrir EndoInforme.</span></div>');
-    var b1 = h('button', 'btn sm', 'Cambiar clave'), b2 = h('button', 'btn sm ghost', 'Bloquear ahora');
-    b1.type = b2.type = 'button';
-    b1.onclick = openChange;
-    b2.onclick = function () { var ov = m.closest('.ov'); if (ov) ov.remove(); lock(); };
-    var row = h('div', 'accbtns'); row.appendChild(b1); row.appendChild(b2); sec.appendChild(row);
+    var t = m.querySelector('h2'); if (!t || t.textContent !== 'Ajustes') return;
+    var old = m.querySelector('.accset:not(.updset)'), id = activeId(), sig = id + '|' + hasPin(id) + '|' + nameOf(id);
+    if (old && old.dataset.sig === sig) return;
+    var sec = h('div', 'accset');
+    sec.dataset.sig = sig;
+    var nm = nameOf(id);
+    sec.appendChild(h('div', null, '<b>Mi clave de acceso</b><span>' + (id ? (hasPin(id) ? 'Clave personal de ' + esc(nm) + '. Se pide al abrir EndoInforme.' : esc(nm) + ' aún no tiene clave personal.') : 'Crea tu usuario para tener clave propia.') + '</span>'));
+    var row = h('div', 'accbtns');
+    var mkb = function (txt, cls, fn) { var b = h('button', 'btn sm' + (cls ? ' ' + cls : ''), txt); b.type = 'button'; b.onclick = fn; row.appendChild(b); };
+    if (id && hasPin(id)) { mkb('Cambiar clave', '', openChange); mkb('Nuevo código de recuperación', 'ghost', openNewCode); }
+    else mkb(id ? 'Crear mi clave' : 'Crear usuario', 'primary', openChange);
+    if (mode() !== 'none') mkb('Bloquear ahora', 'ghost', function () { var ov = m.closest('.ov'); if (ov) ov.remove(); lock(); });
+    sec.appendChild(row);
+    if (old) { old.replaceWith(sec); return; }
     var anchor = m.querySelector('.creds');
     if (anchor) m.insertBefore(sec, anchor); else { var rows = m.querySelectorAll(':scope > .row'), last = rows[rows.length - 1]; if (last) m.insertBefore(sec, last); else m.appendChild(sec); }
   });
 }
-new MutationObserver(inject).observe(document.body, { childList: true });
+new MutationObserver(inject).observe(document.body, { childList: true, subtree: true });
 inject();
 if (!unlocked()) lock();
 window.EndoUI = window.EndoUI || {}; window.EndoUI.acceso = { lock: lock, change: openChange };
+window.EndoAcceso = { hasPin: hasPin, crearPara: crearPara, cambiarA: cambiarA, mode: mode, lock: lock };
 
 })();}catch(e){console.error("Feature acceso.js",e);}
 ;
@@ -17321,7 +17539,7 @@ function switcher(p) {
     var sel = mk('select'); sel.setAttribute('aria-label', 'Médico que informa');
     store.list.forEach(function (x) { var o = mk('option', null, x.nombre || 'Sin nombre'); o.value = x.id; if (p && x.id === p.id) o.selected = true; sel.appendChild(o); });
     sel.onclick = function (e) { e.stopPropagation(); };
-    sel.onchange = function () { store.active = sel.value; syncFirma(); toast('Firma: ' + (active().nombre || 'perfil')); };
+    sel.onchange = function () { var tg = sel.value; sel.value = store.active; var go = function () { store.active = tg; syncFirma(); toast('Firma: ' + (active().nombre || 'perfil')); }; if (window.EndoAcceso && tg !== store.active) window.EndoAcceso.cambiarA(tg, go); else go(); };
     w.appendChild(sel);
   } else w.appendChild(mk('b', null, p.nombre || 'Sin nombre'));
   var ed = mk('button', 'sigedit', 'Editar'); ed.type = 'button'; ed.title = 'Editar perfil y firma (Ajustes)';
@@ -17431,7 +17649,7 @@ function section(m) {
     // selector de perfil
     var row = mk('div', 'perfrow'), lab = mk('label', 'perfsel'); lab.appendChild(mk('span', null, 'Médico que informa'));
     var sel = mk('select'); store.list.forEach(function (x) { var o = mk('option', null, x.nombre || 'Sin nombre'); o.value = x.id; o.selected = x.id === p.id; sel.appendChild(o); });
-    sel.onchange = function () { store.active = sel.value; syncFirma(); draw(); };
+    sel.onchange = function () { var tg = sel.value; draw(); var go = function () { store.active = tg; syncFirma(); draw(); }; if (window.EndoAcceso && tg !== store.active) window.EndoAcceso.cambiarA(tg, go); else go(); };
     lab.appendChild(sel); row.appendChild(lab);
     var bN = mk('button', 'btn sm ghost', '+ Nuevo perfil'); bN.type = 'button';
     bN.onclick = function () { var n = { id: uid(), nombre: '', esp: p.esp || '', reg: '', firma: '' }; store.list.push(n); store.active = n.id; syncFirma(); draw(); var i = s.querySelector('.perfgrid input'); if (i) i.focus(); };
@@ -17494,11 +17712,11 @@ function userForm(opts) {
   // opts: {title, sub, first} → crea un usuario nuevo
   var ov = mk('div', 'usrov'), box = mk('div', 'usrbox');
   box.setAttribute('role', 'dialog'); box.setAttribute('aria-modal', 'true'); box.setAttribute('aria-label', opts.title);
-  box.innerHTML = '<div class="usrav">👩‍⚕️</div><h2>' + esc2(opts.title) + '</h2><p class="usrsub">' + esc2(opts.sub) + '</p>' +
+  box.innerHTML = '<div class="usrav">🩺</div><h2>' + esc2(opts.title) + '</h2><p class="usrsub">' + esc2(opts.sub) + '</p>' +
     '<label class="fld"><span>Nombre</span><input data-k="nombre" type="text" placeholder="Ej: Dr. Nombre Apellido" autocomplete="off" spellcheck="false"></label>' +
     '<label class="fld"><span>Especialidad</span><input data-k="esp" type="text" value="Gastroenterología" autocomplete="off" spellcheck="false"></label>' +
     '<label class="fld"><span>RUT / N° registro (opcional)</span><input data-k="reg" type="text" placeholder="Ej: Reg. 123456" autocomplete="off" spellcheck="false"></label>' +
-    '<p class="usrnote">La firma la puedes agregar después en Ajustes. Todo queda guardado en este computador.</p>' +
+    '<p class="usrnote">La firma la puedes agregar después en Ajustes. Todo queda guardado en este dispositivo.</p>' +
     '<div class="usrmsg" role="alert"></div><div class="row"><button type="button" class="btn" data-x>' + (opts.first ? 'Más tarde' : 'Cancelar') + '</button><button type="button" class="btn primary" data-ok>Crear usuario</button></div>';
   ov.appendChild(box); document.body.appendChild(ov);
   var q = function (k) { return box.querySelector('[data-k="' + k + '"]'); };
@@ -17510,6 +17728,7 @@ function userForm(opts) {
     store.list.push(u); store.active = u.id; syncFirma(); chip();
     try { localStorage.setItem(KBV, '1'); } catch (e) { }
     close(); toast('Usuario creado: ' + n + ' ✓');
+    try { if (window.EndoAcceso) setTimeout(function () { window.EndoAcceso.crearPara(u.id); }, 250); } catch (e) { }
   };
   var key = function (e) {
     if (e.key === 'Escape') { e.stopPropagation(); e.preventDefault(); if (opts.first) try { localStorage.setItem(KBV, '1'); } catch (x) { } close(); }
@@ -17546,7 +17765,7 @@ function menu(anchor) {
   store.list.forEach(function (x) {
     var b = mk('button', 'usrit' + (active() && x.id === active().id ? ' on' : '')); b.type = 'button'; b.setAttribute('role', 'menuitem');
     b.innerHTML = '<i>' + esc2(initials(x.nombre)) + '</i><span><b>' + esc2(x.nombre || 'Sin nombre') + '</b><small>' + esc2(x.esp || '') + '</small></span>';
-    b.onclick = function () { store.active = x.id; syncFirma(); chip(); m.remove(); toast('Usuario: ' + (x.nombre || 'Sin nombre')); };
+    b.onclick = function () { m.remove(); var go = function () { store.active = x.id; syncFirma(); chip(); toast('Usuario: ' + (x.nombre || 'Sin nombre')); }; if (x.id !== store.active && window.EndoAcceso) window.EndoAcceso.cambiarA(x.id, go); else go(); };
     m.appendChild(b);
   });
   var sep = mk('div', 'usrsep'); m.appendChild(sep);
@@ -17561,7 +17780,7 @@ chip();
 // primer ingreso: después de la clave (si está bloqueada) o de inmediato
 if (document.querySelector('.acclock')) document.addEventListener('endo:desbloqueo', function () { setTimeout(firstRun, 350); }, { once: true });
 else setTimeout(firstRun, 400);
-window.EndoPerfil = { addUser: addUser, firstRun: firstRun, active: function () { var p = active(); return p ? { nombre: p.nombre, esp: p.esp, reg: p.reg, firma: !!p.firma } : null; }, list: function () { return store.list.map(function (x) { return x.nombre; }); } };
+window.EndoPerfil = { setActive: function (id) { if (store.list.some(function (x) { return x.id === id; })) { store.active = id; syncFirma(); chip(); } }, addUser: addUser, firstRun: firstRun, active: function () { var p = active(); return p ? { nombre: p.nombre, esp: p.esp, reg: p.reg, firma: !!p.firma } : null; }, list: function () { return store.list.map(function (x) { return x.nombre; }); } };
 
 })();}catch(e){console.error("Feature perfil.js",e);}
 ;
@@ -17837,7 +18056,7 @@ new MutationObserver(scanHome).observe(document.body, { childList: true });
 scanHome();
 
 })();}catch(e){console.error("Feature rapido.js",e);}
-window.ENDO_VERSION="202611270515";window.ENDO_WEB_URL="";</script>
+window.ENDO_VERSION="202611271005";window.ENDO_WEB_URL="";</script>
 <script>
 if ('serviceWorker' in navigator && location.protocol.indexOf('http') === 0) { navigator.serviceWorker.register('sw.js').catch(function(){}); }
 </script>
