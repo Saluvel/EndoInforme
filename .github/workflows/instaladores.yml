@@ -1,0 +1,46 @@
+name: Instaladores de escritorio
+
+on:
+  push:
+    tags: ['v*']
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  build:
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - os: windows-latest
+            args: '--bundles nsis'
+          - os: macos-latest
+            args: '--target universal-apple-darwin --bundles dmg'
+    runs-on: ${{ matrix.os }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+      - uses: dtolnay/rust-toolchain@stable
+        with:
+          targets: ${{ matrix.os == 'macos-latest' && 'aarch64-apple-darwin,x86_64-apple-darwin' || '' }}
+      - name: Instalar Tauri CLI
+        working-directory: desktop
+        run: npm install
+      - name: Generar íconos
+        working-directory: desktop
+        run: npx tauri icon app-icon.png -o src-tauri/icons
+      - uses: tauri-apps/tauri-action@v0
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          projectPath: desktop
+          tagName: v__VERSION__
+          releaseName: 'EndoInforme v__VERSION__'
+          releaseBody: 'Descarga EndoInforme-Setup (Windows) o el .dmg (Mac). Ver instrucciones en el README.'
+          releaseDraft: false
+          prerelease: false
+          args: ${{ matrix.args }}

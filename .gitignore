@@ -1,0 +1,5 @@
+node_modules/
+desktop/src-tauri/target/
+desktop/src-tauri/icons/
+desktop/src-tauri/gen/
+desktop/package-lock.json
