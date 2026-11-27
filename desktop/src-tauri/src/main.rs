@@ -29,6 +29,29 @@ fn guardar_datos(app: AppHandle, datos: String) -> Result<(), String> {
     fs::rename(&tmp, &p).map_err(|e| e.to_string())
 }
 
+#[tauri::command]
+fn info_app() -> serde_json::Value {
+    let os = match std::env::consts::OS { "macos" => "macos", "windows" => "windows", o => o };
+    serde_json::json!({ "version": env!("CARGO_PKG_VERSION"), "os": os, "arch": std::env::consts::ARCH })
+}
+
+// Abre en el navegador del sistema SOLO descargas del repositorio oficial (actualizaciones)
+#[tauri::command]
+fn abrir_url(url: String) -> Result<(), String> {
+    let ok = url.starts_with("https://github.com/Saluvel/EndoInforme/releases/")
+        && !url.chars().any(|c| c.is_whitespace() || c == '"' || c == '\'' || c == '&' || c == '|' || c == '^' || c == '%' || c == '`');
+    if !ok {
+        return Err("URL no permitida".into());
+    }
+    #[cfg(target_os = "windows")]
+    let r = std::process::Command::new("rundll32").args(["url.dll,FileProtocolHandler", &url]).spawn();
+    #[cfg(target_os = "macos")]
+    let r = std::process::Command::new("open").arg(&url).spawn();
+    #[cfg(all(not(target_os = "windows"), not(target_os = "macos")))]
+    let r = std::process::Command::new("xdg-open").arg(&url).spawn();
+    r.map(|_| ()).map_err(|e| e.to_string())
+}
+
 fn leer_datos(app: &AppHandle) -> String {
     let leer = |p: PathBuf| {
         fs::read_to_string(p)
@@ -42,7 +65,7 @@ fn leer_datos(app: &AppHandle) -> String {
 
 fn main() {
     tauri::Builder::default()
-        .invoke_handler(tauri::generate_handler![guardar_datos])
+        .invoke_handler(tauri::generate_handler![guardar_datos, info_app, abrir_url])
         .setup(|app| {
             let datos = leer_datos(app.handle());
             let js = format!(
@@ -58,6 +81,20 @@ fn main() {
                 .initialization_script(&js)
                 .build()?;
             Ok(())
+        })
+        .on_window_event(|window, event| {
+            // al cerrar: pedir a la página que guarde la última copia a disco y cerrar un instante después
+            if let tauri::WindowEvent::CloseRequested { api, .. } = event {
+                if let Some(w) = window.app_handle().get_webview_window(window.label()) {
+                    if w.eval("try{window.EndoDisco&&window.EndoDisco.save()}catch(e){}").is_ok() {
+                        api.prevent_close();
+                        std::thread::spawn(move || {
+                            std::thread::sleep(std::time::Duration::from_millis(350));
+                            let _ = w.destroy();
+                        });
+                    }
+                }
+            }
         })
         .run(tauri::generate_context!())
         .expect("no se pudo iniciar EndoInforme");
