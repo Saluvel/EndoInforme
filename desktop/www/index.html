@@ -801,6 +801,41 @@ a.scl .sci{font-size:.85em;margin-left:3px;text-decoration:none;display:inline-b
 .mpi{height:auto;line-height:1.3}
 .mpi small{line-height:1.25;margin-top:1px}
 
+/* Pantalla de bloqueo con clave numérica */
+.acclock{position:fixed;inset:0;z-index:20000;display:flex;align-items:center;justify-content:center;padding:16px;
+  background:radial-gradient(ellipse at 50% 30%,color-mix(in srgb,var(--accent) 22%,var(--bg,#f4f7f9)),var(--bg,#f4f7f9) 70%);animation:accin .35s var(--ease,ease)}
+.acclock.out{animation:accout .3s ease forwards}
+html.acc-locked body>*:not(.acclock){filter:blur(14px);pointer-events:none;user-select:none}
+.accbox{width:min(340px,100%);display:flex;flex-direction:column;align-items:center;gap:10px;padding:28px 24px 22px;border-radius:22px;background:var(--panel);border:1px solid var(--line);box-shadow:0 30px 80px rgba(10,22,34,.25)}
+.acclogo{width:60px;height:60px;border-radius:18px;display:grid;place-items:center;color:var(--onAccent,#fff);background:linear-gradient(145deg,var(--accent),var(--accent2));box-shadow:0 10px 24px color-mix(in srgb,var(--accent) 40%,transparent)}
+.accbox h2{margin:6px 0 0;font-size:20px;letter-spacing:-.01em;color:var(--ink)}
+.accsub{margin:0;color:var(--ink3);font-size:13.5px}
+.accdots{display:flex;gap:12px;margin:12px 0 2px;min-height:16px}
+.accdots i{width:14px;height:14px;border-radius:50%;border:2px solid var(--line2);transition:background .15s,border-color .15s,transform .15s}
+.accdots i.on{background:var(--accent);border-color:var(--accent);transform:scale(1.08)}
+.accin{position:absolute;opacity:0;width:1px;height:1px;pointer-events:none}
+.accmsg{min-height:18px;font-size:12.5px;color:var(--bad);font-weight:600;text-align:center}
+.accpad{display:grid;grid-template-columns:repeat(3,64px);gap:12px;margin-top:2px}
+.acck{height:58px;border-radius:50%;border:1px solid var(--line);background:var(--panel2,var(--panel));color:var(--ink);font:600 22px/1 var(--font,system-ui),system-ui,sans-serif;cursor:pointer;transition:background .12s,transform .08s,border-color .12s}
+.acck:hover{border-color:var(--accent);background:var(--accentSoft)}
+.acck:active{transform:scale(.93)}
+.acck.fn{font-size:19px;color:var(--ink2);background:transparent;border-color:transparent}
+.acck.fn:hover{background:var(--accentSoft)}
+.accbox.shake{animation:accshake .38s}
+@keyframes accshake{20%,60%{transform:translateX(-9px)}40%,80%{transform:translateX(9px)}}
+@keyframes accin{from{opacity:0}}
+@keyframes accout{to{opacity:0;transform:scale(1.03)}}
+/* Ajustes */
+.accset{display:flex;align-items:center;gap:12px;flex-wrap:wrap;margin:16px 0 4px;padding:12px 14px;border:1px solid var(--line);border-radius:12px}
+.accset>div:first-child{display:flex;flex-direction:column;gap:2px;flex:1 1 180px;font-size:13px;color:var(--ink3)}
+.accset b{color:var(--ink)}
+.accbtns{display:flex;gap:8px}
+.accchg{width:min(420px,94vw)}
+.accchg .fld{margin-bottom:10px}
+.accchg .accmsg{text-align:left;margin-bottom:8px}
+@media print{.acclock{display:none!important}html.acc-locked body>*{filter:none!important}}
+@media (prefers-reduced-motion:reduce){.acclock,.acclock.out,.accbox.shake{animation:none}}
+
 .credh{margin:14px auto 0;text-align:center;font-size:12px;line-height:1.55;color:var(--muted,#64748b);max-width:720px}
 .credh b{color:var(--ink,#0f172a);font-weight:600}
 .creds{display:flex;flex-direction:column;gap:4px;margin:16px 0 4px;padding:12px 14px;border:1px solid var(--line);border-radius:12px;font-size:13px;color:var(--muted,#64748b);line-height:1.5}
@@ -1063,17 +1098,51 @@ mark.rvmk.on,mark.rvmk:hover{background:#f8c867;box-shadow:0 0 0 2px #f8c867,0 0
 .amapbox.mapa{flex-direction:column;align-items:stretch;gap:2px;padding:6px 6px 4px}
 .amapbox.mapa .mmaps{display:flex;gap:4px;justify-content:center}
 .mfig{flex:1;display:flex;justify-content:center;min-width:0}
-.mmap{width:100%;max-width:118px;height:auto;overflow:visible;touch-action:manipulation}
-.mmap .mbg{fill:none;stroke:var(--line);stroke-linecap:round;stroke-linejoin:round}
+.mmap{width:100%;max-width:122px;height:auto;overflow:visible;touch-action:manipulation;
+  --mWall:#b9575e;--mMuc:#e3918c;--mIn:#f6c4b6;--mSpec:#fff;--mSh:rgba(60,20,25,.16);--mk:#c2410c;--mkHi:#fb923c;--mHl:color-mix(in srgb,var(--accent) 62%,#fff)}
+:root[data-theme="dark"] .mmap{--mWall:#9c4a52;--mMuc:#cf7e7c;--mIn:#eaa898;--mSpec:#ffe9e3;--mSh:rgba(0,0,0,.45);--mk:#ea580c;--mkHi:#fdba74;--mHl:color-mix(in srgb,var(--accent) 70%,#fff)}
+.mmap .o-base path:not(.o-sto):not(.o-shf),.mmap .r-ov:not(.f),.mmap .r-hit{fill:none;stroke-linecap:round;stroke-linejoin:round}
+.mmap .o-sh{stroke:var(--mSh)}
+.mmap .o-shf{fill:var(--mSh)}
+.mmap .o-wall{stroke:var(--mWall)}
+.mmap .o-muc{stroke:var(--mMuc)}
+.mmap .o-in{stroke:var(--mIn);opacity:.75}
+.mmap .o-fold{stroke:var(--mWall);opacity:.42;stroke-linecap:butt!important}
+.mmap .o-spec{stroke:var(--mSpec);opacity:.5}
+.mmap .o-base .o-sto{stroke:none}
+.mmap .o-base .o-stol{stroke:var(--mWall);stroke-width:1.3}
+.mmap .o-rug path{stroke:var(--mWall);stroke-width:.9;opacity:.32}
+.mmap .o-glare{fill:var(--mSpec);opacity:.38}
+.mmap .o-z{fill:none;stroke:#fff;stroke-width:.8;opacity:.7;stroke-linecap:round;stroke-linejoin:round}
+.mmap .o-pil{fill:var(--mWall);stroke:color-mix(in srgb,var(--mWall) 70%,#000);stroke-width:.6}
+.mmap .o-pilh{fill:var(--mSpec);opacity:.45}
+.mmap .o-pap{fill:var(--mWall);stroke:var(--mSpec);stroke-width:.4;opacity:.9}
+/* regiones: realce sobre la anatomía */
 .mmap .mreg{cursor:pointer;outline:none}
-.mmap .mvis{fill:none;stroke:var(--ok,#2e9e6a);stroke-linecap:round;stroke-linejoin:round;opacity:.5;transition:opacity .15s,stroke .15s,filter .15s}
-.mmap .mreg.f .mvis{stroke:var(--warn,#d98b1a);opacity:.9}
-.mmap .mhit{fill:none;stroke:transparent;stroke-width:16;stroke-linecap:round;pointer-events:stroke}
-.mmap .mreg:hover .mvis,.mmap .mreg.hov .mvis,.mmap .mreg:focus-visible .mvis{stroke:var(--accent);opacity:1;filter:drop-shadow(0 0 2px color-mix(in srgb,var(--accent) 55%,transparent))}
+.mmap .r-ov{stroke:var(--accent);opacity:0;transition:opacity .18s var(--ease,ease)}
+.mmap .r-ov.f{fill:var(--accent);stroke:none}
+.mmap .r-hit{stroke:transparent;stroke-width:16;pointer-events:stroke}
+.mmap .mreg.f .r-ov{stroke:var(--mk);opacity:.26}
+.mmap .mreg.f .r-ov.f{fill:var(--mk)}
+.mmap .mreg:hover .r-ov,.mmap .mreg.hov .r-ov,.mmap .mreg:focus-visible .r-ov,.mmap .mreg.sel .r-ov{stroke:var(--mHl);opacity:1;stroke-opacity:.88}
+.mmap .mreg:hover .r-ov.f,.mmap .mreg.hov .r-ov.f,.mmap .mreg:focus-visible .r-ov.f,.mmap .mreg.sel .r-ov.f{fill:var(--mHl);fill-opacity:.8;stroke:var(--accent);stroke-width:1.4;stroke-opacity:1}
+.mmap .mreg.sel .r-ov{animation:mselp 1.4s ease-in-out infinite}
+@keyframes mselp{50%{opacity:.6}}
+.mmap .o-base{transition:opacity .2s,filter .2s}
+.mmap:has(.mreg:hover) .o-base{filter:saturate(.75) brightness(1.02)}
+/* rótulos (mapa grande) */
+.mmap .mlab{font:600 4.6px/1 var(--font,system-ui),system-ui,sans-serif;fill:var(--ink3);letter-spacing:.01em;transition:fill .15s}
+.mmap .mreg.f .mlab{fill:var(--warn)}
+.mmap .mreg:hover .mlab,.mmap .mreg.hov .mlab,.mmap .mreg:focus-visible .mlab,.mmap .mreg.sel .mlab{fill:var(--accent);font-weight:800}
+/* marcadores */
 .mmap .mmk{cursor:pointer;outline:none}
-.mmap .mmk circle{fill:var(--warn,#d98b1a);stroke:var(--panel);stroke-width:1.6;transition:r .12s}
-.mmap .mmk text{font:700 7.5px system-ui,sans-serif;fill:#fff;text-anchor:middle;pointer-events:none}
-.mmap .mmk:hover circle,.mmap .mmk:focus-visible circle{fill:var(--accent);r:7}
+.mmap .mmk .mdot{stroke:#fff;stroke-width:1.3;filter:drop-shadow(0 .8px 1.2px rgba(0,0,0,.35));transition:r .14s,stroke .14s}
+.mmap .mmk text{font:800 5.6px system-ui,sans-serif;fill:#fff;text-anchor:middle;pointer-events:none}
+.mmap .mmk:hover .mdot,.mmap .mmk:focus-visible .mdot{r:5.8;stroke:var(--accent)}
+.mmap .mmk.new .mdot,.mmap .mmk.new text{transform-box:fill-box;transform-origin:center;animation:mkpop .5s cubic-bezier(.3,1.6,.5,1) both}
+.mmap .mmk .mping{fill:none;stroke:var(--mk);stroke-width:1.4;transform-box:fill-box;transform-origin:center;animation:mkping 1.1s ease-out 2;opacity:0;pointer-events:none}
+@keyframes mkpop{0%{transform:scale(0)}100%{transform:scale(1)}}
+@keyframes mkping{0%{transform:scale(1);opacity:.8}100%{transform:scale(3);opacity:0}}
 .amapbox.mapa .mfoot{display:flex;align-items:center;gap:4px;min-height:22px}
 .mtip{flex:1;font-size:11px;color:var(--ink3);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;transition:color .15s}
 .mtip.on{color:var(--accentInk);font-weight:600}
@@ -1106,10 +1175,16 @@ mark.rvmk.on,mark.rvmk:hover{background:#f8c867;box-shadow:0 0 0 2px #f8c867,0 0
 .mbh b{font-size:16px}
 .mbh .mtip{font-size:13px}
 .mbb{display:flex;gap:24px;justify-content:center;padding:16px 24px 22px;overflow:auto}
-.mbb .mmap{max-width:none;width:auto;height:min(68vh,560px)}
-.mbb .mmap .mhit{stroke-width:14}
-.mbb .mmap .mmk text{font-size:6.5px}
-.mbb .mmap .mmk circle{r:5}
+.mbb .mmap{max-width:none;width:100%;height:auto;max-height:min(64vh,540px)}
+.mbb .mfig{flex:1 1 0;max-width:460px}
+.mbb{background:radial-gradient(ellipse at 50% 40%,color-mix(in srgb,var(--accent) 6%,transparent),transparent 70%)}
+.mbb .mfig{flex-direction:column;align-items:center;gap:6px}
+.mcap{font-size:12px;font-weight:600;letter-spacing:.06em;text-transform:uppercase;color:var(--ink3)}
+.mleg{display:flex;align-items:center;gap:6px;font-size:12px;color:var(--ink3);white-space:nowrap}
+.mleg i{display:inline-block;width:10px;height:10px;border-radius:50%;margin-left:8px}
+.mleg .lf{background:color-mix(in srgb,var(--warn) 40%,transparent);border-radius:3px}
+.mleg .lm{background:radial-gradient(circle at 35% 30%,#fb923c,#c2410c);box-shadow:0 0 0 1.5px #fff,0 1px 2px rgba(0,0,0,.3)}
+@media (max-width:700px){.mleg{display:none}}
 
 /* hoja: frase de un hallazgo bajo el puntero */
 @media screen{
@@ -1119,7 +1194,7 @@ mark.rvmk.on,mark.rvmk:hover{background:#f8c867;box-shadow:0 0 0 2px #f8c867,0 0
   .paper h3:hover{color:var(--accent)}
 }
 @media print{.ov.mappop,.ov.mapov{display:none!important}.paper h3{color:inherit!important}}
-@media (prefers-reduced-motion:reduce){.mmap .mvis,.mmap .mmk circle,.find.mapahl,.mtip{transition:none!important}}
+@media (prefers-reduced-motion:reduce){.mmap .r-ov,.mmap .mmk .mdot,.mmap .mmk.new .mdot,.mmap .mmk .mping,.mmap .mreg.sel .r-ov,.find.mapahl,.mtip{transition:none!important;animation:none!important}}
 
 /* ===== perfil.css — Perfil del médico (Ajustes) + selector de firma en la hoja ===== */
 .modal .perf{margin:4px 0 14px;padding:14px 16px;border:1px solid var(--line);border-radius:12px;background:var(--panel2);display:flex;flex-direction:column;gap:12px}
@@ -14152,6 +14227,153 @@ if (typeof module !== 'undefined') module.exports = EndoScales;
 })();
 
 ;
+/* ===== feature acceso.js ===== */
+try{(function(){
+// Clave de acceso (PIN numérico) al abrir la app + "Cambiar clave" en Ajustes.
+// Solo se guarda un hash con sal (SHA-256), nunca la clave. Protege contra el acceso casual, no es seguridad fuerte.
+var KEY = 'endoinforme.v1.acceso', SKEY = 'endoinforme.v1.desbloqueo';
+var DEF = { salt: 'ff609f26586140ff', hash: 'fdc5591dded8f2578b925a45ee2577a6463a00143d656da42b305ee9ee6c2939' };
+var MIN = 4, MAX = 8;
+
+// SHA-256 en JS puro (funciona en file://, en la app de escritorio y sin crypto.subtle)
+function sha256(str) {
+  var K = [0x428a2f98, 0x71374491, 0xb5c0fbcf, 0xe9b5dba5, 0x3956c25b, 0x59f111f1, 0x923f82a4, 0xab1c5ed5, 0xd807aa98, 0x12835b01, 0x243185be, 0x550c7dc3, 0x72be5d74, 0x80deb1fe, 0x9bdc06a7, 0xc19bf174, 0xe49b69c1, 0xefbe4786, 0x0fc19dc6, 0x240ca1cc, 0x2de92c6f, 0x4a7484aa, 0x5cb0a9dc, 0x76f988da, 0x983e5152, 0xa831c66d, 0xb00327c8, 0xbf597fc7, 0xc6e00bf3, 0xd5a79147, 0x06ca6351, 0x14292967, 0x27b70a85, 0x2e1b2138, 0x4d2c6dfc, 0x53380d13, 0x650a7354, 0x766a0abb, 0x81c2c92e, 0x92722c85, 0xa2bfe8a1, 0xa81a664b, 0xc24b8b70, 0xc76c51a3, 0xd192e819, 0xd6990624, 0xf40e3585, 0x106aa070, 0x19a4c116, 0x1e376c08, 0x2748774c, 0x34b0bcb5, 0x391c0cb3, 0x4ed8aa4a, 0x5b9cca4f, 0x682e6ff3, 0x748f82ee, 0x78a5636f, 0x84c87814, 0x8cc70208, 0x90befffa, 0xa4506ceb, 0xbef9a3f7, 0xc67178f2];
+  var H = [0x6a09e667, 0xbb67ae85, 0x3c6ef372, 0xa54ff53a, 0x510e527f, 0x9b05688c, 0x1f83d9ab, 0x5be0cd19];
+  var b = unescape(encodeURIComponent(str)), bytes = [], i;
+  for (i = 0; i < b.length; i++) bytes.push(b.charCodeAt(i));
+  var l = bytes.length * 8; bytes.push(0x80);
+  while (bytes.length % 64 !== 56) bytes.push(0);
+  for (i = 7; i >= 0; i--) bytes.push(i >= 4 ? 0 : (l >>> (i * 8)) & 255);
+  var r = function (x, n) { return (x >>> n) | (x << (32 - n)); }, W = new Array(64);
+  for (var o = 0; o < bytes.length; o += 64) {
+    for (i = 0; i < 16; i++) W[i] = (bytes[o + i * 4] << 24) | (bytes[o + i * 4 + 1] << 16) | (bytes[o + i * 4 + 2] << 8) | bytes[o + i * 4 + 3];
+    for (i = 16; i < 64; i++) { var s0 = r(W[i - 15], 7) ^ r(W[i - 15], 18) ^ (W[i - 15] >>> 3), s1 = r(W[i - 2], 17) ^ r(W[i - 2], 19) ^ (W[i - 2] >>> 10); W[i] = (W[i - 16] + s0 + W[i - 7] + s1) | 0; }
+    var a = H[0], bb = H[1], c = H[2], d = H[3], e = H[4], f = H[5], g = H[6], h = H[7];
+    for (i = 0; i < 64; i++) {
+      var t1 = (h + (r(e, 6) ^ r(e, 11) ^ r(e, 25)) + ((e & f) ^ (~e & g)) + K[i] + W[i]) | 0;
+      var t2 = ((r(a, 2) ^ r(a, 13) ^ r(a, 22)) + ((a & bb) ^ (a & c) ^ (bb & c))) | 0;
+      h = g; g = f; f = e; e = (d + t1) | 0; d = c; c = bb; bb = a; a = (t1 + t2) | 0;
+    }
+    H[0] = (H[0] + a) | 0; H[1] = (H[1] + bb) | 0; H[2] = (H[2] + c) | 0; H[3] = (H[3] + d) | 0; H[4] = (H[4] + e) | 0; H[5] = (H[5] + f) | 0; H[6] = (H[6] + g) | 0; H[7] = (H[7] + h) | 0;
+  }
+  return H.map(function (x) { return ('00000000' + (x >>> 0).toString(16)).slice(-8); }).join('');
+}
+function cfg() { try { var c = JSON.parse(localStorage.getItem(KEY) || 'null'); if (c && c.salt && c.hash) return c; } catch (e) { } return DEF; }
+function hashOf(pin, salt) { return sha256('endoinforme|' + salt + '|' + pin); }
+function check(pin) { var c = cfg(); return hashOf(pin, c.salt) === c.hash; }
+function setPin(pin) {
+  var a = new Uint8Array(8); try { crypto.getRandomValues(a); } catch (e) { for (var i = 0; i < 8; i++) a[i] = Math.random() * 256 | 0; }
+  var salt = Array.prototype.map.call(a, function (x) { return ('0' + x.toString(16)).slice(-2); }).join('');
+  try { localStorage.setItem(KEY, JSON.stringify({ salt: salt, hash: hashOf(pin, salt) })); return true; } catch (e) { return false; }
+}
+function unlocked() { try { return sessionStorage.getItem(SKEY) === '1'; } catch (e) { return false; } }
+function markUnlocked(on) { try { if (on) sessionStorage.setItem(SKEY, '1'); else sessionStorage.removeItem(SKEY); } catch (e) { } }
+function h(tag, cls, html) { var x = document.createElement(tag); if (cls) x.className = cls; if (html != null) x.innerHTML = html; return x; }
+var LOCK = '<svg viewBox="0 0 24 24" width="26" height="26" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="4" y="10.5" width="16" height="10" rx="2.5"/><path d="M8 10.5V7.5a4 4 0 0 1 8 0v3"/><circle cx="12" cy="15.5" r="1.4" fill="currentColor"/></svg>';
+
+// ---------- pantalla de bloqueo ----------
+var fails = 0, waitUntil = 0;
+function lock() {
+  if (document.querySelector('.acclock')) return;
+  markUnlocked(false);
+  var ov = h('div', 'acclock'), box = h('div', 'accbox');
+  ov.setAttribute('role', 'dialog'); ov.setAttribute('aria-modal', 'true'); ov.setAttribute('aria-label', 'Ingresar clave');
+  box.innerHTML = '<div class="acclogo">' + LOCK + '</div><h2>EndoInforme</h2><p class="accsub">Ingresa tu clave de acceso</p>' +
+    '<div class="accdots" aria-live="polite"></div><input class="accin" type="password" inputmode="numeric" autocomplete="off" maxlength="' + MAX + '" aria-label="Clave numérica">' +
+    '<div class="accmsg" role="alert"></div><div class="accpad"></div>';
+  ov.appendChild(box); document.body.appendChild(ov);
+  document.documentElement.classList.add('acc-locked');
+  var inp = box.querySelector('.accin'), dots = box.querySelector('.accdots'), msg = box.querySelector('.accmsg'), pad = box.querySelector('.accpad'), val = '';
+  var draw = function () { var n = Math.max(MIN, val.length), s = ''; for (var i = 0; i < n; i++) s += '<i class="' + (i < val.length ? 'on' : '') + '"></i>'; dots.innerHTML = s; inp.value = val; };
+  var shake = function () { box.classList.remove('shake'); void box.offsetWidth; box.classList.add('shake'); };
+  var tryIt = function () {
+    if (Date.now() < waitUntil) { msg.textContent = 'Espera ' + Math.ceil((waitUntil - Date.now()) / 1000) + ' s para reintentar.'; return; }
+    if (val.length < MIN) return;
+    if (check(val)) {
+      markUnlocked(true); fails = 0; ov.classList.add('out');
+      document.documentElement.classList.remove('acc-locked');
+      window.removeEventListener('keydown', trap, true);
+      setTimeout(function () { ov.remove(); }, 320);
+      return;
+    }
+    fails++; val = ''; draw(); shake();
+    if (fails >= 5) { waitUntil = Date.now() + 30000; fails = 0; msg.textContent = 'Demasiados intentos. Espera 30 s.'; }
+    else msg.textContent = 'Clave incorrecta';
+  };
+  var press = function (k) {
+    if (k === 'del') val = val.slice(0, -1);
+    else if (k === 'ok') return tryIt();
+    else if (val.length < MAX) val += k;
+    msg.textContent = ''; draw();
+    if (val.length >= MIN && check(val)) tryIt();
+  };
+  '1 2 3 4 5 6 7 8 9 del 0 ok'.split(' ').forEach(function (k) {
+    var b = h('button', 'acck' + (k === 'del' || k === 'ok' ? ' fn' : ''), k === 'del' ? '⌫' : k === 'ok' ? '✓' : k);
+    b.type = 'button'; b.setAttribute('aria-label', k === 'del' ? 'Borrar' : k === 'ok' ? 'Entrar' : k);
+    b.onclick = function () { press(k); try { inp.focus({ preventScroll: true }); } catch (e) { } };
+    pad.appendChild(b);
+  });
+  var trap = function (e) {
+    if (!document.body.contains(ov)) return window.removeEventListener('keydown', trap, true);
+    var k = e.key;
+    if (/^[0-9]$/.test(k)) press(k);
+    else if (k === 'Backspace') press('del');
+    else if (k === 'Enter') press('ok');
+    else if (k === 'Tab') return;
+    e.preventDefault(); e.stopPropagation();
+  };
+  window.addEventListener('keydown', trap, true);
+  draw();
+  try { inp.focus({ preventScroll: true }); } catch (e) { inp.focus(); }
+}
+
+// ---------- Ajustes: cambiar clave / bloquear ahora ----------
+function openChange() {
+  var ov = h('div', 'ov'), box = h('div', 'modal accchg');
+  box.setAttribute('role', 'dialog'); box.setAttribute('aria-modal', 'true'); box.setAttribute('aria-label', 'Cambiar clave');
+  box.innerHTML = '<h2>Cambiar clave de acceso</h2><div class="sub">Solo números, de ' + MIN + ' a ' + MAX + ' dígitos. Se guarda en este computador.</div>' +
+    '<label class="fld"><span>Clave actual</span><input type="password" inputmode="numeric" autocomplete="off" maxlength="' + MAX + '" data-k="a"></label>' +
+    '<label class="fld"><span>Nueva clave</span><input type="password" inputmode="numeric" autocomplete="off" maxlength="' + MAX + '" data-k="n"></label>' +
+    '<label class="fld"><span>Repite la nueva clave</span><input type="password" inputmode="numeric" autocomplete="off" maxlength="' + MAX + '" data-k="r"></label>' +
+    '<div class="accmsg" role="alert"></div><div class="row"><button type="button" class="btn" data-x>Cancelar</button><button type="button" class="btn primary" data-ok>Guardar clave</button></div>';
+  ov.appendChild(box); document.body.appendChild(ov);
+  var q = function (k) { return box.querySelector('[data-k="' + k + '"]'); }, msg = box.querySelector('.accmsg');
+  Array.prototype.forEach.call(box.querySelectorAll('input'), function (i) { i.addEventListener('input', function () { i.value = i.value.replace(/\D/g, ''); msg.textContent = ''; }); });
+  var close = function () { ov.remove(); document.removeEventListener('keydown', esc, true); };
+  var esc = function (e) { if (e.key === 'Escape') { e.stopPropagation(); close(); } else if (e.key === 'Enter') { e.preventDefault(); e.stopPropagation(); save(); } };
+  var save = function () {
+    var a = q('a').value, n = q('n').value, r = q('r').value;
+    if (!check(a)) { msg.textContent = 'La clave actual no es correcta.'; q('a').focus(); return; }
+    if (!/^\d+$/.test(n) || n.length < MIN || n.length > MAX) { msg.textContent = 'La nueva clave debe tener de ' + MIN + ' a ' + MAX + ' números.'; q('n').focus(); return; }
+    if (n !== r) { msg.textContent = 'Las claves nuevas no coinciden.'; q('r').focus(); return; }
+    if (!setPin(n)) { msg.textContent = 'No se pudo guardar en este navegador.'; return; }
+    close(); try { window.EndoUI.rapido.toast('Clave de acceso actualizada ✓'); } catch (e) { }
+  };
+  box.querySelector('[data-x]').onclick = close; box.querySelector('[data-ok]').onclick = save;
+  ov.addEventListener('mousedown', function (e) { if (e.target === ov) close(); });
+  document.addEventListener('keydown', esc, true);
+  q('a').focus();
+}
+function inject() {
+  document.querySelectorAll('.modal').forEach(function (m) {
+    var t = m.querySelector('h2'); if (!t || t.textContent !== 'Ajustes' || m.querySelector('.accset')) return;
+    var sec = h('div', 'accset', '<div><b>Clave de acceso</b><span>Se pide al abrir EndoInforme.</span></div>');
+    var b1 = h('button', 'btn sm', 'Cambiar clave'), b2 = h('button', 'btn sm ghost', 'Bloquear ahora');
+    b1.type = b2.type = 'button';
+    b1.onclick = openChange;
+    b2.onclick = function () { var ov = m.closest('.ov'); if (ov) ov.remove(); lock(); };
+    var row = h('div', 'accbtns'); row.appendChild(b1); row.appendChild(b2); sec.appendChild(row);
+    var anchor = m.querySelector('.creds');
+    if (anchor) m.insertBefore(sec, anchor); else { var rows = m.querySelectorAll(':scope > .row'), last = rows[rows.length - 1]; if (last) m.insertBefore(sec, last); else m.appendChild(sec); }
+  });
+}
+new MutationObserver(inject).observe(document.body, { childList: true });
+inject();
+if (!unlocked()) lock();
+window.EndoUI = window.EndoUI || {}; window.EndoUI.acceso = { lock: lock, change: openChange };
+
+})();}catch(e){console.error("Feature acceso.js",e);}
+;
 /* ===== feature creditos.js ===== */
 try{(function(){
 // Créditos y copyright: pie discreto en el inicio + "Acerca de" en Ajustes. Nunca en el informe copiado ni impreso.
@@ -14578,31 +14800,42 @@ var esc = function (s) { return String(s == null ? '' : s).replace(/[&<>"]/g, fu
 var st = function () { return UI.state(); };
 
 // ---------- regiones ----------
-// sec: sección del informe · d: trazo · w: grosor · m: punto del marcador · pref: ubicaciones preferidas (en orden) ·
-// re: reconoce una ubicación ya elegida como de esta región
+// Anatomía dibujada una sola vez (órganos con volumen) y dividida en regiones con zonas de recorte.
+// sec: sección del informe · org: órgano que recorta la zona · z: polígono de la zona · m: posición del marcador ·
+// s/l: rótulo corto y su posición [x, y, anclaje] (solo en el mapa grande) · pref/re: ubicación preferida / reconocida
+var GEO = {
+  eso: { d: 'M51 2 C51 24 52 44 56.5 64', w: 9 },
+  sto: { d: 'M52.5 63 C47 54 31 52 24 62 C17 72 18.5 91 24 105 C30 121 43 130 59 129 C75 128 88 119 95.5 106 L100 104.4 L99 95.6 C90 99 78 103.5 68 103 C60 102.5 58 96 59 88 C60 79 61.5 71 61 63 Z' },
+  duo: { d: 'M100 100 C106 93 115 95 116 106 C117 119 116 129 108 138 C102 144 92 144 85 140', w: 9 },
+  bulb: { d: 'M101.5 99 C105 95.5 110 95.5 113 99.5', w: 12 },
+  col: { d: 'M29 110 L29 38 C29 33 33 29 40 29 C52 29 58 38 70 38 C84 38 92 17 102 17 C107 17 110 21 110 29 L110 90 C110 104 98 101 88 104 C77 107.5 80 119 68 122.5 C67.6 130 67.5 138 67.4 145', w: 13 },
+  cec: { d: 'M29 104 L29 114', w: 19 },
+  app: { d: 'M25 122 C21 130 23 136 28 139', w: 3.4 },
+  ile: { d: 'M3 101 C10 99 15 102 20 105.5', w: 6.5 }
+};
 var EDA = [
-  { id: 'eso_sup', sec: 'esofago', name: 'Esófago, tercio superior', d: 'M46 4 L46 24', m: [34, 14], pref: ['tercio superior', 'tercio superior del esófago'], re: /superior/ },
-  { id: 'eso_med', sec: 'esofago', name: 'Esófago, tercio medio', d: 'M46 24 L47 44', m: [34, 34], pref: ['tercio medio', 'tercio medio del esófago'], re: /medio/ },
-  { id: 'eso_inf', sec: 'esofago', name: 'Esófago, tercio inferior', d: 'M47 44 L49 62', m: [35, 53], pref: ['tercio inferior', 'tercio inferior del esófago'], re: /inferior/ },
-  { id: 'ueg', sec: 'esofago', name: 'Unión esofagogástrica', d: 'M49 62 L52 72', m: [62, 64], pref: ['unión esofagogástrica'], re: /uni[oó]n|ueg|cardias|esofagog/ },
-  { id: 'fondo', sec: 'estomago', name: 'Fondo gástrico', d: 'M53 78 C47 68 33 66 29 78', w: 15, m: [24, 64], pref: ['fondo gástrico (fórnix)', 'fondo gástrico', 'fondo'], re: /fondo|f[oó]rnix|cardias|retrovisi/ },
-  { id: 'cuerpo', sec: 'estomago', name: 'Cuerpo gástrico', d: 'M29 78 C27 92 31 104 40 114', w: 15, m: [16, 98], pref: ['tercio medio del cuerpo', 'cuerpo gástrico', 'cuerpo'], re: /cuerpo|curvatura|pared/ },
-  { id: 'angulo', sec: 'estomago', name: 'Ángulo (incisura)', d: 'M40 114 C46 120 54 122 61 120', w: 15, m: [50, 136], pref: ['ángulo (incisura angularis)', 'ángulo', 'incisura'], re: /[aá]ngulo|incisura/ },
-  { id: 'antro', sec: 'estomago', name: 'Antro', d: 'M61 120 C72 116 81 107 86 98', w: 15, m: [78, 124], pref: ['antro', 'antro gástrico', 'región prepilórica'], re: /antr|prepil/ },
-  { id: 'piloro', sec: 'piloro', name: 'Píloro', d: 'M86 98 L95 93', m: [84, 86], pref: ['píloro', 'canal pilórico'], re: /p[ií]lor/ },
-  { id: 'bulbo', sec: 'duodeno', name: 'Bulbo duodenal', d: 'M95 93 C101 88 109 91 111 100', w: 12, m: [104, 80], pref: ['bulbo cara anterior', 'bulbo duodenal', 'bulbo'], re: /bulbo/ },
-  { id: 'd2', sec: 'duodeno', name: 'Segunda porción duodenal', d: 'M111 100 C115 111 113 124 104 134', w: 11, m: [122, 120], pref: ['segunda porción', 'segunda porción duodenal'], re: /segunda|papila|rodilla|tercera|porci/ }
+  { id: 'eso_sup', sec: 'esofago', org: 'eso', z: '0,0 130,0 130,22 0,22', name: 'Esófago, tercio superior', s: 'Tercio superior', l: [43, 13, 'end'], m: [51, 12], pref: ['tercio superior', 'tercio superior del esófago'], re: /superior/ },
+  { id: 'eso_med', sec: 'esofago', org: 'eso', z: '0,22 130,22 130,43 0,43', name: 'Esófago, tercio medio', s: 'Tercio medio', l: [43, 34, 'end'], m: [51.5, 33], pref: ['tercio medio', 'tercio medio del esófago'], re: /medio/ },
+  { id: 'eso_inf', sec: 'esofago', org: 'eso', z: '0,43 130,43 130,56 0,56', name: 'Esófago, tercio inferior', s: 'Tercio inferior', l: [44, 50, 'end'], m: [53, 49.5], pref: ['tercio inferior', 'tercio inferior del esófago'], re: /inferior/ },
+  { id: 'ueg', sec: 'esofago', org: 'eso', z: '0,56 130,56 130,70 0,70', name: 'Unión esofagogástrica', s: 'UEG', l: [66, 59, 'start'], m: [55.6, 59.5], pref: ['unión esofagogástrica'], re: /uni[oó]n|ueg|cardias|esofagog/ },
+  { id: 'fondo', sec: 'estomago', org: 'sto', z: '0,0 130,0 130,70 0,70', name: 'Fondo gástrico', s: 'Fondo', l: [19, 63, 'end'], m: [37, 63], pref: ['fondo gástrico (fórnix)', 'fondo gástrico', 'fondo'], re: /fondo|f[oó]rnix|cardias|retrovisi/ },
+  { id: 'cuerpo', sec: 'estomago', org: 'sto', z: '0,70 70,70 58,96 46,150 0,150', name: 'Cuerpo gástrico', s: 'Cuerpo', l: [15, 92, 'end'], m: [33, 92], pref: ['tercio medio del cuerpo', 'cuerpo gástrico', 'cuerpo'], re: /cuerpo|curvatura|pared/ },
+  { id: 'angulo', sec: 'estomago', org: 'sto', z: '58,96 70,70 74,70 74,150 46,150', name: 'Ángulo (incisura)', s: 'Ángulo', l: [60, 139, 'middle'], m: [61, 116], pref: ['ángulo (incisura angularis)', 'ángulo', 'incisura'], re: /[aá]ngulo|incisura/ },
+  { id: 'antro', sec: 'estomago', org: 'sto', z: '74,60 97.6,60 97.6,150 74,150', name: 'Antro', s: 'Antro', l: [88, 128, 'middle'], m: [84, 111], pref: ['antro', 'antro gástrico', 'región prepilórica'], re: /antr|prepil/ },
+  { id: 'piloro', sec: 'piloro', org: 'pil', name: 'Píloro', s: 'Píloro', l: [94, 89, 'end'], m: [100, 100], pref: ['píloro', 'canal pilórico'], re: /p[ií]lor/ },
+  { id: 'bulbo', sec: 'duodeno', org: 'duo', z: '101.2,0 130,0 130,107 101.2,107', name: 'Bulbo duodenal', s: 'Bulbo', l: [109, 88, 'middle'], m: [109, 98], pref: ['bulbo cara anterior', 'bulbo duodenal', 'bulbo'], re: /bulbo/ },
+  { id: 'd2', sec: 'duodeno', org: 'duo', z: '60,107 130,107 130,150 60,150', name: 'Segunda porción duodenal', s: 'Segunda porción', l: [123, 121, 'start'], m: [116, 120], pref: ['segunda porción', 'segunda porción duodenal'], re: /segunda|papila|rodilla|tercera|porci/ }
 ];
 var COL = [
-  { id: 'ileon', sec: 'ileon', name: 'Íleon terminal', d: 'M10 112 C20 112 28 112 34 110', m: [14, 100], pref: ['íleon terminal'], re: /./ },
-  { id: 'ciego', sec: 'colon', name: 'Ciego', d: 'M36 128 L36 106', w: 13, m: [22, 126], pref: ['ciego'], re: /ciego|cecal|apendic|ileocecal/ },
-  { id: 'asc', sec: 'colon', name: 'Colon ascendente', d: 'M36 106 L36 48', m: [24, 78], pref: ['colon ascendente'], re: /ascend/ },
-  { id: 'hep', sec: 'colon', name: 'Ángulo hepático', d: 'M36 48 C36 34 42 26 54 26', m: [30, 24], pref: ['ángulo hepático'], re: /hep[aá]t/ },
-  { id: 'transv', sec: 'colon', name: 'Colon transverso', d: 'M54 26 L86 26', m: [70, 14], pref: ['colon transverso'], re: /transv/ },
-  { id: 'espl', sec: 'colon', name: 'Ángulo esplénico', d: 'M86 26 C98 26 102 32 102 44', m: [110, 24], pref: ['ángulo esplénico'], re: /espl/ },
-  { id: 'desc', sec: 'colon', name: 'Colon descendente', d: 'M102 44 L102 92', m: [116, 68], pref: ['colon descendente'], re: /descend|izquierdo/ },
-  { id: 'sigma', sec: 'colon', name: 'Colon sigmoides', d: 'M102 92 C102 108 88 102 80 110 C72 118 80 124 77 130', m: [116, 110], pref: ['colon sigmoides'], re: /sigm/ },
-  { id: 'recto', sec: 'recto', name: 'Recto', d: 'M77 130 L77 146', w: 11, m: [92, 140], pref: ['recto'], re: /./ }
+  { id: 'ileon', sec: 'ileon', org: 'ile', name: 'Íleon terminal', s: 'Íleon', l: [4, 93, 'start'], m: [9, 100.5], pref: ['íleon terminal'], re: /./ },
+  { id: 'ciego', sec: 'colon', org: 'col', z: '0,100 46,100 46,150 0,150', name: 'Ciego', s: 'Ciego', l: [15, 125, 'end'], m: [29, 111], pref: ['ciego'], re: /ciego|cecal|apendic|ileocecal/ },
+  { id: 'asc', sec: 'colon', org: 'col', z: '0,36 46,36 46,100 0,100', name: 'Colon ascendente', s: 'Ascendente', l: [18, 68, 'end'], m: [29, 68], pref: ['colon ascendente'], re: /ascend/ },
+  { id: 'hep', sec: 'colon', org: 'col', z: '0,0 50,0 50,36 0,36', name: 'Ángulo hepático', s: 'Á. hepático', l: [30, 24, 'end'], m: [33, 32], pref: ['ángulo hepático'], re: /hep[aá]t/ },
+  { id: 'transv', sec: 'colon', org: 'col', z: '50,0 96,0 96,70 50,70', name: 'Colon transverso', s: 'Transverso', l: [72, 50, 'middle'], m: [70, 38], pref: ['colon transverso'], re: /transv/ },
+  { id: 'espl', sec: 'colon', org: 'col', z: '96,0 130,0 130,34 96,34', name: 'Ángulo esplénico', s: 'Á. esplénico', l: [114, 10, 'start'], m: [106, 20], pref: ['ángulo esplénico'], re: /espl/ },
+  { id: 'desc', sec: 'colon', org: 'col', z: '96,34 130,34 130,96 96,96', name: 'Colon descendente', s: 'Descendente', l: [121, 64, 'start'], m: [110, 63], pref: ['colon descendente'], re: /descend|izquierdo/ },
+  { id: 'sigma', sec: 'colon', org: 'col', z: '50,96 130,96 130,150 80,150 80,120.5 50,120.5', name: 'Colon sigmoides', s: 'Sigmoides', l: [100, 118, 'start'], m: [88, 104], pref: ['colon sigmoides'], re: /sigm/ },
+  { id: 'recto', sec: 'recto', org: 'col', z: '50,120.5 80,120.5 80,150 50,150', name: 'Recto', s: 'Recto', l: [79, 140, 'start'], m: [67.4, 131], pref: ['recto'], re: /./ }
 ];
 var DEFREG = { esofago: 'eso_inf', estomago: 'cuerpo', piloro: 'piloro', duodeno: 'bulbo', ileon: 'ileon', colon: 'transv', recto: 'recto' };
 var ALL = EDA.concat(COL), BYID = {}; ALL.forEach(function (r) { BYID[r.id] = r; });
@@ -14621,6 +14854,9 @@ function regionFor(secId, fi) {
   return BYID[DEFREG[secId]] || regs[0];
 }
 // marcadores: un punto por hallazgo, numerado como en el informe (#n)
+// marcadores: un punto por hallazgo, numerado como en el informe (#n), agrupados sobre su región
+var OFF = [[0, 0], [7.5, -4.5], [7.5, 4.5], [-7.5, -4.5], [-7.5, 4.5], [0, 9], [0, -9]];
+var SEEN = {}, FIRST = true;
 function markers(regs) {
   var out = [], per = {};
   regs.forEach(function (r) { per[r.id] = 0; });
@@ -14629,9 +14865,9 @@ function markers(regs) {
     var ss = st().sections[sid]; if (!ss) return;
     ss.findings.forEach(function (fi) {
       var r = regionFor(sid, fi); if (!r || per[r.id] === undefined) return;
-      var k = per[r.id]++, def = M.FIND[fi.fid] || {};
+      var k = per[r.id]++, def = M.FIND[fi.fid] || {}, o = OFF[k % OFF.length];
       var n = /\d+/.exec(fi._tag || ''); n = n ? n[0] : '';
-      out.push({ uid: fi.uid, x: r.m[0] + (k % 3) * 9 - (k ? 0 : 0), y: r.m[1] + Math.floor(k / 3) * 9, n: n, label: (def.label || '') + (locOf(def, fi) ? ' · ' + locOf(def, fi) : '') });
+      out.push({ uid: fi.uid, x: r.m[0] + o[0], y: r.m[1] + o[1] + Math.floor(k / OFF.length) * 4, n: n, label: (def.label || '') + (locOf(def, fi) ? ' · ' + locOf(def, fi) : '') });
     });
   });
   return out;
@@ -14640,27 +14876,77 @@ function count(regId) {
   var r = BYID[regId], ss = st().sections[r.sec]; if (!ss) return 0;
   return ss.findings.filter(function (fi) { return regionFor(r.sec, fi) === r; }).length;
 }
-function svgFor(regs, label) {
-  var p = ['<svg viewBox="0 0 130 150" class="mmap" role="group" aria-label="' + esc(label) + '">'];
-  // contorno suave de fondo
-  regs.forEach(function (r) { p.push('<path class="mbg" d="' + r.d + '" style="stroke-width:' + ((r.w || 9) + 3) + '"/>'); });
+// tubo con volumen: sombra, pared, mucosa, luz interior, pliegues y brillo
+function tube(g, fold) {
+  var d = g.d, w = g.w;
+  return '<path class="o-sh" d="' + d + '" stroke-width="' + (w + 2.6) + '" transform="translate(.7 1.6)"/>' +
+    '<path class="o-wall" d="' + d + '" stroke-width="' + (w + 2) + '"/>' +
+    '<path class="o-muc" d="' + d + '" stroke-width="' + w + '"/>' +
+    '<path class="o-in" d="' + d + '" stroke-width="' + (w * 0.46).toFixed(2) + '"/>' +
+    (fold ? '<path class="o-fold" d="' + d + '" stroke-width="' + (w + 2) + '" stroke-dasharray="' + fold + '"/>' : '') +
+    '<path class="o-spec" d="' + d + '" stroke-width="' + (w * 0.17).toFixed(2) + '" transform="translate(' + (-w * 0.2).toFixed(2) + ' ' + (-w * 0.08).toFixed(2) + ')"/>';
+}
+var NID = 0;
+function anatomy(kind, u) {
+  var G = GEO, p = [];
+  if (kind === 'eda') {
+    p.push('<path class="o-shf" d="' + G.sto.d + '" transform="translate(.9 2)"/>');
+    p.push(tube(G.eso, '0.5 2.6'));
+    p.push('<path class="o-sto" d="' + G.sto.d + '" style="fill:url(#gs' + u + ')"/>');
+    p.push('<path class="o-stol" d="' + G.sto.d.replace(/\s*Z$/, '') + '"/>');
+    p.push('<g clip-path="url(#cs' + u + ')" class="o-rug"><path d="M27 70 C22 86 26 104 37 117"/><path d="M34 67 C29 85 34 104 47 120"/><path d="M42 67 C38 84 42 101 56 112 C66 119 80 116 92 104"/><path d="M50 69 C47 84 50 96 60 106 C70 113 82 110 94 101"/><ellipse class="o-glare" cx="35" cy="64" rx="7" ry="3.2" transform="rotate(-28 35 64)"/></g>');
+    p.push('<path class="o-z" d="M51.2 58.6 l1.5 -1.2 l1.5 1.2 l1.5 -1.2 l1.5 1.2 l1.5 -1.2"/>');
+    p.push(tube(G.duo, '0.5 2.1'));
+    p.push(tube(G.bulb));
+    p.push('<ellipse class="o-pil" cx="100" cy="100" rx="2.7" ry="5.4"/><ellipse class="o-pilh" cx="99.4" cy="98.4" rx=".8" ry="2.2"/>');
+    p.push('<circle class="o-pap" cx="112.4" cy="119" r="1.3"/>');
+  } else {
+    p.push(tube(G.ile, '0.4 2'));
+    p.push(tube(G.app));
+    p.push(tube(G.cec));
+    p.push(tube(G.col, '1.1 4.6'));
+  }
+  return p.join('');
+}
+// forma de la región para el realce (recortada a su zona)
+function overlay(r, u) {
+  var G = GEO;
+  if (r.org === 'sto') return '<path class="r-ov f" d="' + G.sto.d + '"/>';
+  if (r.org === 'pil') return '<ellipse class="r-ov f" cx="100" cy="100" rx="3.6" ry="6.4"/>';
+  var gs = r.org === 'col' ? [G.col, G.cec, G.app] : r.org === 'duo' ? [G.duo, G.bulb] : [G[r.org]];
+  return gs.map(function (g) { return '<path class="r-ov" d="' + g.d + '" stroke-width="' + (g.w + 2) + '"/>'; }).join('') + '<path class="r-hit" d="' + gs[0].d + '"/>';
+}
+function svgFor(kind, big) {
+  var regs = kind === 'eda' ? EDA : COL, u = ++NID, label = kind === 'eda' ? 'Mapa EDA' : 'Mapa colon';
+  var vb = big ? (kind === 'eda' ? '-26 -2 178 154' : '-30 -2 186 154') : '0 0 130 150';
+  var p = ['<svg viewBox="' + vb + '" class="mmap' + (big ? ' big' : '') + '" role="group" aria-label="' + esc(label) + '">'];
+  p.push('<defs><radialGradient id="gs' + u + '" cx=".36" cy=".3" r=".78"><stop offset="0" style="stop-color:var(--mIn)"/><stop offset=".55" style="stop-color:var(--mMuc)"/><stop offset="1" style="stop-color:var(--mWall)"/></radialGradient>' +
+    '<radialGradient id="gk' + u + '" cx=".35" cy=".3" r=".8"><stop offset="0" style="stop-color:var(--mkHi)"/><stop offset="1" style="stop-color:var(--mk)"/></radialGradient>' +
+    '<clipPath id="cs' + u + '"><path d="' + GEO.sto.d + '"/></clipPath>' +
+    regs.filter(function (r) { return r.z; }).map(function (r) { return '<clipPath id="z' + r.id + u + '"><polygon points="' + r.z + '"/></clipPath>'; }).join('') + '</defs>');
+  p.push('<g class="o-base" aria-hidden="true">' + anatomy(kind, u) + '</g>');
   regs.forEach(function (r) {
     if (!M.SEC[r.sec] || !st().sections[r.sec]) return;
-    var k = count(r.id);
-    p.push('<g class="mreg' + (k ? ' f' : '') + '" data-reg="' + r.id + '" tabindex="0" role="button" aria-label="' + esc(r.name) + (k ? ', ' + k + (k === 1 ? ' hallazgo' : ' hallazgos') : '') + '">' +
+    var k = count(r.id), nm = esc(r.name) + (k ? ', ' + k + (k === 1 ? ' hallazgo' : ' hallazgos') : '');
+    p.push('<g class="mreg' + (k ? ' f' : '') + '" data-reg="' + r.id + '" tabindex="0" role="button" aria-label="' + nm + '">' +
       '<title>' + esc(r.name) + (k ? ' · ' + k + (k === 1 ? ' hallazgo' : ' hallazgos') : '') + ' · clic: agregar hallazgo aquí</title>' +
-      '<path class="mvis" d="' + r.d + '" style="stroke-width:' + (r.w || 9) + '"/><path class="mhit" d="' + r.d + '"/></g>');
+      '<g' + (r.z ? ' clip-path="url(#z' + r.id + u + ')"' : '') + '>' + overlay(r, u) + '</g>' +
+      (big ? '<text class="mlab" x="' + r.l[0] + '" y="' + r.l[1] + '" text-anchor="' + r.l[2] + '">' + esc(r.s) + (k ? ' · ' + k : '') + '</text>' : '') + '</g>');
   });
   markers(regs).forEach(function (mk) {
-    p.push('<g class="mmk" data-uid="' + mk.uid + '" tabindex="0" role="button" aria-label="Ir a ' + esc(mk.label) + '"><title>' + esc((mk.n ? '#' + mk.n + ' ' : '') + mk.label) + ' · clic: ir a la tarjeta</title><circle cx="' + mk.x + '" cy="' + mk.y + '" r="5.6"/>' + (mk.n ? '<text x="' + mk.x + '" y="' + (mk.y + 2.9) + '">' + mk.n + '</text>' : '') + '</g>');
+    var isNew = !FIRST && !SEEN[mk.uid]; SEEN[mk.uid] = 1;
+    p.push('<g class="mmk' + (isNew ? ' new' : '') + '" data-uid="' + mk.uid + '" tabindex="0" role="button" aria-label="Ir a ' + esc(mk.label) + '"><title>' + esc((mk.n ? '#' + mk.n + ' ' : '') + mk.label) + ' · clic: ir a la tarjeta</title>' +
+      (isNew ? '<circle class="mping" cx="' + mk.x + '" cy="' + mk.y + '" r="4.6"/>' : '') +
+      '<circle class="mdot" cx="' + mk.x + '" cy="' + mk.y + '" r="4.6" fill="url(#gk' + u + ')"/>' + (mk.n ? '<text x="' + mk.x + '" y="' + (mk.y + 2.1).toFixed(2) + '">' + mk.n + '</text>' : '') + '</g>');
   });
   p.push('</svg>');
   return p.join('');
 }
-function mapHTML() {
+function mapHTML(big) {
   var ex = examList(), h = '';
-  if (ex.indexOf('eda') >= 0) h += '<div class="mfig">' + svgFor(EDA, 'Mapa EDA') + '</div>';
-  if (ex.indexOf('colono') >= 0) h += '<div class="mfig">' + svgFor(COL, 'Mapa colon') + '</div>';
+  if (ex.indexOf('eda') >= 0) h += '<div class="mfig">' + svgFor('eda', big) + (big ? '<div class="mcap">Endoscopía digestiva alta</div>' : '') + '</div>';
+  if (ex.indexOf('colono') >= 0) h += '<div class="mfig">' + svgFor('colono', big) + (big ? '<div class="mcap">Colonoscopía</div>' : '') + '</div>';
+  setTimeout(function () { FIRST = false; }, 0);
   return h;
 }
 
@@ -14715,6 +15001,7 @@ function openPop(r, anchor) {
     '<input type="search" class="mps" placeholder="Buscar hallazgo…" aria-label="Buscar hallazgo" autocomplete="off"><div class="mpl" role="listbox"></div>' +
     '<div class="mpf"><button type="button" class="mpgo">Ir a ' + esc(M.SEC[r.sec].title) + '</button></div>';
   ov.appendChild(pop); document.body.appendChild(ov);
+  anchor.classList.add('sel'); ov.remove = function () { anchor.classList.remove('sel'); Element.prototype.remove.call(ov); };
   var all = rankedFor(r.sec), inp = pop.querySelector('.mps'), list = pop.querySelector('.mpl'), sel = 0, shown = [];
   var draw = function () {
     var q = M.norm(inp.value).trim(), toks = q.split(/\s+/).filter(Boolean);
@@ -14770,10 +15057,10 @@ function addAt(r, fid) {
 function openBig() {
   closeAll();
   var ov = document.createElement('div'); ov.className = 'ov mapov';
-  ov.innerHTML = '<div class="mbig" role="dialog" aria-label="Mapa anatómico"><div class="mbh"><b>Mapa anatómico</b><span class="mtip">Toca un segmento para agregar un hallazgo</span><button type="button" class="mpx" title="Cerrar (Esc)" aria-label="Cerrar">×</button></div><div class="mbb"></div></div>';
+  ov.innerHTML = '<div class="mbig" role="dialog" aria-label="Mapa anatómico"><div class="mbh"><b>Mapa anatómico</b><span class="mtip">Toca un segmento para agregar un hallazgo</span><span class="mleg"><i class="lf"></i>Con hallazgos<i class="lm"></i>N.º en el informe</span><button type="button" class="mpx" title="Cerrar (Esc)" aria-label="Cerrar">×</button></div><div class="mbb"></div></div>';
   document.body.appendChild(ov);
   var big = ov.querySelector('.mbig'), body = ov.querySelector('.mbb');
-  var draw = function () { body.innerHTML = mapHTML(); };
+  var draw = function () { body.innerHTML = mapHTML(true); };
   draw(); big._draw = draw;
   wire(big, true);
   ov.addEventListener('mousedown', function (e) { if (e.target === ov) { e.preventDefault(); ov.remove(); } });
@@ -15403,7 +15690,7 @@ new MutationObserver(scanHome).observe(document.body, { childList: true });
 scanHome();
 
 })();}catch(e){console.error("Feature rapido.js",e);}
-window.ENDO_VERSION="202611270317";window.ENDO_WEB_URL="";</script>
+window.ENDO_VERSION="202611270340";window.ENDO_WEB_URL="";</script>
 <script>
 if ('serviceWorker' in navigator && location.protocol.indexOf('http') === 0) { navigator.serviceWorker.register('sw.js').catch(function(){}); }
 </script>
