@@ -14166,7 +14166,7 @@ function inject() {
   }
   document.querySelectorAll('.modal').forEach(function (m) {
     var t = m.querySelector('h2'); if (!t || t.textContent !== 'Ajustes' || m.querySelector('.creds')) return;
-    var s = h('div', 'creds', '<b>Acerca de EndoInforme</b><span>Herramienta creada por <b>' + AUTOR + '</b><br>' + CARGO + '</span><span>' + EMP + ' · © ' + YEAR + ' ' + EMP + '. Todos los derechos reservados.</span>');
+    var s = h('div', 'creds', '<b>Acerca de EndoInforme</b><span>Herramienta creada por <b>' + AUTOR + '</b><br>' + CARGO + '</span><span>© ' + YEAR + ' ' + EMP + '. Todos los derechos reservados.</span>');
     var rows = m.querySelectorAll(':scope > .row'), row = rows[rows.length - 1]; if (row) m.insertBefore(s, row); else m.appendChild(s);
   });
 }
