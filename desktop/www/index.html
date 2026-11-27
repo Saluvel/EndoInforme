@@ -912,6 +912,11 @@ details.params.qhas:not([open]){border-color:var(--qyLine)}
 .qwiz .qwb{display:flex;gap:6px;flex-wrap:wrap}
 @media print{.qwiz{display:none!important}}
 @media (max-width:820px){.qwiz{bottom:calc(84px + env(safe-area-inset-bottom,0px))}body:has(.qwiz) .fab{display:none!important}}
+/* Texto normal propio (plantilla pegada) */
+.ovn{border:1px solid var(--accentSoft2);background:var(--accentSoft);border-radius:10px;padding:8px 10px;margin-bottom:10px}
+.ovn-h{display:flex;align-items:center;gap:8px;flex-wrap:wrap;font-size:12.5px;margin-bottom:6px}
+.ovn-h b{color:var(--accentInk)}
+.ovn-t{width:100%;box-sizing:border-box;font:inherit;font-size:13.5px;line-height:1.45;border:1px solid var(--line);border-radius:8px;padding:7px 9px;background:var(--panel);color:var(--ink);resize:vertical}
 
 /* Pantalla de bloqueo con clave numérica */
 .acclock{position:fixed;inset:0;z-index:20000;display:flex;align-items:center;justify-content:center;padding:16px;
@@ -1979,6 +1984,22 @@ mark.rvmk.on,mark.rvmk:hover{background:#f8c867;box-shadow:0 0 0 2px #f8c867,0 0
 }
 @media print{.apbtns{display:none!important}}
 
+.pgbox{max-width:760px}
+.pgbtn{display:inline-flex;align-items:center;gap:7px;margin:0 0 14px;border-style:dashed}
+.pgta{width:100%;box-sizing:border-box;font:inherit;font-size:13.5px;line-height:1.45;border:1px solid var(--line);border-radius:10px;padding:10px 12px;background:var(--panel);color:var(--ink);resize:vertical;min-height:170px}
+.pgbox>.btn.ghost.sm{margin:6px 0 8px}
+.pgpv{display:flex;flex-direction:column;gap:6px;max-height:300px;overflow:auto;margin:4px 0 12px;padding:10px;border:1px solid var(--line);border-radius:10px;background:var(--panel2)}
+.pgsum{font-weight:800;color:var(--accentInk);font-size:13px}
+.pgit{display:grid;grid-template-columns:130px 1fr;gap:2px 10px;font-size:13px;line-height:1.4;padding:6px 0;border-top:1px solid var(--line)}
+.pgit b{color:var(--ink)}
+.pgit span{color:var(--ink2)}
+.pgit small{grid-column:2;color:var(--ink3);font-size:11.5px}
+.pgwarn{font-size:12.5px;padding:6px 9px;border-radius:8px;background:var(--warnSoft);color:var(--warn)}
+.pgnote{font-size:11.5px}
+.pgrow{gap:8px;flex-wrap:wrap}
+.pgrow input{flex:1;min-width:200px}
+@media (max-width:600px){.pgit{grid-template-columns:1fr}.pgit small{grid-column:1}}
+
 /* ===== perfil.css — Perfil del médico (Ajustes) + selector de firma en la hoja ===== */
 .modal .perf{margin:4px 0 14px;padding:14px 16px;border:1px solid var(--line);border-radius:12px;background:var(--panel2);display:flex;flex-direction:column;gap:12px}
 .perf .perfh b{display:block;font-size:14px;color:var(--ink)}
@@ -2355,6 +2376,14 @@ try{(function(){
     var f = ((S.col_proc && S.col_proc.findings) || []).filter(function (x) { return x && x.fid === 'tx_descompresion'; })[0];
     return f ? { dx: (f.v && f.v.dx) || 'sigmoides', v: f.v || {} } : null;
   }
+  function hartmannF(ctx) { var S = (ctx && ctx.sections) || {}; return ((S.recto && S.recto.findings) || []).some(function (f) { return f && f.fid === 'cb_hartmann'; }); }
+  // Proctocolectomía con reservorio ileoanal (pouch): no hay colon, ciego ni íleon terminal que describir
+  function pouch(ctx) {
+    var S = ctx && ctx.sections;
+    if (!S) { try { var st = typeof EndoUI !== 'undefined' && EndoUI.state && EndoUI.state(); S = (st && st.sections) || {}; } catch (e) { S = {}; } }
+    if (S.col_datos && S.col_datos.v && S.col_datos.v.alcance === 'reservorio') return true;
+    return ['recto', 'ileon', 'colon'].some(function (k) { return ((S[k] && S[k].findings) || []).some(function (f) { return f && (f.fid === 'eii_pouch' || f.fid === 'cb_pouch'); }); });
+  }
   // Lesión neoplásica / masa en recto
   function masaRectal(ctx) {
     var S = (ctx && ctx.sections) || {};
@@ -2439,6 +2468,8 @@ try{(function(){
         { v: 'Test inmunoquímico fecal positivo', label: 'Test inmunoquímico (+)', hint: 'Sangre oculta en deposiciones / FIT positivo' },
         { v: 'Baja de peso', label: 'Baja de peso' },
         { v: 'Control post-cirugía colorrectal', label: 'Control post-cirugía' },
+        { v: 'Evaluación previa a reconstitución del tránsito', label: 'Pre-reconstitución de tránsito', hint: 'Post-Hartmann: evaluación por colostomía y muñón rectal antes de la reconexión' },
+        { v: 'Control de reservorio ileoanal', label: 'Control de reservorio (pouch)', hint: 'Proctocolectomía con reservorio ileoanal: reservoritis, cuffitis, asa aferente' },
         { v: 'Dolor abdominal', label: 'Dolor abdominal' },
         { v: 'Distensión abdominal / sospecha de vólvulo', label: 'Vólvulo / distensión', hint: 'Sospecha de vólvulo o pseudo-obstrucción colónica (descompresión)' },
         { v: 'Hemorragia digestiva baja', label: 'HDB', hint: 'Hemorragia digestiva baja (hematoquecia) en estudio' }
@@ -2471,9 +2502,9 @@ try{(function(){
         { v: 'el día previo', label: 'Día previo' },
         { v: 'el mismo día', label: 'Mismo día' }
       ], show: function (v) { return has(v.prep) && v.prep !== 'sin preparación' && v.prep !== 'enema evacuante'; } },
-      { id: 'bost_d', quality: true, qsoft: true, pin: true, show: function () { return !volvulo(); }, label: 'Boston colon derecho', type: 'chips', default: '', options: BOSTON, hint: 'Ciego y colon ascendente' },
-      { id: 'bost_t', quality: true, qsoft: true, pin: true, show: function () { return !volvulo(); }, label: 'Boston colon transverso', type: 'chips', default: '', options: BOSTON, hint: 'Incluye ángulos hepático y esplénico' },
-      { id: 'bost_i', quality: true, qsoft: true, pin: true, show: function () { return !volvulo(); }, label: 'Boston colon izquierdo', type: 'chips', default: '', options: BOSTON, hint: 'Descendente, sigmoides y recto' },
+      { id: 'bost_d', quality: true, qsoft: true, pin: true, show: function () { return !volvulo() && !pouch(); }, label: 'Boston colon derecho', type: 'chips', default: '', options: BOSTON, hint: 'Ciego y colon ascendente' },
+      { id: 'bost_t', quality: true, qsoft: true, pin: true, show: function () { return !volvulo() && !pouch(); }, label: 'Boston colon transverso', type: 'chips', default: '', options: BOSTON, hint: 'Incluye ángulos hepático y esplénico' },
+      { id: 'bost_i', quality: true, qsoft: true, pin: true, show: function () { return !volvulo() && !pouch(); }, label: 'Boston colon izquierdo', type: 'chips', default: '', options: BOSTON, hint: 'Descendente, sigmoides y recto' },
       { id: 'insp_anal', label: 'Inspección anal', type: 'multi', default: ['normal'], options: [
         { v: 'normal', label: 'Normal' },
         { v: 'hemorroides externas', label: 'Hemorroides externas' },
@@ -2497,7 +2528,8 @@ try{(function(){
         { v: 'ciego', label: 'Ciego', hint: 'Intubación cecal: válvula ileocecal y orificio apendicular identificados' },
         { v: 'anastomosis', label: 'Anastomosis', hint: 'Colon operado: hasta la anastomosis / neoíleon' },
         { v: 'incompleto', label: 'Incompleto hasta…' },
-        { v: 'muñón', label: 'Muñón rectal', hint: 'Post-Hartmann: exploración solo del muñón rectal hasta su fondo ciego (agregar hallazgo "Muñón rectal")' }
+        { v: 'muñón', label: 'Muñón rectal', hint: 'Post-Hartmann: exploración solo del muñón rectal hasta su fondo ciego (agregar hallazgo "Muñón rectal")' },
+        { v: 'reservorio', label: 'Reservorio (pouch)', hint: 'Proctocolectomía total con reservorio ileoanal: se exploran anastomosis, cuff, reservorio y asa aferente (agregar hallazgo "Reservorio ileoanal")' }
       ] },
       { id: 'anast_tipo', label: 'Anastomosis', type: 'chips', default: 'ileocólica', options: ['ileocólica', 'colocólica', 'colorrectal', 'ileorrectal', 'coloanal'], show: function (v) { return v.alcance === 'anastomosis'; } },
       { id: 'hasta', label: 'Hasta', type: 'select', default: 'colon transverso', options: HASTA, show: function (v) { return v.alcance === 'incompleto'; } },
@@ -2510,10 +2542,10 @@ try{(function(){
         { v: 'intolerancia del paciente', label: 'Intolerancia' },
         { v: 'riesgo de perforación', label: 'Riesgo de perforación' }
       ], show: function (v) { return v.alcance === 'incompleto'; } },
-      { id: 'ileo', quality: true, label: 'Ileoscopía', type: 'chips', default: 'Sí', options: ['Sí', 'No'], show: function (v) { return v.alcance !== 'incompleto' && v.alcance !== 'muñón' && !volvulo(); } },
-      { id: 'ileo_cm', quality: true, qsoft: true, label: 'Íleon explorado', type: 'num', unit: 'cm', min: 1, max: 40, placeholder: 'cm', show: function (v) { return v.ileo === 'Sí' && v.alcance !== 'incompleto' && v.alcance !== 'muñón' && !volvulo(); } },
-      { id: 'retro', label: 'Retrovisión rectal', type: 'chips', default: 'Sí', options: ['Sí', 'No'] },
-      { id: 'retiro', quality: true, label: 'Tiempo de retiro', type: 'num', unit: 'min', min: 1, max: 60, default: '', show: function () { return !volvulo(); }, hint: 'Indicador de calidad: ≥ 6 min en examen sin terapéutica' },
+      { id: 'ileo', quality: true, label: 'Ileoscopía', type: 'chips', default: 'Sí', options: ['Sí', 'No'], show: function (v) { return v.alcance !== 'incompleto' && v.alcance !== 'muñón' && !volvulo() && !pouch(); } },
+      { id: 'ileo_cm', quality: true, qsoft: true, label: 'Íleon explorado', type: 'num', unit: 'cm', min: 1, max: 40, placeholder: 'cm', show: function (v) { return v.ileo === 'Sí' && v.alcance !== 'incompleto' && v.alcance !== 'muñón' && !volvulo() && !pouch(); } },
+      { id: 'retro', label: 'Retrovisión rectal', type: 'chips', default: 'Sí', options: ['Sí', 'No'], show: function () { return !pouch(); } },
+      { id: 'retiro', quality: true, label: 'Tiempo de retiro', type: 'num', unit: 'min', min: 1, max: 60, default: '', show: function () { return !volvulo() && !pouch(); }, hint: 'Indicador de calidad: ≥ 6 min en examen sin terapéutica' },
       { id: 'insercion', label: 'Longitud de inserción', type: 'num', unit: 'cm', min: 10, max: 200, hint: 'Opcional: cm de endoscopio insertado al alcanzar el punto máximo' },
       // contexto clínico (vacío = ambulatorio, no se escribe); en examen combinado se registra en la EDA
       { id: 'contexto', label: 'Contexto', type: 'chips', default: 'ambulatorio', pin: true, options: CTX_OPTS, hint: 'Ambulatorio no se escribe en el informe', show: function (v, ctx) { return !comboExam(ctx); } },
@@ -2593,12 +2625,13 @@ try{(function(){
       else if (al === 'anastomosis') L.push('Alcance: Anastomosis' + h.opt(sc.anast || v.anast_tipo, ' '));
       else if (al === 'incompleto') L.push('Alcance: Examen incompleto' + h.opt(sc.hasta, ', hasta ') + h.opt(sc.motivo, ' (', ')'));
       else if (al === 'muñón') L.push('Alcance: Muñón rectal, hasta su fondo ciego');
-      var reach = al !== 'incompleto' && al !== 'muñón';
+      else if (al === 'reservorio') L.push('Alcance: Reservorio ileoanal y asa aferente (proctocolectomía total)');
+      var reach = al !== 'incompleto' && al !== 'muñón' && al !== 'reservorio';
       if (reach && v.ileo === 'Sí' && rutInfranq(ctx)) L.push('Ileoscopía: No, por estenosis infranqueable de la anastomosis ileocólica');
       else if (reach && v.ileo === 'Sí') L.push('Ileoscopía: Sí' + (has(v.ileo_cm) ? ', ' + n(v.ileo_cm) + ' cm' : ''));
       else if (reach && v.ileo === 'No') L.push('Ileoscopía: No');
-      if (has(v.retro)) L.push('Retrovisión rectal: ' + v.retro);
-      if (has(v.retiro)) L.push('Tiempo de retiro: ' + n(v.retiro) + ' min' + (Number(v.retiro) >= 6 ? ' (adecuado, ≥ 6 min)' : ' (subóptimo, < 6 min)'));
+      if (has(v.retro) && al !== 'reservorio' && !hartmannF(ctx)) L.push('Retrovisión rectal: ' + v.retro);
+      if (has(v.retiro) && al !== 'reservorio') L.push('Tiempo de retiro: ' + n(v.retiro) + ' min' + (Number(v.retiro) >= 6 ? ' (adecuado, ≥ 6 min)' : ' (subóptimo, < 6 min)'));
       if (has(v.insercion)) L.push('Longitud de inserción: ' + n(v.insercion) + ' cm');
       return L.join('\n');
     },
@@ -2704,6 +2737,7 @@ try{(function(){
   // Alcance efectivo: el del header, o "incompleto" derivado de una lesión infranqueable
   function scope(H, ctx) {
     var al = d(H, 'alcance', 'ciego'), sc = { alcance: al, hasta: d(H, 'hasta', ''), motivo: d(H, 'motivo', ''), derived: false };
+    if (pouch(ctx)) { sc.alcance = 'reservorio'; return sc; }
     // Rutgeerts implica resección ileocecal: no corresponde "hasta ciego"
     if (al === 'ciego' && ['ileon', 'colon'].some(function (sec) { return anyF(findsOf(ctx, sec), 'eii_rutgeerts'); })) { sc.alcance = 'anastomosis'; sc.anast = 'ileocólica'; }
     if (al !== 'ciego') return sc;
@@ -2741,7 +2775,7 @@ try{(function(){
       var own = S.all.ileon;
       if (own.some(function (f) { return SELF_DESC[f.fid]; })) return '';
       if (volvulo(ctx)) return '';
-      if (d(H, 'ileo', 'Sí') === 'No' || sc.alcance === 'incompleto' || sc.alcance === 'muñón') return '';
+      if (d(H, 'ileo', 'Sí') === 'No' || sc.alcance === 'incompleto' || sc.alcance === 'muñón' || sc.alcance === 'reservorio') return '';
       var cm = d(H, 'ileo_cm', ''); // dato medido: sin valor no se escribe la longitud
       var atI = sc.anast || d(H, 'anast_tipo', '');
       var neo = sc.alcance === 'anastomosis' && (atI === 'ileocólica' || atI === 'ileorrectal');
@@ -2766,12 +2800,14 @@ try{(function(){
       var H = hdr(ctx), sc = scope(H, ctx), S = scan(ctx);
       var al = sc.alcance;
       if (al === 'muñón') return '';
+      if (al === 'reservorio') return S.focal.colon.length ? '' : h.sent('Sin colon remanente (proctocolectomía total con reservorio ileoanal)');
       var vol = volvulo(ctx);
       if (vol) return S.focal.colon.length || S.col.length || S.colUnknown ? '' : h.sent(vol.dx === 'ogilvie'
         ? 'Se progresa con mínima insuflación a través de colon distendido, con fines de descompresión; no se realiza evaluación completa de la mucosa colónica'
         : 'Se progresa con mínima insuflación hasta el punto de torsión, con fines de descompresión; no se realiza evaluación completa de la mucosa colónica');
       var ostomy = anyF(S.all.colon, 'cb_colostomia');
-      var via = ostomy ? 'Se introduce el equipo a través de la colostomía y se progresa' : 'Se progresa';
+      var ost = ostomy && S.all.colon.filter(function (f) { return f.fid === 'cb_colostomia'; })[0], ov = (ost && ost.v) || {};
+      var via = ostomy ? 'Se introduce el equipo a través de la colostomía' + h.opt(d(ov, 'tipo', ''), ' ') + h.opt(ov.sitio, ' en ') + h.opt(ov.estoma, ', estoma ') + (has(ov.estoma) ? ',' : '') + ' y se progresa' : 'Se progresa';
       var focal = S.focal.colon.length > 0;
       var low = bostonLow(H);
       var s1, s2 = '', s3 = '';
@@ -2795,13 +2831,14 @@ try{(function(){
         s3 = normal.length ? h.sent('Mucosa de ' + segs(normal) + ' de aspecto normal' + pv) : '';
       } else if (low) s3 = focal ? h.sent('En la mucosa evaluable se identifica lo que se describe a continuación') : h.sent('En la mucosa evaluable no se observan lesiones');
       else if (focal) s3 = h.sent('Mucosa ' + region + ' de aspecto normal' + pv + SALVO);
+      else if (al === 'ciego' && ostomy) s3 = h.sent('Mucosa del colon remanente, desde el estoma hasta el ciego, de aspecto normal' + pv);
       else if (al === 'ciego') s3 = h.sent('Mucosa de ciego, colon ascendente, transverso, descendente y sigmoides de aspecto normal' + pv);
       else s3 = h.sent('Mucosa ' + region + ' de aspecto normal' + pv);
       return h.join(s1, s2, s3);
     },
     conclNormal: function (v, h, ctx) {
       var H = hdr(ctx), sc = scope(H, ctx);
-      if (sc.alcance === 'muñón' || volvulo(ctx)) return null;
+      if (sc.alcance === 'muñón' || sc.alcance === 'reservorio' || volvulo(ctx)) return null;
       if (bostonLow(H)) return 'Sin lesiones en la mucosa evaluable';
       if (sc.alcance === 'incompleto') return 'Sin hallazgos patológicos en los segmentos explorados';
       return 'Colonoscopía sin hallazgos patológicos';
@@ -3321,7 +3358,9 @@ try{(function(){
       { id: 'sitio', label: 'Ubicación', type: 'chips', default: 'flanco izquierdo', options: ['flanco izquierdo', 'flanco derecho', 'hipogastrio', 'epigastrio'] },
       { id: 'estoma', label: 'Estoma', type: 'chips', default: 'de aspecto normal', options: ['de aspecto normal', 'con mucosa eritematosa', 'con estenosis del orificio', 'con sospecha de hernia paraestomal', 'con prolapso'] }
     ],
-    text: function (v, h) {
+    text: function (v, h, ctx) {
+      var al = d(hdr(ctx), 'alcance', 'ciego');
+      if (al !== 'muñón' && al !== 'reservorio' && !volvulo(ctx)) return ''; // la sección Colon ya lo describe al entrar por el estoma
       return h.sent('Estoma de colostomía', d(v, 'tipo', ''), h.opt(v.sitio, 'en '), h.opt(v.estoma, ', '));
     },
     concl: function (v) { return ['Colostomía', v.tipo, h_en(v.sitio)].filter(has).join(' '); }
@@ -3349,22 +3388,24 @@ try{(function(){
   // ---- Muñón rectal (Hartmann) ----
   EndoApp.finding({
     id: 'cb_hartmann', label: 'Muñón rectal (Hartmann)', group: G_POST, where: ['recto'],
-    keywords: 'hartmann muñon rectal colitis exclusion derivacion',
+    keywords: 'hartmann muñon rectal colitis exclusion derivacion reconstitucion transito',
     fields: [
-      { id: 'cm', label: 'Longitud', type: 'num', unit: 'cm', default: 15, min: 1, max: 40 },
+      { id: 'cm', label: 'Longitud del muñón', type: 'num', unit: 'cm', default: '', min: 1, max: 40, placeholder: 'cm', hint: 'Dato medido: vacío = no se escribe' },
       { id: 'asp', label: 'Aspecto', type: 'chips', default: 'normal', options: [
         { v: 'normal', label: 'Normal' },
         { v: 'colitis de exclusión', label: 'Colitis de exclusión', hint: 'Colitis por derivación: eritema, friabilidad, nodularidad, exudado mucoso' }
       ] },
-      { id: 'moco', label: 'Restos mucosos', type: 'bool', default: true },
+      { id: 'moco', label: 'Restos mucosos', type: 'bool', default: false },
+      { id: 'apto', label: 'Apto para reconstitución del tránsito (sin lesiones)', type: 'bool', default: false, hint: 'Agrega a la conclusión que no hay contraindicación endoscópica para reconstituir el tránsito' },
       { id: 'grapas', label: 'Línea de grapas visible', type: 'bool', default: true }
     ],
-    text: function (v, h) {
+    text: function (v, h, ctx) {
       var asp = v.asp === 'colitis de exclusión' ? ', con eritema, friabilidad y nodularidad mucosa sugerentes de colitis de exclusión' : ', de mucosa de aspecto normal';
-      return h.sent('Se explora muñón rectal', has(v.cm) ? 'de aproximadamente ' + h.cm(v.cm) + ' de longitud' : '', asp,
+      var S = (ctx && ctx.sections) || {}, osto = ((S.colon && S.colon.findings) || []).some(function (f) { return f && f.fid === 'cb_colostomia'; });
+      return h.sent(osto ? 'Luego, por vía anal, se explora muñón rectal' : 'Se explora muñón rectal', has(v.cm) ? 'de aproximadamente ' + h.cm(v.cm) + ' de longitud' : '', asp,
         v.moco ? ', con restos mucosos que se lavan' : '', v.grapas ? '. Fondo ciego con línea de grapas indemne' : '');
     },
-    concl: function (v) { return 'Muñón rectal (Hartmann)' + (v.asp === 'colitis de exclusión' ? ' con signos de colitis de exclusión' : ' de aspecto normal'); }
+    concl: function (v) { return 'Muñón rectal (Hartmann)' + (v.asp === 'colitis de exclusión' ? ' con signos de colitis de exclusión' : ' de aspecto normal') + (v.apto ? '; sin contraindicación endoscópica para la reconstitución del tránsito' : ''); }
   });
 
   // ---- Reservorio ileal ----
@@ -5646,10 +5687,10 @@ try{(function(){
     where: ['recto', 'ileon'],
     keywords: 'reservoritis pouchitis pouch reservorio ileoanal pdai cuffitis cuff ileitis prerreservorio',
     fields: [
-      { id: 'pdai', label: 'PDAI endoscópico (1 punto c/u)', type: 'multi', wide: true, default: ['edema', 'granularidad', 'friabilidad'], options: PDAI },
+      { id: 'pdai', label: 'PDAI endoscópico (1 punto c/u)', type: 'multi', wide: true, default: [], options: PDAI, hint: 'Vacío = mucosa normal (PDAI 0/6)' },
       { id: 'tipo', label: 'Reservorio', type: 'chips', default: 'en J', options: ['en J', 'en S', 'en W', 'continente de Kock'] },
       { id: 'cuff', label: 'Manguito rectal (cuff)', type: 'chips', default: 'normal', show: function (v) { return v.tipo !== 'continente de Kock'; }, options: [{ v: 'normal', label: 'Normal' }, { v: 'cuffitis', label: 'Cuffitis', hint: 'Inflamación de la mucosa rectal residual entre la anastomosis y la línea pectínea' }, { v: '', label: 'No evaluado' }] },
-      { id: 'cuff_d', label: 'Hallazgos en el cuff', type: 'multi', default: ['eritema', 'friabilidad'], options: ['eritema', 'pérdida del patrón vascular', 'friabilidad', 'erosiones', 'úlceras'], show: function (v) { return v.tipo !== 'continente de Kock' && v.cuff === 'cuffitis'; } },
+      { id: 'cuff_d', label: 'Hallazgos en el cuff', type: 'multi', default: [], options: ['eritema', 'pérdida del patrón vascular', 'friabilidad', 'erosiones', 'úlceras'], show: function (v) { return v.tipo !== 'continente de Kock' && v.cuff === 'cuffitis'; } },
       { id: 'pre', label: 'Asa aferente (íleon prerreservorio)', type: 'chips', default: 'normal', options: [{ v: 'normal', label: 'Normal' }, { v: 'ileítis', label: 'Ileítis prerreservorio' }, { v: '', label: 'No explorada' }] },
       { id: 'pre_cm', label: 'Asa aferente explorada', type: 'num', unit: 'cm', min: 0, max: 60, show: function (v) { return has(v.pre); } },
       { id: 'anast', label: 'Anastomosis ileoanal', type: 'chips', default: 'normal', show: function (v) { return v.tipo !== 'continente de Kock'; }, options: [{ v: 'normal', label: 'Normal' }, { v: 'estenosis franqueable', label: 'Estenosis franqueable' }, { v: 'estenosis infranqueable', label: 'Estenosis infranqueable' }, { v: '', label: 'No consignar' }] },
@@ -5663,18 +5704,20 @@ try{(function(){
     text: function (v, h) {
       var s = [], pe = pdaiEndo(v), pc = pdaiClin(v), kock = v.tipo === 'continente de Kock';
       if (kock) v = Object.assign({}, v, { cuff: '', anast: '' });
-      s.push(kock ? 'Se explora reservorio ileal continente (Kock).' : h.sent('Se explora reservorio ileoanal', h.opt(v.tipo)));
-      if (has(v.pre)) s.push(h.sent('Asa aferente (íleon prerreservorio)', has(v.pre_cm) ? 'explorada en ' + h.cm(v.pre_cm) + ',' : '', v.pre === 'ileítis' ? 'con eritema, erosiones y úlceras, compatible con ileítis prerreservorio' : 'de aspecto normal'));
-      if (pe > 0) s.push(h.sent('La mucosa del reservorio presenta', listY(PDAI.filter(function (p) { return (v.pdai || []).indexOf(p.v) >= 0; }).map(function (p) { return p.v; })), '(PDAI endoscópico ' + pe + '/6)'));
-      else s.push(h.sent('Mucosa del reservorio de aspecto normal, sin edema, granularidad, friabilidad, pérdida del patrón vascular, exudado ni ulceración (PDAI endoscópico 0/6)'));
+      s.push(kock ? 'Anatomía postquirúrgica de proctocolectomía con reservorio ileal continente (Kock); se explora a través del estoma.' : h.sent('Anatomía postquirúrgica de proctocolectomía total con reservorio ileoanal', h.opt(v.tipo)));
+      if (v.anast === 'normal') s.push('Anastomosis ileoanal de calibre normal, sin estenosis.');
+      else if (has(v.anast)) s.push(h.sent('Anastomosis ileoanal con', v.anast, 'con el endoscopio'));
       if (v.cuff === 'cuffitis') s.push(h.sent('El manguito rectal (cuff) presenta', listY(v.cuff_d && v.cuff_d.length ? v.cuff_d : ['cambios inflamatorios']), ', compatible con cuffitis'));
       else if (v.cuff === 'normal') s.push('Manguito rectal (cuff) de aspecto normal.');
-      if (v.anast === 'normal') s.push('Anastomosis ileoanal de calibre normal.');
-      else if (has(v.anast)) s.push(h.sent('Anastomosis ileoanal con', v.anast, 'con el endoscopio'));
+      if (pe > 0) s.push(h.sent('La mucosa del reservorio presenta', listY(PDAI.filter(function (p) { return (v.pdai || []).indexOf(p.v) >= 0; }).map(function (p) { return p.v; })), '(PDAI endoscópico ' + pe + '/6)'));
+      else s.push(h.sent('Mucosa del reservorio de aspecto normal, sin edema, granularidad, friabilidad, pérdida del patrón vascular, exudado ni ulceración (PDAI endoscópico 0/6)'));
+      if (has(v.pre)) s.push(h.sent('Se intuba el asa aferente (íleon prerreservorio)', has(v.pre_cm) ? 'en ' + h.cm(v.pre_cm) + ',' : '', v.pre === 'ileítis' ? 'con eritema, erosiones y úlceras, compatible con ileítis prerreservorio' : 'de aspecto normal'));
+      else s.push('No se explora el asa aferente.');
       if (pc !== null) s.push(h.sent('PDAI clínico', pc + '/6; PDAI modificado (mPDAI)', (pc + pe) + '/12,', (pc + pe) >= 5 ? 'compatible con reservoritis (≥5)' : 'bajo el umbral diagnóstico de reservoritis (<5)'));
       if (v.biop) s.push(kock ? 'Se toman biopsias del reservorio y del asa aferente, en frascos separados.' : 'Se toman biopsias del reservorio, del asa aferente y del manguito rectal (cuff), en frascos separados.');
       return h.join.apply(null, s);
     },
+    frascos: function (v) { if (!v || !v.biop) return []; return v.tipo === 'continente de Kock' ? [['reservorio ileal', 2], ['asa aferente (íleon prerreservorio)', 2]] : [['reservorio ileoanal', 2], ['asa aferente (íleon prerreservorio)', 2], ['manguito rectal (cuff)', 2]]; },
     concl: function (v) {
       var pe = pdaiEndo(v), pc = pdaiClin(v), m = pc !== null ? pc + pe : null;
       var kock = v.tipo === 'continente de Kock';
@@ -7099,6 +7142,7 @@ try{(function(){
   function arr(x) { return Array.isArray(x) ? x.filter(function (y) { return y !== '' && y != null; }) : (x === '' || x == null ? [] : [x]); }
   function n01(x) { var n = parseInt(x, 10); return isNaN(n) ? null : n; }
   function noPar(x) { return String(x).replace(/\s*\([^)]*\)/g, ''); }
+  function excluido(ctx) { var ids = (ctx && ctx.findingIds) || []; return ids.indexOf('est_bypass') >= 0 || ids.indexOf('est_gastrectomia_total') >= 0; }
   // sin artículo (conclusiones, rótulos de frasco)
   function aNivel(h, locs, pre) {
     var l = arr(locs).map(function (x) { return /^ángulo \(/.test(x) ? 'incisura angularis' : noPar(x); });
@@ -7341,8 +7385,8 @@ try{(function(){
       ] },
       { id: 'tor_e', quality: true, qsoft: true, label: 'Toronto · esófago', type: 'chips', options: TOR_OPTS, default: '', hint: 'Toronto Upper GI Cleaning Score: 0-3 por región (esófago, estómago proximal, antro, duodeno); total 0-12' },
       { id: 'tor_ep', quality: true, qsoft: true, label: 'Toronto · estómago proximal (fondo/cuerpo)', type: 'chips', options: TOR_OPTS, default: '' },
-      { id: 'tor_a', quality: true, qsoft: true, label: 'Toronto · antro', type: 'chips', options: TOR_OPTS, default: '' },
-      { id: 'tor_d', quality: true, qsoft: true, label: 'Toronto · duodeno', type: 'chips', options: TOR_OPTS, default: '' },
+      { id: 'tor_a', quality: true, qsoft: true, label: 'Toronto · antro', type: 'chips', options: TOR_OPTS, default: '', show: function (v, ctx) { return !excluido(ctx); } },
+      { id: 'tor_d', quality: true, qsoft: true, label: 'Toronto · duodeno', type: 'chips', options: TOR_OPTS, default: '', show: function (v, ctx) { return !excluido(ctx); } },
       { id: 'distension', label: 'Distensión', type: 'chips', default: 'adecuada', options: [
         { v: 'adecuada', label: 'Adecuada', hint: 'Pliegues se aplanan con la insuflación' },
         { v: 'parcial', label: 'Parcial', hint: 'Distensión parcial, evaluación algo limitada' },
@@ -7424,7 +7468,8 @@ try{(function(){
       var tv = Object.assign({}, v, { tecnica: tecUnion(v, ctx) });
       // (revisor) estómago operado: bypass / gastrectomía total → el hallazgo describe la anatomía; aquí solo la técnica
       var fids = (ctx && ctx.findingIds) || [];
-      if (fids.indexOf('est_bypass') >= 0 || fids.indexOf('est_gastrectomia_total') >= 0) return tecnicaSent(h, tv);
+      if (fids.indexOf('est_bypass') >= 0) return ''; // el hallazgo describe reservorio, anastomosis y asas
+      if (fids.indexOf('est_gastrectomia_total') >= 0) return tecnicaSent(h, tv);
       var operado = fids.indexOf('est_billroth') >= 0 || fids.indexOf('est_manga') >= 0;
       // impactación esofágica no resuelta: no se explora el estómago
       var stop0 = noAvanzaInfo(ctx);
@@ -7875,32 +7920,47 @@ try{(function(){
   // ---------------- POSTQUIRÚRGICO ----------------
   EndoApp.finding({
     id: 'est_bypass', label: 'Bypass gástrico en Y de Roux', group: G_QX, where: ['estomago'],
-    keywords: 'bypass y de roux bariatrica reservorio pouch gastroyeyunal anastomosis',
+    keywords: 'bypass y de roux bariatrica reservorio pouch gastroyeyunal anastomosis asa aferente eferente alimentaria biliopancreatica candy cane pie de asa',
     fields: [
-      { id: 'reservorio', label: 'Reservorio (cm)', type: 'num', unit: 'cm', default: 5, step: 0.5 },
-      { id: 'anast', label: 'Anastomosis GY (mm)', type: 'size', default: '' },
-      { id: 'permeable', label: 'Anastomosis permeable', type: 'bool', default: true },
-      { id: 'mucosa', label: 'Mucosa reservorio', type: 'chips', default: 'normal', options: ['normal', 'eritematosa', 'erosionada'] },
-      { id: 'material', label: 'Material de sutura/grapas visible', type: 'bool', default: false },
+      { id: 'reservorio', label: 'Reservorio gástrico (largo)', type: 'num', unit: 'cm', min: 1, max: 20, step: 0.5, default: '', placeholder: 'cm', hint: 'Dato medido: vacío = no se escribe' },
+      { id: 'res_asp', label: 'Tamaño del reservorio', type: 'chips', default: 'normal', options: [{ v: 'normal', label: 'Habitual' }, { v: 'dilatado', label: 'Dilatado' }] },
+      { id: 'mucosa', label: 'Mucosa del reservorio', type: 'chips', default: 'normal', options: [{ v: 'normal', label: 'Normal' }, { v: 'eritematosa', label: 'Eritematosa' }, { v: 'erosionada', label: 'Erosiones' }] },
+      { id: 'anast', label: 'Anastomosis gastroyeyunal (diámetro)', type: 'size', default: '' },
+      { id: 'permeable', label: 'Anastomosis permeable (pasa el endoscopio)', type: 'bool', default: true },
+      { id: 'asa_ciega', label: 'Asa ciega (candy cane)', type: 'chips', default: 'normal', options: [
+        { v: 'normal', label: 'Corta, sin alteraciones' }, { v: 'larga', label: 'Elongada / dilatada', hint: 'Síndrome de candy cane: asa ciega larga que retiene alimento' }, { v: 'no', label: 'No evaluada' }] },
+      { id: 'asa_alim', label: 'Asa alimentaria (eferente)', type: 'chips', default: 'normal', options: [{ v: 'normal', label: 'Normal' }, { v: 'alterada', label: 'Con alteraciones (describir)' }, { v: 'no', label: 'No evaluada' }] },
+      { id: 'asa_alim_cm', label: 'Asa alimentaria explorada', type: 'num', unit: 'cm', min: 1, max: 150, default: '', placeholder: 'cm', show: function (v) { return v.asa_alim !== 'no'; } },
+      { id: 'pie', label: 'Se alcanza el pie de asa (yeyuno-yeyunoanastomosis)', type: 'bool', default: false, show: function (v) { return v.asa_alim !== 'no'; } },
+      { id: 'asa_bp', label: 'Asa biliopancreática (aferente)', type: 'chips', default: 'no', options: [{ v: 'no', label: 'No evaluada' }, { v: 'normal', label: 'Normal' }], show: function (v) { return !!v.pie; } },
+      { id: 'material', label: 'Material de sutura / grapas expuesto', type: 'bool', default: false },
       { id: 'fistula', label: 'Fístula gastrogástrica', type: 'bool', default: false },
-      { id: 'asa_alim', label: 'Asa alimentaria', type: 'chips', default: 'normal', options: [{ v: 'normal', label: 'Normal' }, { v: 'no', label: 'No evaluada' }] },
-      { id: 'asa_bp', label: 'Asa biliopancreática', type: 'chips', default: 'no', options: [{ v: 'normal', label: 'Normal' }, { v: 'no', label: 'No evaluada' }] },
+      { id: 'restos', label: 'Restos alimentarios / bezoar en el reservorio', type: 'bool', default: false },
     ],
-    text: function (v, h) {
-      var mu = { normal: 'de mucosa normal', eritematosa: 'con mucosa eritematosa', erosionada: 'con erosiones de la mucosa' }[v.mucosa] || '';
-      var asas = [];
-      if (v.asa_alim === 'normal') asas.push('Asa alimentaria de aspecto normal');
-      if (v.asa_bp === 'normal') asas.push('se accede al asa biliopancreática, de aspecto normal');
-      else if (v.asa_bp === 'no' && v.asa_alim === 'normal') asas.push('no se evalúa el asa biliopancreática');
-      return h.join(
-        h.sent('Se observan cambios postquirúrgicos de bypass gástrico en Y de Roux, con reservorio gástrico', h.has(v.reservorio) ? 'de aprox. ' + h.cm(v.reservorio) + ' de longitud' : '', mu ? ', ' + mu : ''),
-        h.sent('Anastomosis gastroyeyunal', v.permeable ? 'permeable' : 'estenótica', h.has(v.anast) ? ', de aprox. ' + h.mm(v.anast) + ' de diámetro' : '', v.permeable ? ', que permite el paso del endoscopio' : ', que no permite el paso del endoscopio'),
+    text: function (v, h, ctx) {
+      var S = (ctx && ctx.sections) || {}, ids = ((S.estomago && S.estomago.findings) || []).map(function (x) { return x && x.fid; });
+      var ulc = ids.indexOf('est_ulcera_marginal') >= 0 || ((S.estomago && S.estomago.findings) || []).some(function (x) { return x && x.fid === 'hem_ulcera' && x.v && x.v.tipo === 'marginal'; });
+      var mu = { normal: 'de mucosa de aspecto normal', eritematosa: 'con mucosa eritematosa', erosionada: 'con erosiones de la mucosa' }[v.mucosa] || '';
+      var res = h.sent('Anatomía postquirúrgica de bypass gástrico en Y de Roux. Reservorio gástrico', h.has(v.reservorio) ? 'de aprox. ' + h.cm(v.reservorio) + ' de longitud,' : '', v.res_asp === 'dilatado' ? 'dilatado,' : 'de tamaño habitual,', mu);
+      var an = h.sent('Anastomosis gastroyeyunal', v.permeable ? 'permeable' : 'estenótica', h.has(v.anast) ? ', de aprox. ' + h.mm(v.anast) + ' de diámetro' : '', v.permeable ? (ulc ? ', que permite el paso del endoscopio' : ', de bordes regulares, sin úlcera marginal, que permite el paso del endoscopio') : ', que no permite el paso del endoscopio');
+      var ac = v.asa_ciega === 'normal' ? 'Asa ciega (candy cane) corta, sin alteraciones.' : v.asa_ciega === 'larga' ? 'Asa ciega (candy cane) elongada y dilatada.' : '';
+      var al = '';
+      if (v.permeable && v.asa_alim !== 'no') al = h.sent('Se progresa por el asa alimentaria (eferente)', h.has(v.asa_alim_cm) ? 'por aprox. ' + h.cm(v.asa_alim_cm) + ',' : '', v.asa_alim === 'normal' ? 'de mucosa yeyunal de aspecto normal' : 'con las alteraciones que se describen', v.pie ? ', hasta el pie de asa (yeyuno-yeyunoanastomosis), de aspecto normal' : '');
+      var bp = v.pie && v.asa_bp === 'normal' ? 'Se accede al asa biliopancreática (aferente), de aspecto normal.' : (v.permeable ? 'No se evalúa el asa biliopancreática (aferente).' : '');
+      return h.join(res, an, ac, al, bp,
         v.material ? 'Se identifica material de sutura/grapas expuesto en la línea anastomótica.' : '',
         v.fistula ? 'Se identifica orificio fistuloso hacia el estómago excluido (fístula gastrogástrica).' : '',
-        asas.length ? h.sent(asas.join('; ')) : '');
+        v.restos ? 'Restos alimentarios retenidos en el reservorio.' : '',
+        'Estómago excluido, píloro y duodeno no accesibles por la anatomía quirúrgica.');
     },
     concl: function (v, h) {
-      return 'Bypass gástrico en Y de Roux' + (v.permeable ? ', anastomosis gastroyeyunal permeable' : ', estenosis de anastomosis gastroyeyunal') + (h.has(v.anast) ? ' (' + h.mm(v.anast) + ')' : '') + (v.fistula ? ', fístula gastrogástrica' : '');
+      var x = [];
+      x.push(v.permeable ? 'anastomosis gastroyeyunal permeable' + (h.has(v.anast) ? ' (' + h.mm(v.anast) + ')' : '') : 'estenosis de anastomosis gastroyeyunal' + (h.has(v.anast) ? ' (' + h.mm(v.anast) + ')' : ''));
+      if (v.res_asp === 'dilatado') x.push('reservorio dilatado');
+      if (v.asa_ciega === 'larga') x.push('asa ciega elongada (posible síndrome de candy cane)');
+      if (v.fistula) x.push('fístula gastrogástrica');
+      if (v.material) x.push('material de sutura expuesto');
+      return 'Bypass gástrico en Y de Roux: ' + x.join(', ');
     },
   });
 
@@ -11087,13 +11147,47 @@ try{(function(){
     }
   });
 
-// EDA 5. Paciente con cirugía bariátrica
+// EDA 5. Paciente con cirugía bariátrica: bypass en Y de Roux (sin antro, píloro ni duodeno accesibles) y manga
   EndoApp.preset({
-    id: 'pre_eda_bypass_ulcera_marginal', label: 'Cirugía bariátrica (manga, bypass)', exam: 'eda',
+    id: 'pre_eda_bypass_ryg', label: 'Bypass gástrico en Y de Roux', exam: 'eda',
+    state: {
+      sections: {
+        eda_datos: { v: { indicacion: ['bariatrica'] } },
+        estomago: { v: {}, findings: [{ fid: 'est_bypass', v: {} }] }
+      },
+      frascos: []
+    }
+  });
+  EndoApp.preset({
+    id: 'pre_eda_bypass_ulcera_marginal', label: 'Gastrectomía en manga (sleeve)', exam: 'eda',
     state: {
       sections: {
         eda_datos: { v: { indicacion: ['bariatrica'] } },
         estomago: { v: {}, findings: [{ fid: 'est_manga', v: {} }] }
+      },
+      frascos: []
+    }
+  });
+
+  // COLONO 7. Reservorio ileoanal (pouch) tras proctocolectomía por colitis ulcerosa
+  EndoApp.preset({
+    id: 'pre_col_pouch', label: 'Reservorio ileoanal / pouch (PDAI, cuff, asa aferente)', exam: 'colono',
+    state: {
+      sections: {
+        col_datos: { v: { indic: ['Control de reservorio ileoanal'], alcance: 'reservorio' } },
+        recto: { v: {}, findings: [{ fid: 'eii_pouch', v: {} }] }
+      },
+      frascos: []
+    }
+  });
+  // COLONO 8. Hartmann: por colostomía y luego muñón rectal, antes de reconstituir el tránsito
+  EndoApp.preset({
+    id: 'pre_col_hartmann', label: 'Hartmann pre-reconstitución (colostomía + muñón rectal)', exam: 'colono',
+    state: {
+      sections: {
+        col_datos: { v: { indic: ['Evaluación previa a reconstitución del tránsito'] } },
+        colon: { v: {}, findings: [{ fid: 'cb_colostomia', v: {} }] },
+        recto: { v: {}, findings: [{ fid: 'cb_hartmann', v: {} }] }
       },
       frascos: []
     }
@@ -13293,6 +13387,8 @@ if (typeof module !== 'undefined') module.exports = EndoScales;
         });
         var ctx = ctxOf(s, ex, { hasFindings: fs.length > 0, findingIds: fs.map(function (x) { return x.def.id; }) });
         var base = String(call(s.text, [ss.v, h, ctx], s.id + '.text')).trim();
+        // texto normal propio del médico (pegado desde su plantilla): reemplaza la descripción normal si la sección no tiene hallazgos
+        if (s.kind !== 'header' && !fs.length && h.has(ss.ovNormal)) base = String(ss.ovNormal).trim();
         var sc = call(s.concl, [ss.v, h, ctx], s.id + '.concl'); sc = (Array.isArray(sc) ? sc : [sc]).filter(h.has);
         if (s.kind === 'header') {
           base.split('\n').filter(h.has).forEach(function (l) { blk.header.push(l.trim()); });
@@ -13321,6 +13417,9 @@ if (typeof module !== 'undefined') module.exports = EndoScales;
       var procLike = rest.filter(function (c) { var sid = c.key.split(':')[0]; return /proc$/.test(sid); });
       var clinical = rest.filter(function (c) { return procLike.indexOf(c) < 0; });
       if (!clinical.length && !hdrConcl.length) clinical.unshift({ key: 'normal:' + ex, text: NORMAL[ex] });
+      // conclusión normal propia (plantilla pegada): solo si el examen no tiene hallazgos
+      var cno = isObj(state.conclNormOv) && state.conclNormOv[ex];
+      if (!blk.hasFind && h.has(cno)) clinical = String(cno).split(/\n+/).map(function (t) { return t.replace(/^\s*(\d+[.)-]+|[-•*·])\s*/, '').trim(); }).filter(h.has).map(function (t, i) { return { key: 'normov:' + ex + ':' + i, text: t }; });
       // lo grave primero (neoplasia, sangrado activo/estigmas tratados); el resto mantiene el orden anatómico
       var sev = function (c) { var t = String(c.text || ''); if (/\b(sin|no se observa|descartar)\b[^.]{0,40}(neopl[aá]si|c[aá]ncer|malign)/i.test(t)) return 9; if (/neopl[aá]si|c[aá]ncer|carcinoma|borrmann|malign|linfoma/i.test(t)) return 0; if (/forrest\s+(ia|ib|iia|iib)\b|hemostasia/i.test(t) || /sangrado activo/i.test(t.replace(/\b(sin|no se observa|no hay)\s+(signos de\s+)?sangrado activo/gi, ''))) return 1; return 9; };
       clinical = clinical.map(function (c, i) { return [sev(c), i, c]; }).sort(function (a, b) { return a[0] - b[0] || a[1] - b[1]; }).map(function (x) { return x[2]; });
@@ -13761,9 +13860,19 @@ if (typeof module !== 'undefined') module.exports = EndoScales;
       if (ss.findings.length || s.kind !== 'header') hd.appendChild(el('button', { class: 'btn sm', type: 'button', html: SVG.reset + 'Normal', title: 'Quitar hallazgos y volver a valores normales', onclick: function () { snapshot(); ss.findings = []; ss.v = secDefaults(s); ss.note = ''; renderAll(); toast(s.title + ': normal'); } }));
       if (fsAvail.length) hd.appendChild(el('button', { class: 'btn primary sm', type: 'button', html: SVG.plus + 'Hallazgo', onclick: function () { openPalette(s.id); } }));
     }
-    if (!isFoot && s.kind !== 'header') { var nsum = el('span', { class: 'nsum', text: ss.findings.length ? ss.findings.map(function (fi) { return (FIND[fi.fid] || {}).label || ''; }).join(' · ') : (fieldSummary(s.fields || [], ss.v, s.locations, fieldCtx(s, ex)) || '') }); var h2 = hd.querySelector('h2'); if (h2 && h2.nextSibling) hd.insertBefore(nsum, h2.nextSibling.nextSibling || null); else hd.appendChild(nsum); hd.addEventListener('click', function (e) { if (!ss._min || e.target.closest('button')) return; ss._min = false; card.classList.remove('collapsed'); save(); }); }
+    if (!isFoot && s.kind !== 'header') { var nsum = el('span', { class: 'nsum', text: ss.findings.length ? ss.findings.map(function (fi) { return (FIND[fi.fid] || {}).label || ''; }).join(' · ') : h.has(ss.ovNormal) ? 'Tu texto normal' : (fieldSummary(s.fields || [], ss.v, s.locations, fieldCtx(s, ex)) || '') }); var h2 = hd.querySelector('h2'); if (h2 && h2.nextSibling) hd.insertBefore(nsum, h2.nextSibling.nextSibling || null); else hd.appendChild(nsum); hd.addEventListener('click', function (e) { if (!ss._min || e.target.closest('button')) return; ss._min = false; card.classList.remove('collapsed'); save(); }); }
     card.appendChild(hd);
     var bd = el('div', { class: 'bd' }); card.appendChild(bd);
+    // texto normal propio (de una plantilla pegada): se ve y se edita aquí; con hallazgos se usa el texto de la app
+    if (s.kind !== 'header' && !isFoot && h.has(ss.ovNormal)) {
+      var ovT = el('textarea', { class: 'ovn-t', rows: 3, 'aria-label': 'Tu texto normal de ' + s.title });
+      ovT.value = ss.ovNormal;
+      ovT.oninput = function () { ss.ovNormal = ovT.value; refresh(); };
+      bd.appendChild(el('div', { class: 'ovn' }, [
+        el('div', { class: 'ovn-h' }, [el('b', { text: 'Tu texto normal' }), el('span', { class: 'muted', text: ss.findings.length ? 'No se usa mientras haya hallazgos: la app redacta la sección' : 'Se escribe tal cual en el informe' }), el('span', { class: 'sp' }),
+          el('button', { class: 'btn ghost sm', type: 'button', text: '↺ Texto automático', title: 'Quitar tu texto y volver a la redacción automática de la app', onclick: function () { snapshot(); delete ss.ovNormal; renderAll(); toast(s.title + ': texto automático'); } })]),
+        ovT]));
+    }
     if ((s.fields || []).length) {
       var host = bd, sumEl = null;
       var isHdr = s.kind === 'header';
@@ -14041,6 +14150,7 @@ if (typeof module !== 'undefined') module.exports = EndoScales;
       else { cInd.forEach(function (v) { if ((g.col || []).indexOf(v) >= 0) why.push(lab('col_datos', 'indic', v)); }); if (g.re && g.re.test(cTxt)) why.push('otra indicación'); }
       if (!why.length) return;
       // respeta lo que el médico ya escribió: si sus frascos (de este examen) son de otro sitio, no insistir con Sydney
+      if (g.k === 'sydney' && ((state.sections.estomago || {}).findings || []).some(function (f) { return f.fid === 'est_bypass' || f.fid === 'est_gastrectomia_total'; })) return; // sin antro: no hay Sydney
       if (g.k === 'sydney') { var own = state.frascos.filter(function (f) { return String(f.sitio || '').trim() && frEx(f) === 'eda'; }); if (own.length && !own.some(function (f) { return /antr|cuerpo|incisur|[aá]ngulo|g[aá]str|fondo|sydney/i.test(f.sitio); })) return; }
       if (g.k === 'eoe' && state.frascos.reduce(function (a, x) { return a + (/esofag/.test(norm(x.sitio)) ? (parseInt(x.n, 10) || 0) : 0); }, 0) >= 6) { out.push({ g: g, why: why, done: true }); return; }
       var done = g.k === 'sydney' ? state.frascos.some(function (f) { return /\(Sydney [1-5]|sydney/i.test(f.sitio || ''); }) : g.fr.every(function (x) { return findFrasco(x[0]) >= 0; });
@@ -15126,7 +15236,7 @@ if (typeof module !== 'undefined') module.exports = EndoScales;
       });
       ['frascos', 'conclExtra'].forEach(function (k) { if (Array.isArray(s[k])) base[k] = s[k]; });
       if (EXAMS[s.exam]) base.frascos.forEach(function (f) { if (isObj(f) && !f.ex) f.ex = s.exam; });
-      ['conclHidden', 'conclOv', 'conclOrder'].forEach(function (k) { if (isObj(s[k])) base[k] = s[k]; });
+      ['conclHidden', 'conclOv', 'conclOrder', 'conclNormOv'].forEach(function (k) { if (isObj(s[k])) base[k] = s[k]; });
       if (s.bxOn === true || s.bxOn === false) base.bxOn = s.bxOn;
       state = ensure(base);
     } catch (e) { console.error('Plantilla no válida', e); state = ensure(popUndo(true)); toast('No se pudo cargar la plantilla'); renderAll(); return; }
@@ -15684,8 +15794,8 @@ if (typeof module !== 'undefined') module.exports = EndoScales;
   }
   // frecuencia clínica de los escenarios (las 7 primeras se ven en el inicio)
   var TPL_RANK = ['pre_eda_dispepsia', 'pre_eda_anemia_celiaca', 'pre_eda_hda_forrest_iia', 'pre_eda_screening_normal', 'pre_eda_varices_ligadura', 'pre_eda_ligadura_programada', 'pre_eda_barrett_seattle',
-    'pre_eda_tamizaje_varices', 'pre_eda_cuerpo_extrano', 'pre_eda_urgencia_uci', 'pre_eda_sonda', 'pre_eda_causticos', 'pre_eda_bypass_ulcera_marginal',
-    'pre_col_tamizaje_normal', 'pre_col_polipo_asa_fria', 'pre_col_hdb', 'pre_col_cu_control', 'pre_col_crohn_sescd', 'pre_col_lst', 'pre_col_urgencia_volvulo'];
+    'pre_eda_tamizaje_varices', 'pre_eda_cuerpo_extrano', 'pre_eda_urgencia_uci', 'pre_eda_sonda', 'pre_eda_causticos', 'pre_eda_bypass_ryg', 'pre_eda_bypass_ulcera_marginal',
+    'pre_col_tamizaje_normal', 'pre_col_polipo_asa_fria', 'pre_col_hdb', 'pre_col_cu_control', 'pre_col_crohn_sescd', 'pre_col_lst', 'pre_col_urgencia_volvulo', 'pre_col_pouch', 'pre_col_hartmann'];
   function showHome() {
     if (tplEdit) endTplEdit();
     var old = $('#home'); if (old) old.remove();
@@ -19502,6 +19612,194 @@ place();
 
 })();}catch(e){console.error("Feature patologia.js",e);}
 ;
+/* ===== feature pegar.js ===== */
+try{(function(){
+/* ===== pegar.js — "Pegar mi plantilla": el médico pega su informe normal de Word por secciones =====
+   Reconoce títulos como ESÓFAGO:, ESTÓMAGO:, PÍLORO:, DUODENO:, ÍLEON:, COLON:, RECTO:, SEDACIÓN:, PREPARACIÓN:,
+   CONCLUSIÓN: y RECOMENDACIONES:, y arma una plantilla propia:
+   - cada sección anatómica guarda su "texto normal" (se escribe tal cual mientras no haya hallazgos);
+   - sedación y preparación marcan los fármacos/productos reconocidos (las dosis se completan en cada paciente);
+   - la conclusión pasa a ser la conclusión normal; las recomendaciones, las indicaciones al alta.
+   Identificación del paciente e indicación se ignoran (son de cada paciente) y los RUT se eliminan. */
+var U = window.EndoUI; if (!U) return;
+var KEY = 'endoinforme.v1.templates';
+function mk(tag, cls, txt) { var e = document.createElement(tag); if (cls) e.className = cls; if (txt != null) e.textContent = txt; return e; }
+function toast(m, ms) { try { U.rapido.toast(m, ms); } catch (e) { } }
+function nrm(s) { return String(s || '').normalize('NFD').replace(/[̀-ͯ]/g, '').toLowerCase().replace(/\s+/g, ' ').trim(); }
+function uid() { return Math.random().toString(36).slice(2, 10); }
+
+// título → destino. sub: subsegmento que se conserva como "Bulbo: …" dentro de su sección
+var RULES = [
+  [/^(identificacion|datos (del )?paciente|paciente|nombre|rut|edad|fecha|ficha|prevision|procedencia|medico|endoscopista|tratante|solicitante|n° examen|numero de examen)\b/, 'skip', 'datos del paciente'],
+  [/^(recomendaciones|indicaciones( al alta| post| de alta)?|sugerencias|plan|control)\b/, 'alta'],
+  [/^(indicacion|motivo( del examen)?|antecedentes|diagnostico de ingreso)\b/, 'skip', 'indicación'],
+  [/^(premedicacion|sedacion|sedoanalgesia|anestesia|medicamentos|farmacos)\b/, 'sed'],
+  [/^(preparacion|limpieza|boston)\b/, 'prep'],
+  [/^(conclusion(es)?|diagnostico(s)?( endoscopico)?|impresion( diagnostica)?)\b/, 'concl'],
+  [/^(esofago|union escamocolumnar|linea z|hiato|cardias)\b/, 'esofago', null, /^esofago/],
+  [/^(estomago|camara gastrica|fondo|cuerpo|antro|angulo|incisura|retrovision gastrica|reservorio gastrico)\b/, 'estomago', null, /^estomago/],
+  [/^(piloro)\b/, 'piloro', null, /^piloro/],
+  [/^(duodeno|bulbo( duodenal)?|segunda porcion( duodenal)?|papila)\b/, 'duodeno', null, /^duodeno/],
+  [/^(ileon( terminal)?|neoileon|valvula ileocecal)\b/, 'ileon', null, /^ileon/],
+  [/^retrovision$/, 'retro'],
+  [/^(recto|canal anal|ano|region perianal|retrovision rectal|tacto rectal|inspeccion anal|muñon rectal|munon rectal)\b/, 'recto', null, /^recto/],
+  [/^(colon|ciego|ascendente|transverso|descendente|sigmoides|angulo (hepatico|esplenico)|marco colonico)\b/, 'colon', null, /^colon$/],
+  [/^(procedimientos?|terapeutica|biopsias?|test de ureasa|tecnica|equipo|instrumento|complicaciones|tolerancia)\b/, 'skip', 'procedimientos / biopsias (cambian en cada paciente)']
+];
+var EXAM_OF = { esofago: 'eda', estomago: 'eda', piloro: 'eda', duodeno: 'eda', ileon: 'colono', colon: 'colono', recto: 'colono', prep: 'colono' };
+var TITLE = { esofago: 'Esófago', estomago: 'Estómago', piloro: 'Píloro', duodeno: 'Duodeno', ileon: 'Íleon', colon: 'Colon', recto: 'Recto y canal anal', sed: 'Sedación', prep: 'Preparación', concl: 'Conclusión', alta: 'Recomendaciones' };
+var RUT = /\b\d{1,2}\.?\d{3}\.?\d{3}\s*-\s*[\dkK]\b/g;
+
+function rule(head) {
+  var t = nrm(head).replace(/[.:]+$/, '');
+  for (var i = 0; i < RULES.length; i++) if (RULES[i][0].test(t)) return { to: RULES[i][1], why: RULES[i][2], sub: RULES[i][3] ? !RULES[i][3].test(t) : false };
+  return null;
+}
+function capHead(s) { s = String(s).trim(); if (s === s.toUpperCase()) s = s.toLowerCase(); return s.charAt(0).toUpperCase() + s.slice(1); }
+
+function parse(txt) {
+  var out = { secs: {}, order: [], skipped: [], ruts: 0, pre: [], concl: { eda: [], colono: [] }, alta: [], sed: '', prep: '' };
+  txt = String(txt || '').replace(/\r/g, '').replace(/ /g, ' ');
+  var nR = (txt.match(RUT) || []).length; out.ruts = nR; txt = txt.replace(RUT, '');
+  var cur = null, lastEx = null;
+  var put = function (to, line) {
+    if (!line) return;
+    if (to === 'concl') { (out.concl[lastEx || 'eda']).push(line); return; }
+    if (to === 'alta') { out.alta.push(line); return; }
+    if (to === 'sed' || to === 'prep') { out[to] += (out[to] ? ' ' : '') + line; return; }
+    if (!out.secs[to]) { out.secs[to] = []; out.order.push(to); }
+    out.secs[to].push(line);
+  };
+  txt.split('\n').forEach(function (raw) {
+    var line = raw.replace(/^\s*[-•*·]\s*/, '').trim(); if (!line) return;
+    var m = line.match(/^([A-Za-zÁÉÍÓÚÜÑáéíóúüñ°][A-Za-zÁÉÍÓÚÜÑáéíóúüñ° .\/()-]{1,45}?)\s*:\s*(.*)$/);
+    var head = m ? m[1] : (line.length <= 45 && line === line.toUpperCase() && /[A-ZÁÉÍÓÚÑ]{3}/.test(line) ? line : null);
+    var r = head ? rule(head) : null;
+    if (r) {
+      var body = m ? m[2].trim() : '';
+      if (r.to === 'skip') { cur = { to: 'skip' }; if (out.skipped.indexOf(r.why) < 0) out.skipped.push(r.why); return; }
+      if (r.to === 'retro') { r.to = lastEx === 'colono' ? 'recto' : 'estomago'; r.sub = true; } // "Retrovisión:" va con el examen en curso
+      if (EXAM_OF[r.to]) lastEx = EXAM_OF[r.to];
+      cur = { to: r.to };
+      if (r.sub) put(r.to, capHead(head) + ': ' + (body || ''));
+      else put(r.to, body);
+      return;
+    }
+    if (!cur) { out.pre.push(line); return; }
+    if (cur.to === 'skip') return;
+    put(cur.to, line);
+  });
+  var exs = {}; out.order.forEach(function (k) { exs[EXAM_OF[k]] = 1; }); if (out.prep) exs.colono = 1;
+  out.exam = exs.eda && exs.colono ? 'ambos' : exs.colono ? 'colono' : 'eda';
+  if (out.exam === 'colono' && out.concl.eda.length) { out.concl.colono = out.concl.eda.concat(out.concl.colono); out.concl.eda = []; }
+  return out;
+}
+function joinSent(lines) { return lines.map(function (l) { l = l.trim(); l = l.charAt(0).toUpperCase() + l.slice(1); return /[.:;]$/.test(l) ? l : l + '.'; }).join(' ').replace(/:\s*\./g, ':').replace(/\s+/g, ' ').trim(); }
+
+function sedVals(t, ex) {
+  var n = nrm(t), v = [];
+  if (ex === 'eda') {
+    if (/lidoca|xiloca/.test(n)) v.push('lidocaina'); if (/midazol/.test(n)) v.push('midazolam'); if (/fentan/.test(n)) v.push('fentanilo');
+    if (/propofol/.test(n)) v.push('propofol'); if (/anestesi/.test(n)) v.push('anestesista'); if (/simetic/.test(n)) v.push('simeticona');
+    if (/sin sedac/.test(n)) v = ['sin'];
+  } else {
+    if (/lidoca|xiloca/.test(n)) v.push('Lidocaína gel'); if (/midazol/.test(n)) v.push('Midazolam'); if (/fentan/.test(n)) v.push('Fentanilo'); if (/propofol/.test(n)) v.push('Propofol');
+    if (/sin sedac/.test(n)) v = ['Sin sedación'];
+  }
+  return v;
+}
+function prepVal(t) { var n = nrm(t); return /polietilen|\bpeg\b|nulytely|golytely|barex/.test(n) ? 'polietilenglicol (PEG)' : /picosulf/.test(n) ? 'picosulfato de sodio con citrato de magnesio' : /fosfato/.test(n) ? 'fosfato de sodio' : /sulfato/.test(n) ? 'sulfato de sodio, potasio y magnesio' : ''; }
+
+function toState(P) {
+  var st = { exam: P.exam, sections: {}, frascos: [], conclNormOv: {} };
+  P.order.forEach(function (k) { var t = joinSent(P.secs[k]); if (t) st.sections[k] = { ovNormal: t, findings: [] }; });
+  if (P.sed) {
+    var hx = P.exam === 'colono' ? 'col_datos' : 'eda_datos', fid = hx === 'col_datos' ? 'premed' : 'sedacion', sv = sedVals(P.sed, hx === 'col_datos' ? 'colono' : 'eda');
+    if (sv.length) { st.sections[hx] = st.sections[hx] || { v: {} }; st.sections[hx].v = st.sections[hx].v || {}; st.sections[hx].v[fid] = sv; }
+  }
+  if (P.prep && P.exam !== 'eda') { var pv = prepVal(P.prep); if (pv) { st.sections.col_datos = st.sections.col_datos || { v: {} }; st.sections.col_datos.v = st.sections.col_datos.v || {}; st.sections.col_datos.v.prep = pv; } }
+  ['eda', 'colono'].forEach(function (ex) { if (P.concl[ex].length) st.conclNormOv[ex] = P.concl[ex].join('\n'); });
+  if (P.alta.length) {
+    var tx = joinSent(P.alta.map(function (l) { return l.replace(/^\s*\d+\s*[.)-]+\s*/, ''); }));
+    // conserva el intervalo de control sugerido por guías salvo que su texto ya indique un control
+    st.sections.alta = { on: true, v: { otra: tx, ind: /control|nuevo examen|repetir|vigilancia/i.test(tx) ? [] : ['control'] } };
+  }
+  return st;
+}
+function saveTpl(name, st) {
+  var T; try { T = JSON.parse(localStorage.getItem(KEY) || '[]'); } catch (e) { T = []; } if (!Array.isArray(T)) T = [];
+  T.unshift({ id: uid() + uid(), name: name, exam: st.exam, date: new Date().toISOString().slice(0, 10), state: st, pegada: true });
+  try { localStorage.setItem(KEY, JSON.stringify(T)); return true; } catch (e) { toast('No se pudo guardar la plantilla (¿almacenamiento lleno?)'); return false; }
+}
+
+var EJEMPLO = 'SEDACIÓN: lidocaína en spray y midazolam EV\n\nESÓFAGO: Mucosa de aspecto normal en toda su extensión. Unión escamocolumnar regular a 38 cm de la arcada dentaria.\n\nESTÓMAGO: Lago gástrico claro. Mucosa de fondo, cuerpo y antro sin lesiones. Retrovisión sin hallazgos.\n\nPÍLORO: Permeable.\n\nDUODENO: Bulbo y segunda porción de aspecto normal.\n\nCONCLUSIÓN: Endoscopía digestiva alta normal.\n\nRECOMENDACIONES: Régimen liviano hoy. No conducir por 12 horas.';
+
+function open() {
+  Array.prototype.forEach.call(document.querySelectorAll('.ov.pgov'), function (x) { x.remove(); });
+  var ov = mk('div', 'ov pgov'), box = mk('div', 'modal pgbox');
+  var close = function () { ov.remove(); };
+  ov.onclick = function (e) { if (e.target === ov) close(); };
+  box.appendChild(mk('h2', null, 'Pegar mi plantilla'));
+  box.appendChild(mk('div', 'sub', 'Pega tu informe normal tal como lo tienes en Word, con sus títulos (ESÓFAGO:, ESTÓMAGO:, PÍLORO:, DUODENO: o ÍLEON:, COLON:, RECTO:, más SEDACIÓN:, CONCLUSIÓN: y RECOMENDACIONES:). La app lo ordena por secciones y lo guarda como plantilla tuya.'));
+  var ta = mk('textarea', 'pgta'); ta.rows = 10; ta.placeholder = EJEMPLO; ta.setAttribute('aria-label', 'Texto de tu plantilla');
+  var ej = mk('button', 'btn ghost sm', 'Ver un ejemplo'); ej.type = 'button'; ej.onclick = function () { ta.value = EJEMPLO; upd(); };
+  var pv = mk('div', 'pgpv');
+  var name = mk('input'); name.type = 'text'; name.placeholder = 'Nombre de la plantilla (ej: Mi EDA normal)';
+  var bSave = mk('button', 'btn', 'Guardar'), bUse = mk('button', 'btn primary', 'Guardar y usar'); bSave.type = bUse.type = 'button';
+  var cancel = mk('button', 'btn ghost', 'Cancelar'); cancel.type = 'button'; cancel.onclick = close;
+  box.appendChild(ta); box.appendChild(ej); box.appendChild(pv);
+  var row = mk('div', 'row pgrow'); row.appendChild(name); row.appendChild(cancel); row.appendChild(bSave); row.appendChild(bUse); box.appendChild(row);
+  var P = null, t0 = 0;
+  function upd() {
+    P = parse(ta.value); pv.innerHTML = '';
+    var n = P.order.length + (P.sed ? 1 : 0) + (P.prep ? 1 : 0) + (P.concl.eda.length || P.concl.colono.length ? 1 : 0) + (P.alta.length ? 1 : 0);
+    bSave.disabled = bUse.disabled = !P.order.length;
+    if (!ta.value.trim()) { pv.appendChild(mk('div', 'muted', 'Aquí verás cómo queda repartido tu texto.')); return; }
+    if (!P.order.length) { pv.appendChild(mk('div', 'pgwarn', 'No encontré títulos de secciones. Escribe cada parte con su título y dos puntos, por ejemplo "ESÓFAGO: …".')); return; }
+    if (!name.value || name.dataset.auto) { name.value = 'Mi ' + ({ eda: 'EDA', colono: 'colonoscopía', ambos: 'EDA + colonoscopía' })[P.exam] + ' normal'; name.dataset.auto = '1'; }
+    pv.appendChild(mk('div', 'pgsum', ({ eda: 'EDA', colono: 'Colonoscopía', ambos: 'EDA + colonoscopía' })[P.exam] + ' · ' + n + ' parte' + (n === 1 ? '' : 's') + ' reconocida' + (n === 1 ? '' : 's')));
+    var add = function (k, t, note) { var d = mk('div', 'pgit'); d.appendChild(mk('b', null, k)); d.appendChild(mk('span', null, t)); if (note) d.appendChild(mk('small', null, note)); pv.appendChild(d); };
+    P.order.forEach(function (k) { add(TITLE[k], joinSent(P.secs[k])); });
+    if (P.sed) { var sv = sedVals(P.sed, P.exam === 'colono' ? 'colono' : 'eda'); var SL = { lidocaina: 'lidocaína', midazolam: 'midazolam', fentanilo: 'fentanilo', propofol: 'propofol', anestesista: 'anestesista', simeticona: 'simeticona', sin: 'sin sedación' }; add('Sedación', P.sed, sv.length ? 'Marca: ' + sv.map(function (x) { return SL[x] || x.toLowerCase(); }).join(', ') + '. Las dosis se completan en cada paciente.' : 'No reconocí fármacos: márcalos en Datos del examen.'); }
+    if (P.prep) { var pp = prepVal(P.prep); add('Preparación', P.prep, pp ? 'Marca: ' + pp + '. Boston se completa en cada paciente.' : 'No reconocí el producto: márcalo en Datos del examen.'); }
+    ['eda', 'colono'].forEach(function (ex) { if (P.concl[ex].length) add('Conclusión' + (P.exam === 'ambos' ? (ex === 'eda' ? ' EDA' : ' colonoscopía') : ''), P.concl[ex].join(' / '), 'Se usa cuando el examen no tiene hallazgos.'); });
+    if (P.alta.length) add('Recomendaciones', P.alta.join(' '), 'Reemplazan a las automáticas (se mantiene el control sugerido por guías si tu texto no indica uno).');
+    var w = [];
+    if (P.skipped.length) w.push('No se guarda: ' + P.skipped.join(', ') + '.');
+    if (P.ruts) w.push('Eliminé ' + P.ruts + ' RUT del texto.');
+    if (P.pre.length) w.push('Texto antes del primer título (no se usa): "' + P.pre.join(' ').slice(0, 80) + (P.pre.join(' ').length > 80 ? '…' : '') + '"');
+    w.forEach(function (x) { pv.appendChild(mk('div', 'pgwarn', x)); });
+    pv.appendChild(mk('div', 'muted pgnote', 'Revisa que no queden nombres de pacientes. Con hallazgos, la app redacta esa sección; tu texto vuelve cuando la sección está normal.'));
+  }
+  ta.oninput = function () { clearTimeout(t0); t0 = setTimeout(upd, 120); };
+  name.oninput = function () { delete name.dataset.auto; };
+  function go(use) {
+    upd(); if (!P || !P.order.length) return;
+    var nm = name.value.trim() || 'Mi plantilla'; var st = toState(P);
+    if (!saveTpl(nm, st)) return;
+    close(); Array.prototype.forEach.call(document.querySelectorAll('.ov'), function (x) { if (x.querySelector('.modal h2') && /Plantillas/.test(x.querySelector('.modal h2').textContent)) x.remove(); });
+    if (use) { try { U.hideHome(); } catch (e) { } U.loadState(JSON.parse(JSON.stringify(st)), nm); }
+    toast('Plantilla guardada: ' + nm + '. Queda en Plantillas y en el Inicio', 3800);
+  }
+  bSave.onclick = function () { go(false); }; bUse.onclick = function () { go(true); };
+  upd(); ov.appendChild(box); document.body.appendChild(ov); setTimeout(function () { ta.focus(); }, 30);
+}
+window.EndoPegar = { open: open, parse: parse, toState: toState };
+
+// botón en la ventana de Plantillas
+function hook() {
+  Array.prototype.forEach.call(document.querySelectorAll('.ov .modal'), function (m) {
+    var h2 = m.querySelector('h2'); if (!h2 || h2.textContent !== 'Plantillas' || m.querySelector('.pgbtn')) return;
+    var b = mk('button', 'btn pgbtn'); b.type = 'button'; b.innerHTML = '<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><rect x="8" y="2" width="8" height="4" rx="1"/><path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"/></svg>Pegar mi plantilla de Word';
+    b.title = 'Pega tu informe normal con sus títulos (ESÓFAGO:, ESTÓMAGO:…) y queda como plantilla tuya';
+    b.onclick = open;
+    var sub = m.querySelector('.sub'); if (sub && sub.nextSibling) m.insertBefore(b, sub.nextSibling); else m.appendChild(b);
+  });
+}
+var tm = 0; new MutationObserver(function () { if (tm) return; tm = setTimeout(function () { tm = 0; hook(); }, 40); }).observe(document.body, { childList: true, subtree: true });
+
+})();}catch(e){console.error("Feature pegar.js",e);}
+;
 /* ===== feature perfil.js ===== */
 try{(function(){
 /* ===== perfil.js — "Perfil del médico" con firma guardada =====
@@ -20576,7 +20874,7 @@ document.addEventListener('endo:settings', function (e) { try { section(e.detail
 window.EndoRespaldo = { exportar: exportar, importar: importar, deshacer: deshacer, resumen: function () { return resumen(snapshotAll()); }, validar: function (x) { var v = validar(x); return v.error ? { error: v.error } : { ok: true, resumen: v.res }; } };
 
 })();}catch(e){console.error("Feature respaldo.js",e);}
-window.ENDO_VERSION="202611272103";window.ENDO_WEB_URL="";</script>
+window.ENDO_VERSION="202611272119";window.ENDO_WEB_URL="";</script>
 <script>
 if ('serviceWorker' in navigator && location.protocol.indexOf('http') === 0) { navigator.serviceWorker.register('sw.js').catch(function(){}); }
 </script>
