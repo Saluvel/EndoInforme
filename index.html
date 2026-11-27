@@ -816,7 +816,7 @@ html.acc-locked body>*:not(.acclock){filter:blur(14px);pointer-events:none;user-
 .accin{position:absolute;opacity:0;width:1px;height:1px;pointer-events:none}
 .accmsg{min-height:18px;font-size:12.5px;color:var(--bad);font-weight:600;text-align:center}
 .accpad{display:grid;grid-template-columns:repeat(3,64px);gap:12px;margin-top:2px}
-.acck{height:58px;border-radius:50%;border:1px solid var(--line);background:var(--panel2,var(--panel));color:var(--ink);font:600 22px/1 var(--font,system-ui),system-ui,sans-serif;cursor:pointer;transition:background .12s,transform .08s,border-color .12s}
+.acck{width:64px;height:64px;aspect-ratio:1;border-radius:50%;border:1px solid var(--line);background:var(--panel2,var(--panel));color:var(--ink);font:600 22px/1 var(--font,system-ui),system-ui,sans-serif;cursor:pointer;transition:background .12s,transform .08s,border-color .12s}
 .acck:hover{border-color:var(--accent);background:var(--accentSoft)}
 .acck:active{transform:scale(.93)}
 .acck.fn{font-size:19px;color:var(--ink2);background:transparent;border-color:transparent}
@@ -14289,12 +14289,12 @@ function lock() {
   var ov = h('div', 'acclock'), box = h('div', 'accbox');
   ov.setAttribute('role', 'dialog'); ov.setAttribute('aria-modal', 'true'); ov.setAttribute('aria-label', 'Ingresar clave');
   box.innerHTML = '<div class="acclogo">' + LOCK + '</div><h2>EndoInforme</h2><p class="accsub">Ingresa tu clave de acceso</p>' +
-    '<div class="accdots" aria-live="polite"></div><input class="accin" type="password" inputmode="numeric" autocomplete="off" maxlength="' + MAX + '" aria-label="Clave numérica">' +
+    '<div class="accdots" aria-live="polite" aria-label="Clave numérica"></div>' +
     '<div class="accmsg" role="alert"></div><div class="accpad"></div>';
   ov.appendChild(box); document.body.appendChild(ov);
   document.documentElement.classList.add('acc-locked');
-  var inp = box.querySelector('.accin'), dots = box.querySelector('.accdots'), msg = box.querySelector('.accmsg'), pad = box.querySelector('.accpad'), val = '';
-  var draw = function () { var n = Math.max(MIN, val.length), s = ''; for (var i = 0; i < n; i++) s += '<i class="' + (i < val.length ? 'on' : '') + '"></i>'; dots.innerHTML = s; inp.value = val; };
+  var dots = box.querySelector('.accdots'), msg = box.querySelector('.accmsg'), pad = box.querySelector('.accpad'), val = '';
+  var draw = function () { var n = Math.max(MIN, val.length), s = ''; for (var i = 0; i < n; i++) s += '<i class="' + (i < val.length ? 'on' : '') + '"></i>'; dots.innerHTML = s; };
   var shake = function () { box.classList.remove('shake'); void box.offsetWidth; box.classList.add('shake'); };
   var tryIt = function () {
     if (Date.now() < waitUntil) { msg.textContent = 'Espera ' + Math.ceil((waitUntil - Date.now()) / 1000) + ' s para reintentar.'; return; }
@@ -14320,7 +14320,7 @@ function lock() {
   '1 2 3 4 5 6 7 8 9 del 0 ok'.split(' ').forEach(function (k) {
     var b = h('button', 'acck' + (k === 'del' || k === 'ok' ? ' fn' : ''), k === 'del' ? '⌫' : k === 'ok' ? '✓' : k);
     b.type = 'button'; b.setAttribute('aria-label', k === 'del' ? 'Borrar' : k === 'ok' ? 'Entrar' : k);
-    b.onclick = function () { press(k); try { inp.focus({ preventScroll: true }); } catch (e) { } };
+    b.onclick = function () { press(k); };
     pad.appendChild(b);
   });
   var trap = function (e) {
@@ -14334,7 +14334,8 @@ function lock() {
   };
   window.addEventListener('keydown', trap, true);
   draw();
-  try { inp.focus({ preventScroll: true }); } catch (e) { inp.focus(); }
+  // sin campo de texto: en celular no aparece el teclado del sistema; en PC se usa el teclado físico (captura arriba)
+  try { if (document.activeElement && document.activeElement.blur) document.activeElement.blur(); } catch (e) { }
 }
 
 // ---------- Ajustes: cambiar clave / bloquear ahora ----------
@@ -15719,7 +15720,7 @@ new MutationObserver(scanHome).observe(document.body, { childList: true });
 scanHome();
 
 })();}catch(e){console.error("Feature rapido.js",e);}
-window.ENDO_VERSION="202611270421";window.ENDO_WEB_URL="https://saluvel.github.io/EndoInforme/";</script>
+window.ENDO_VERSION="202611270424";window.ENDO_WEB_URL="https://saluvel.github.io/EndoInforme/";</script>
 <script>
 if ('serviceWorker' in navigator && location.protocol.indexOf('http') === 0) { navigator.serviceWorker.register('sw.js').catch(function(){}); }
 </script>
