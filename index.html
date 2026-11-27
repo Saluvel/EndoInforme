@@ -1099,19 +1099,29 @@ mark.rvmk.on,mark.rvmk:hover{background:#f8c867;box-shadow:0 0 0 2px #f8c867,0 0
 .amapbox.mapa .mmaps{display:flex;gap:4px;justify-content:center}
 .mfig{flex:1;display:flex;justify-content:center;min-width:0}
 .mmap{width:100%;max-width:122px;height:auto;overflow:visible;touch-action:manipulation;
-  --mWall:#b9575e;--mMuc:#e3918c;--mIn:#f6c4b6;--mSpec:#fff;--mSh:rgba(60,20,25,.16);--mk:#c2410c;--mkHi:#fb923c;--mHl:color-mix(in srgb,var(--accent) 62%,#fff)}
-:root[data-theme="dark"] .mmap{--mWall:#9c4a52;--mMuc:#cf7e7c;--mIn:#eaa898;--mSpec:#ffe9e3;--mSh:rgba(0,0,0,.45);--mk:#ea580c;--mkHi:#fdba74;--mHl:color-mix(in srgb,var(--accent) 70%,#fff)}
+  --mWall:#b04a53;--mMuc:#dc7e7b;--mIn:#f2b0a2;--mSpec:#fff;--mSh:rgba(60,20,25,.16);--mk:#c2410c;--mkHi:#fb923c;--mHl:color-mix(in srgb,var(--accent) 62%,#fff);--mArt:#b3202c;--mVen:#5b4a8c}
+:root[data-theme="dark"] .mmap{--mWall:#9c4a52;--mMuc:#cf7e7c;--mIn:#eaa898;--mSpec:#ffe9e3;--mSh:rgba(0,0,0,.45);--mk:#ea580c;--mkHi:#fdba74;--mHl:color-mix(in srgb,var(--accent) 70%,#fff);--mArt:#e2535c;--mVen:#9a88d6}
 .mmap .o-base path:not(.o-sto):not(.o-shf),.mmap .r-ov:not(.f),.mmap .r-hit{fill:none;stroke-linecap:round;stroke-linejoin:round}
 .mmap .o-sh{stroke:var(--mSh)}
 .mmap .o-shf{fill:var(--mSh)}
 .mmap .o-wall{stroke:var(--mWall)}
 .mmap .o-muc{stroke:var(--mMuc)}
 .mmap .o-in{stroke:var(--mIn);opacity:.75}
-.mmap .o-fold{stroke:var(--mWall);opacity:.42;stroke-linecap:butt!important}
+.mmap .o-sacc{stroke:var(--mWall)}
+.mmap .o-sacm{stroke:var(--mMuc)}
+.mmap .o-lon{stroke:var(--mWall);opacity:.28}
+.mmap .o-ten{stroke:var(--mIn);opacity:.85}
+.mmap .o-rug{fill:none;stroke:var(--mWall);stroke-width:.9;opacity:.3;stroke-linecap:round}
+.mmap .o-dark{fill:none;stroke:var(--mWall);opacity:.28;stroke-linecap:round}
+.mmap .o-glare.s{opacity:.18}
+.mmap .o-vs path{fill:none;stroke-linecap:round;stroke-linejoin:round}
+.mmap .o-vs .a{stroke:var(--mArt);stroke-width:.85}
+.mmap .o-vs .v{stroke:var(--mVen);stroke-width:.9;opacity:.75}
+.mmap .o-vs .b{stroke:var(--mArt);stroke-width:.45;opacity:.55}
+.mmap .o-fold{stroke:var(--mWall);opacity:.3;stroke-linecap:butt!important}
 .mmap .o-spec{stroke:var(--mSpec);opacity:.5}
 .mmap .o-base .o-sto{stroke:none}
 .mmap .o-base .o-stol{stroke:var(--mWall);stroke-width:1.3}
-.mmap .o-rug path{stroke:var(--mWall);stroke-width:.9;opacity:.32}
 .mmap .o-glare{fill:var(--mSpec);opacity:.38}
 .mmap .o-z{fill:none;stroke:#fff;stroke-width:.8;opacity:.7;stroke-linecap:round;stroke-linejoin:round}
 .mmap .o-pil{fill:var(--mWall);stroke:color-mix(in srgb,var(--mWall) 70%,#000);stroke-width:.6}
@@ -14876,35 +14886,45 @@ function count(regId) {
   var r = BYID[regId], ss = st().sections[r.sec]; if (!ss) return 0;
   return ss.findings.filter(function (fi) { return regionFor(r.sec, fi) === r; }).length;
 }
-// tubo con volumen: sombra, pared, mucosa, luz interior, pliegues y brillo
-function tube(g, fold) {
-  var d = g.d, w = g.w;
-  return '<path class="o-sh" d="' + d + '" stroke-width="' + (w + 2.6) + '" transform="translate(.7 1.6)"/>' +
-    '<path class="o-wall" d="' + d + '" stroke-width="' + (w + 2) + '"/>' +
-    '<path class="o-muc" d="' + d + '" stroke-width="' + w + '"/>' +
-    '<path class="o-in" d="' + d + '" stroke-width="' + (w * 0.46).toFixed(2) + '"/>' +
-    (fold ? '<path class="o-fold" d="' + d + '" stroke-width="' + (w + 2) + '" stroke-dasharray="' + fold + '"/>' : '') +
-    '<path class="o-spec" d="' + d + '" stroke-width="' + (w * 0.17).toFixed(2) + '" transform="translate(' + (-w * 0.2).toFixed(2) + ' ' + (-w * 0.08).toFixed(2) + ')"/>';
+// tubo con volumen: pared, mucosa, luz interior y brillo. o: {fold, sacc, ten, lon}
+function tube(g, o) {
+  var d = g.d, w = g.w; o = o || {};
+  var P = function (cls, sw, extra) { return '<path class="' + cls + '" d="' + d + '" stroke-width="' + (+sw).toFixed(2) + '"' + (extra || '') + '/>'; };
+  return (o.sacc ? P('o-wall', w + 0.6) + P('o-sacc', w + 3, ' stroke-dasharray="' + o.sacc + '"') + P('o-muc', w) + P('o-sacm', w + 0.9, ' stroke-dasharray="' + o.sacc + '"') : P('o-wall', w + 2) + P('o-muc', w)) +
+    P('o-in', w * 0.46) +
+    (o.fold ? P('o-fold', w + (o.sacc ? 3 : 2), ' stroke-dasharray="' + o.fold + '"' + (o.foff ? ' stroke-dashoffset="' + o.foff + '"' : '')) : '') +
+    (o.lon ? P('o-lon', 0.5, ' transform="translate(-2.2 0)"') + P('o-lon', 0.5) + P('o-lon', 0.5, ' transform="translate(2.2 0)"') : '') +
+    (o.ten ? P('o-ten', 0.8, ' transform="translate(' + (w * 0.18).toFixed(2) + ' ' + (-w * 0.06).toFixed(2) + ')"') : '') +
+    P('o-spec', w * 0.17, ' transform="translate(' + (-w * 0.2).toFixed(2) + ' ' + (-w * 0.08).toFixed(2) + ')"');
 }
 var NID = 0;
 function anatomy(kind, u) {
   var G = GEO, p = [];
   if (kind === 'eda') {
-    p.push('<path class="o-shf" d="' + G.sto.d + '" transform="translate(.9 2)"/>');
-    p.push(tube(G.eso, '0.5 2.6'));
+    p.push(tube(G.eso, { lon: 1 }));
     p.push('<path class="o-sto" d="' + G.sto.d + '" style="fill:url(#gs' + u + ')"/>');
+    p.push('<g clip-path="url(#cs' + u + ')"><path class="o-rug" d="M27 70 C22 86 26 104 37 117"/><path class="o-rug" d="M34 67 C29 85 34 104 47 120"/><path class="o-rug" d="M42 67 C38 84 42 101 56 112 C66 119 80 116 92 104"/><path class="o-rug" d="M50 69 C47 84 50 96 60 106 C70 113 82 110 94 101"/>' +
+      '<path class="o-dark" d="M61 63 C61.5 71 60 79 59 88 C58 96 60 102.5 68 103 C78 103.5 90 99 99 95.6" stroke-width="7"/>' +
+      '<ellipse class="o-glare" cx="35" cy="64" rx="7" ry="3.2" transform="rotate(-28 35 64)"/><ellipse class="o-glare s" cx="30" cy="86" rx="2.2" ry="9" transform="rotate(-8 30 86)"/></g>');
     p.push('<path class="o-stol" d="' + G.sto.d.replace(/\s*Z$/, '') + '"/>');
-    p.push('<g clip-path="url(#cs' + u + ')" class="o-rug"><path d="M27 70 C22 86 26 104 37 117"/><path d="M34 67 C29 85 34 104 47 120"/><path d="M42 67 C38 84 42 101 56 112 C66 119 80 116 92 104"/><path d="M50 69 C47 84 50 96 60 106 C70 113 82 110 94 101"/><ellipse class="o-glare" cx="35" cy="64" rx="7" ry="3.2" transform="rotate(-28 35 64)"/></g>');
+    // arcadas vasculares: gastroepiploicas (curvatura mayor) y gástricas (curvatura menor)
+    p.push('<g class="o-vs">' +
+      '<path class="v" d="M21.5 68 C15.5 82 16.5 98 21.6 108 C28.6 124.5 43 133 59 132.4 C76 131.6 90 121.6 97.6 108"/>' +
+      '<path class="a" d="M22.6 68.5 C16.8 82 17.8 98 22.8 107.6 C29.6 123.4 43.4 131.8 59 131.2 C75.6 130.4 89.2 120.8 96.6 107.4"/>' +
+      '<path class="a" d="M64 64 C64.2 73 62.4 81 61.8 88.5 C61.2 95 63.6 99.8 69 100 C78.6 100.4 89.4 96.8 98 93.4"/>' +
+      '<path class="b" d="M18.6 82 l3.6 .6 M18.4 92 l3.8 0 M20 102 l3.4 -.8 M25.4 114 l2.6 -2 M32.6 122.6 l2 -2.6 M41.6 128.6 l1.2 -3 M51.4 131.4 l.4 -3.2 M61.4 131.2 l-.2 -3.2 M71 129.2 l-.8 -3 M80.4 125.4 l-1.6 -2.8 M88.8 119.4 l-2.2 -2.4"/>' +
+      '<path class="b" d="M63.6 72 l-2.6 .2 M62.4 81 l-2.8 0 M61.8 90 l-2.8 .4 M64.6 98 l-1.6 2 M72.4 100.4 l-.4 2.6 M80.4 99.2 l.2 2.6 M88.4 96.8 l.6 2.4"/>' +
+      '</g>');
     p.push('<path class="o-z" d="M51.2 58.6 l1.5 -1.2 l1.5 1.2 l1.5 -1.2 l1.5 1.2 l1.5 -1.2"/>');
-    p.push(tube(G.duo, '0.5 2.1'));
+    p.push(tube(G.duo, { fold: '0.45 2.1' }));
     p.push(tube(G.bulb));
     p.push('<ellipse class="o-pil" cx="100" cy="100" rx="2.7" ry="5.4"/><ellipse class="o-pilh" cx="99.4" cy="98.4" rx=".8" ry="2.2"/>');
     p.push('<circle class="o-pap" cx="112.4" cy="119" r="1.3"/>');
   } else {
-    p.push(tube(G.ile, '0.4 2'));
+    p.push(tube(G.ile, { fold: '0.4 2' }));
     p.push(tube(G.app));
-    p.push(tube(G.cec));
-    p.push(tube(G.col, '1.1 4.6'));
+    p.push(tube(G.cec, { sacc: '0.01 6', fold: '0.9 5.1', foff: '-2.55', ten: 1 }));
+    p.push(tube(G.col, { sacc: '0.01 6', fold: '0.9 5.1', foff: '-2.55', ten: 1 }));
   }
   return p.join('');
 }
@@ -14922,12 +14942,17 @@ function svgFor(kind, big) {
   var p = ['<svg viewBox="' + vb + '" class="mmap' + (big ? ' big' : '') + '" role="group" aria-label="' + esc(label) + '">'];
   p.push('<defs><radialGradient id="gs' + u + '" cx=".36" cy=".3" r=".78"><stop offset="0" style="stop-color:var(--mIn)"/><stop offset=".55" style="stop-color:var(--mMuc)"/><stop offset="1" style="stop-color:var(--mWall)"/></radialGradient>' +
     '<radialGradient id="gk' + u + '" cx=".35" cy=".3" r=".8"><stop offset="0" style="stop-color:var(--mkHi)"/><stop offset="1" style="stop-color:var(--mk)"/></radialGradient>' +
+    '<filter id="v' + u + '" x="-12%" y="-8%" width="124%" height="122%" color-interpolation-filters="sRGB"><feGaussianBlur in="SourceAlpha" stdDeviation="1.5" result="b"/>' +
+    '<feSpecularLighting in="b" surfaceScale="2.4" specularConstant=".9" specularExponent="20" lighting-color="#fff" result="sp"><feDistantLight azimuth="225" elevation="50"/></feSpecularLighting><feComposite in="sp" in2="SourceAlpha" operator="in" result="sp2"/>' +
+    '<feDiffuseLighting in="b" surfaceScale="2.4" diffuseConstant="1.2" lighting-color="#fff" result="df"><feDistantLight azimuth="225" elevation="52"/></feDiffuseLighting><feComposite in="df" in2="SourceAlpha" operator="in" result="df2"/>' +
+    '<feBlend in="SourceGraphic" in2="df2" mode="multiply" result="sh"/><feComposite in="sh" in2="sp2" operator="arithmetic" k2="1" k3=".3" result="lit"/>' +
+    '<feDropShadow dx=".5" dy="1.6" stdDeviation="1.4" flood-color="#3c1418" flood-opacity=".25"/></filter>' +
     '<clipPath id="cs' + u + '"><path d="' + GEO.sto.d + '"/></clipPath>' +
     regs.filter(function (r) { return r.z; }).map(function (r) { return '<clipPath id="z' + r.id + u + '"><polygon points="' + r.z + '"/></clipPath>'; }).join('') + '</defs>');
   // EDA en espejo: el estómago mira hacia la izquierda (vista anatómica). Rótulos y marcadores se reflejan aparte.
   var FL = kind === 'eda', fx = function (x) { return FL ? +(130 - x).toFixed(2) : x; }, fa = function (a) { return !FL ? a : a === 'start' ? 'end' : a === 'end' ? 'start' : a; };
   var TF = FL ? ' transform="matrix(-1 0 0 1 130 0)"' : '';
-  p.push('<g class="o-base" aria-hidden="true"' + TF + '>' + anatomy(kind, u) + '</g>');
+  p.push('<g class="o-3d" filter="url(#v' + u + ')"><g class="o-base" aria-hidden="true"' + TF + '>' + anatomy(kind, u) + '</g></g>');
   regs.forEach(function (r) {
     if (!M.SEC[r.sec] || !st().sections[r.sec]) return;
     var k = count(r.id), nm = esc(r.name) + (k ? ', ' + k + (k === 1 ? ' hallazgo' : ' hallazgos') : '');
@@ -15694,7 +15719,7 @@ new MutationObserver(scanHome).observe(document.body, { childList: true });
 scanHome();
 
 })();}catch(e){console.error("Feature rapido.js",e);}
-window.ENDO_VERSION="202611270415";window.ENDO_WEB_URL="https://saluvel.github.io/EndoInforme/";</script>
+window.ENDO_VERSION="202611270421";window.ENDO_WEB_URL="https://saluvel.github.io/EndoInforme/";</script>
 <script>
 if ('serviceWorker' in navigator && location.protocol.indexOf('http') === 0) { navigator.serviceWorker.register('sw.js').catch(function(){}); }
 </script>
