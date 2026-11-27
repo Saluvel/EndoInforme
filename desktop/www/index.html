@@ -7920,19 +7920,16 @@ try{(function(){
   // ---------------- POSTQUIRÚRGICO ----------------
   EndoApp.finding({
     id: 'est_bypass', label: 'Bypass gástrico en Y de Roux', group: G_QX, where: ['estomago'],
-    keywords: 'bypass y de roux bariatrica reservorio pouch gastroyeyunal anastomosis asa aferente eferente alimentaria biliopancreatica candy cane pie de asa',
+    keywords: 'bypass y de roux bariatrica reservorio pouch gastroyeyunal anastomosis asa aferente eferente alimentaria biliopancreatica',
     fields: [
       { id: 'reservorio', label: 'Reservorio gástrico (largo)', type: 'num', unit: 'cm', min: 1, max: 20, step: 0.5, default: '', placeholder: 'cm', hint: 'Dato medido: vacío = no se escribe' },
       { id: 'res_asp', label: 'Tamaño del reservorio', type: 'chips', default: 'normal', options: [{ v: 'normal', label: 'Habitual' }, { v: 'dilatado', label: 'Dilatado' }] },
       { id: 'mucosa', label: 'Mucosa del reservorio', type: 'chips', default: 'normal', options: [{ v: 'normal', label: 'Normal' }, { v: 'eritematosa', label: 'Eritematosa' }, { v: 'erosionada', label: 'Erosiones' }] },
       { id: 'anast', label: 'Anastomosis gastroyeyunal (diámetro)', type: 'size', default: '' },
       { id: 'permeable', label: 'Anastomosis permeable (pasa el endoscopio)', type: 'bool', default: true },
-      { id: 'asa_ciega', label: 'Asa ciega (candy cane)', type: 'chips', default: 'normal', options: [
-        { v: 'normal', label: 'Corta, sin alteraciones' }, { v: 'larga', label: 'Elongada / dilatada', hint: 'Síndrome de candy cane: asa ciega larga que retiene alimento' }, { v: 'no', label: 'No evaluada' }] },
-      { id: 'asa_alim', label: 'Asa alimentaria (eferente)', type: 'chips', default: 'normal', options: [{ v: 'normal', label: 'Normal' }, { v: 'alterada', label: 'Con alteraciones (describir)' }, { v: 'no', label: 'No evaluada' }] },
-      { id: 'asa_alim_cm', label: 'Asa alimentaria explorada', type: 'num', unit: 'cm', min: 1, max: 150, default: '', placeholder: 'cm', show: function (v) { return v.asa_alim !== 'no'; } },
-      { id: 'pie', label: 'Se alcanza el pie de asa (yeyuno-yeyunoanastomosis)', type: 'bool', default: false, show: function (v) { return v.asa_alim !== 'no'; } },
-      { id: 'asa_bp', label: 'Asa biliopancreática (aferente)', type: 'chips', default: 'no', options: [{ v: 'no', label: 'No evaluada' }, { v: 'normal', label: 'Normal' }], show: function (v) { return !!v.pie; } },
+      { id: 'aferente', label: 'Asa aferente (biliopancreática)', type: 'chips', default: 'normal', options: [{ v: 'normal', label: 'Normal' }, { v: 'dilatada', label: 'Dilatada / con retención' }, { v: 'no', label: 'No evaluada' }] },
+      { id: 'eferente', label: 'Asa eferente (alimentaria)', type: 'chips', default: 'normal', options: [{ v: 'normal', label: 'Normal' }, { v: 'alterada', label: 'Con alteraciones (describir)' }, { v: 'no', label: 'No evaluada' }] },
+      { id: 'eferente_cm', label: 'Asa eferente explorada', type: 'num', unit: 'cm', min: 1, max: 150, default: '', placeholder: 'cm', show: function (v) { return v.eferente !== 'no'; } },
       { id: 'material', label: 'Material de sutura / grapas expuesto', type: 'bool', default: false },
       { id: 'fistula', label: 'Fístula gastrogástrica', type: 'bool', default: false },
       { id: 'restos', label: 'Restos alimentarios / bezoar en el reservorio', type: 'bool', default: false },
@@ -7943,11 +7940,11 @@ try{(function(){
       var mu = { normal: 'de mucosa de aspecto normal', eritematosa: 'con mucosa eritematosa', erosionada: 'con erosiones de la mucosa' }[v.mucosa] || '';
       var res = h.sent('Anatomía postquirúrgica de bypass gástrico en Y de Roux. Reservorio gástrico', h.has(v.reservorio) ? 'de aprox. ' + h.cm(v.reservorio) + ' de longitud,' : '', v.res_asp === 'dilatado' ? 'dilatado,' : 'de tamaño habitual,', mu);
       var an = h.sent('Anastomosis gastroyeyunal', v.permeable ? 'permeable' : 'estenótica', h.has(v.anast) ? ', de aprox. ' + h.mm(v.anast) + ' de diámetro' : '', v.permeable ? (ulc ? ', que permite el paso del endoscopio' : ', de bordes regulares, sin úlcera marginal, que permite el paso del endoscopio') : ', que no permite el paso del endoscopio');
-      var ac = v.asa_ciega === 'normal' ? 'Asa ciega (candy cane) corta, sin alteraciones.' : v.asa_ciega === 'larga' ? 'Asa ciega (candy cane) elongada y dilatada.' : '';
-      var al = '';
-      if (v.permeable && v.asa_alim !== 'no') al = h.sent('Se progresa por el asa alimentaria (eferente)', h.has(v.asa_alim_cm) ? 'por aprox. ' + h.cm(v.asa_alim_cm) + ',' : '', v.asa_alim === 'normal' ? 'de mucosa yeyunal de aspecto normal' : 'con las alteraciones que se describen', v.pie ? ', hasta el pie de asa (yeyuno-yeyunoanastomosis), de aspecto normal' : '');
-      var bp = v.pie && v.asa_bp === 'normal' ? 'Se accede al asa biliopancreática (aferente), de aspecto normal.' : (v.permeable ? 'No se evalúa el asa biliopancreática (aferente).' : '');
-      return h.join(res, an, ac, al, bp,
+      var af = !v.permeable ? '' : v.aferente === 'normal' ? 'Asa aferente (biliopancreática) de aspecto normal.' : v.aferente === 'dilatada' ? 'Asa aferente (biliopancreática) dilatada, con retención de contenido.' : 'No se evalúa el asa aferente (biliopancreática).';
+      var ef = '';
+      if (v.permeable && v.eferente !== 'no') ef = h.sent('Se progresa por el asa eferente (alimentaria)', h.has(v.eferente_cm) ? 'por aprox. ' + h.cm(v.eferente_cm) : '', v.eferente === 'normal' ? ', de mucosa yeyunal de aspecto normal' : ', con las alteraciones que se describen');
+      else if (v.permeable) ef = 'No se evalúa el asa eferente (alimentaria).';
+      return h.join(res, an, af, ef,
         v.material ? 'Se identifica material de sutura/grapas expuesto en la línea anastomótica.' : '',
         v.fistula ? 'Se identifica orificio fistuloso hacia el estómago excluido (fístula gastrogástrica).' : '',
         v.restos ? 'Restos alimentarios retenidos en el reservorio.' : '',
@@ -7957,7 +7954,7 @@ try{(function(){
       var x = [];
       x.push(v.permeable ? 'anastomosis gastroyeyunal permeable' + (h.has(v.anast) ? ' (' + h.mm(v.anast) + ')' : '') : 'estenosis de anastomosis gastroyeyunal' + (h.has(v.anast) ? ' (' + h.mm(v.anast) + ')' : ''));
       if (v.res_asp === 'dilatado') x.push('reservorio dilatado');
-      if (v.asa_ciega === 'larga') x.push('asa ciega elongada (posible síndrome de candy cane)');
+      if (v.aferente === 'dilatada') x.push('asa aferente (biliopancreática) dilatada');
       if (v.fistula) x.push('fístula gastrogástrica');
       if (v.material) x.push('material de sutura expuesto');
       return 'Bypass gástrico en Y de Roux: ' + x.join(', ');
@@ -20874,7 +20871,7 @@ document.addEventListener('endo:settings', function (e) { try { section(e.detail
 window.EndoRespaldo = { exportar: exportar, importar: importar, deshacer: deshacer, resumen: function () { return resumen(snapshotAll()); }, validar: function (x) { var v = validar(x); return v.error ? { error: v.error } : { ok: true, resumen: v.res }; } };
 
 })();}catch(e){console.error("Feature respaldo.js",e);}
-window.ENDO_VERSION="202611272119";window.ENDO_WEB_URL="";</script>
+window.ENDO_VERSION="202611272144";window.ENDO_WEB_URL="";</script>
 <script>
 if ('serviceWorker' in navigator && location.protocol.indexOf('http') === 0) { navigator.serviceWorker.register('sw.js').catch(function(){}); }
 </script>
