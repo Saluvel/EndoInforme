@@ -829,6 +829,24 @@ a.scl .sci{font-size:.85em;margin-left:3px;text-decoration:none;display:inline-b
 @media (pointer:coarse){.pal .ft{display:none}}
 .tour{position:fixed}.tourx{position:absolute;top:6px;right:8px;border:0;background:none;font-size:14px;color:var(--ink3);cursor:pointer;padding:4px 6px;border-radius:6px}.tourx:hover{background:var(--panel2)}
 .searchbtn>span:not(.kbd){min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+/* v1.0.6 · informe normal en 1 clic */
+.home .hq .hnorm{font:inherit;width:100%;display:flex;align-items:center;gap:8px;padding:8px 12px;margin-bottom:4px;border-radius:10px;border:1px solid color-mix(in srgb,var(--ok) 45%,var(--line2));background:var(--okSoft);color:var(--ok);font-weight:700;font-size:13px;cursor:pointer;text-align:left}
+.home .hq .hnorm small{margin-left:auto;font-weight:500;font-size:11px;color:var(--ink3)}
+.home .hq .hnorm:hover{border-color:var(--ok);box-shadow:0 0 0 3px color-mix(in srgb,var(--ok) 18%,transparent)}
+.hnck{display:inline-grid;place-items:center;width:18px;height:18px;border-radius:50%;background:var(--ok);color:var(--panel);font-size:11px;font-weight:800;flex:none}
+.rail .railnorm{display:flex;flex-direction:column;gap:4px;margin:2px 0 8px}
+.rail .railnorm .btn{justify-content:flex-start;gap:7px;font-size:12px;width:100%;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.rail .railnorm .hnck{width:15px;height:15px;font-size:9.5px}
+/* "Más opciones ▸" y "Más detalles": indicador de valores no default */
+details.params.masop{margin:6px 0 8px;background:transparent;border-style:dashed}
+details.params.masop>summary .lbl,details.params.more>summary .lbl{text-transform:none;letter-spacing:0;font-size:12px}
+details.params .mocnt{font-size:11px;font-weight:700;border-radius:20px;padding:0 8px;line-height:18px;background:var(--warnSoft);color:var(--warn)}
+details.params .mocnt:empty{display:none}
+details.params.has:not([open]){border-color:color-mix(in srgb,var(--warn) 45%,var(--line))}
+/* encabezado con menos ruido en notebooks */
+@media (max-width:1480px) and (min-width:1181px){.searchbtn .kbd{display:none}}
+details.params>summary .chev{display:inline-block}
+details.params[open]>summary .chev{transform:rotate(90deg)}
 
 /* Pantalla de bloqueo con clave numérica */
 .acclock{position:fixed;inset:0;z-index:20000;display:flex;align-items:center;justify-content:center;padding:16px;
@@ -896,11 +914,235 @@ html.acc-locked body>*:not(.acclock){filter:blur(14px);pointer-events:none;user-
 .updst.new{color:var(--ink)}
 .updst .btn{margin-left:6px}
 
+.atbtab{grid-column:1/-1;margin:12px 0 4px;border:1px solid var(--line2);border-radius:var(--r2);background:var(--panel2);overflow:hidden}
+.atbtab>summary{flex-wrap:wrap;cursor:pointer;list-style:none;display:flex;align-items:center;gap:8px;padding:10px 12px;font-weight:600;color:var(--accentInk);font-size:13.5px}
+.atbtab>summary::-webkit-details-marker{display:none}
+.atbtab>summary::after{content:'▸';margin-left:auto;transition:transform .2s var(--ease);color:var(--ink3)}
+.atbtab[open]>summary::after{transform:rotate(90deg)}
+.atbtab>summary small{font-weight:500;color:var(--ink3);font-size:11.5px}
+.atbtab>summary:hover{background:var(--accentSoft)}
+.atbtab[open]>summary{border-bottom:1px solid var(--line)}
+.atbt{padding:10px 12px 12px;font-size:12.5px;color:var(--ink)}
+.atbt table{width:100%;border-collapse:collapse;background:var(--panel)}
+.atbt th{background:var(--accentSoft);color:var(--accentInk);text-align:left;padding:7px 8px;font-size:12px;border:1px solid var(--line)}
+.atbt td{padding:7px 8px;border:1px solid var(--line);vertical-align:top;line-height:1.4}
+.atbt td.atbg{background:var(--panel3);font-weight:700;text-transform:uppercase;letter-spacing:.04em;font-size:11px;color:var(--ink2)}
+.atbt td.atbd{font-weight:600;width:22%}
+.atbrisk{margin-top:10px;display:grid;gap:4px}
+.atbrisk p,.atbfoot p{margin:0;line-height:1.4}
+.atbfoot{margin-top:10px;padding-top:8px;border-top:1px dashed var(--line2);color:var(--ink2);font-size:11.5px;display:grid;gap:4px}
+.atbrefs{margin:2px 0 0;padding-left:18px;display:grid;gap:3px}
+.atbov{position:fixed;inset:0;z-index:2000;background:rgba(10,18,26,.45);display:flex;align-items:flex-start;justify-content:center;padding:4vh 16px;overflow:auto}
+.atbbox{background:var(--panel);border-radius:var(--r);max-width:980px;width:100%;box-shadow:var(--shadow)}
+.atbhd{display:flex;align-items:center;justify-content:space-between;padding:12px 14px;border-bottom:1px solid var(--line)}
+.atbhd h2{margin:0;font-size:17px}
+@media (max-width:700px){
+  .atbt thead{display:none}
+  .atbt table,.atbt tbody,.atbt tr,.atbt td{display:block;width:100%!important}
+  .atbt tr{border:1px solid var(--line);border-radius:var(--r3);margin-bottom:8px;overflow:hidden}
+  .atbt td{border:0;border-top:1px solid var(--line)}
+  .atbt td.atbd{border-top:0;background:var(--panel2)}
+  .atbt td[data-h]::before{content:attr(data-h) ': ';font-weight:700;color:var(--accentInk)}
+}
+@media print{.atbtab,.atbov{display:none!important}}
+
+/* ===== calidad.css — Panel de calidad por endoscopista (features/calidad.js) ===== */
+.calov{position:fixed;inset:0;z-index:9000;overflow:auto;overscroll-behavior:contain;display:flex;align-items:flex-start;justify-content:center;
+  padding:clamp(12px,4vh,44px) 16px calc(28px + env(safe-area-inset-bottom,0px));background:color-mix(in srgb,#0a1622 46%,transparent);
+  -webkit-backdrop-filter:blur(6px);backdrop-filter:blur(6px);animation:calFade .18s ease}
+.calov.out{opacity:0;transition:opacity .15s}
+.calbox{width:min(1080px,100%);background:var(--bg);color:var(--ink);border:1px solid var(--line);border-radius:20px;box-shadow:var(--shadowPop);
+  padding:20px 22px 18px;display:flex;flex-direction:column;gap:14px;animation:calPop .24s var(--ease)}
+@keyframes calFade{from{opacity:0}to{opacity:1}}
+@keyframes calPop{from{opacity:0;transform:translateY(10px) scale(.985)}to{opacity:1;transform:none}}
+@keyframes calUp{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
+@keyframes calGrow{from{transform:scaleY(0)}to{transform:scaleY(1)}}
+
+/* encabezado */
+.calhd{display:flex;align-items:center;gap:12px}
+.calic{width:44px;height:44px;flex:none;border-radius:13px;display:grid;place-items:center;color:var(--onAccent);
+  background:linear-gradient(140deg,var(--accent),color-mix(in srgb,var(--accent) 60%,#3b4fa0));box-shadow:0 6px 16px color-mix(in srgb,var(--accent) 30%,transparent)}
+.calht{flex:1;min-width:0}
+.calht h2{margin:0;font-size:20px;line-height:1.2;letter-spacing:-.01em}
+.calht p{margin:2px 0 0;color:var(--ink3);font-size:12.5px}
+.calx{font-size:16px;width:36px;height:36px;padding:0;border-radius:10px;flex:none}
+
+/* filtros */
+.calfb{display:flex;flex-wrap:wrap;align-items:flex-end;gap:10px;padding:10px 12px;background:var(--panel);border:1px solid var(--line);border-radius:14px}
+.calsel{display:flex;flex-direction:column;gap:3px;min-width:0;flex:0 1 280px}
+.calsel span{font-size:11.5px;font-weight:650;color:var(--ink3);text-transform:uppercase;letter-spacing:.04em}
+.calsel select{font-size:13.5px;padding:7px 10px;border-radius:9px;width:100%;min-width:0}
+.calseg{display:inline-flex;padding:3px;border-radius:10px;background:var(--panel3);border:1px solid var(--line)}
+.calseg button{border:0;background:none;padding:6px 12px;border-radius:8px;font-size:13px;font-weight:600;color:var(--ink2)}
+.calseg button:hover{color:var(--ink)}
+.calseg button.on{background:var(--panel);color:var(--accentInk);box-shadow:0 1px 2px rgba(0,0,0,.08),0 0 0 1px var(--line)}
+.calsp{flex:1}
+.calfb .btn svg{flex:none}
+.calfb .btn[disabled]{opacity:.5;cursor:default}
+.calpr{display:none}
+
+/* resumen */
+.calsum{display:flex;align-items:center;gap:16px;padding:14px 18px;border-radius:16px;border:1px solid var(--line);
+  background:linear-gradient(120deg,var(--panel) 40%,color-mix(in srgb,var(--accentSoft) 70%,var(--panel)));animation:calUp .3s var(--ease) both}
+.calring{position:relative;width:64px;height:64px;flex:none;--c:var(--ink3)}
+.calring.ok{--c:var(--ok)}.calring.warn{--c:var(--warn)}.calring.bad{--c:var(--bad)}
+.calring svg{width:64px;height:64px;transform:rotate(-90deg)}
+.calring circle{fill:none;stroke-width:6}
+.calring .trk{stroke:var(--line)}
+.calring .val{stroke:var(--c);stroke-linecap:round;transition:stroke-dashoffset .8s var(--ease)}
+.calring b{position:absolute;inset:0;display:grid;place-items:center;font-size:20px;font-weight:750;color:var(--ink);font-variant-numeric:tabular-nums}
+.calring b small{font-size:12px;font-weight:600;color:var(--ink3)}
+.calring b{display:flex;align-items:center;justify-content:center}
+.calsumt{display:flex;flex-direction:column;gap:2px;min-width:0}
+.calsumt b{font-size:16px}
+.calsumt span{font-size:13.5px;color:var(--ink2)}
+.calsumt small{font-size:12px;color:var(--ink3)}
+
+/* tarjetas */
+.calgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:12px}
+.calcard{position:relative;background:var(--panel);border:1px solid var(--line);border-radius:16px;padding:14px 16px 13px;box-shadow:var(--shadow);overflow:hidden}
+.calcard.kpi{display:flex;flex-direction:column;gap:4px;--c:var(--ink3);--cs:var(--panel3);animation:calUp .35s var(--ease) both;animation-delay:calc(var(--i,0) * 45ms)}
+.calcard.kpi::before{content:"";position:absolute;left:0;top:0;bottom:0;width:4px;background:var(--c);opacity:.9}
+.calcard.lv-ok{--c:var(--ok);--cs:var(--okSoft)}
+.calcard.lv-warn{--c:var(--warn);--cs:var(--warnSoft)}
+.calcard.lv-bad{--c:var(--bad);--cs:var(--badSoft)}
+.calcard.lv-info{--c:var(--accent);--cs:var(--accentSoft)}
+.calcard.lv-na{--c:var(--line2)}
+.calk{display:flex;align-items:center;gap:7px;min-width:0}
+.calk b{font-size:13.5px;font-weight:700;color:var(--ink);min-width:0}
+.caldot{width:9px;height:9px;border-radius:50%;flex:none;background:var(--c);box-shadow:0 0 0 3px var(--cs)}
+.calpill{margin-left:auto;flex:none;font-size:11px;font-weight:700;padding:2px 8px;border-radius:999px;color:var(--c);background:var(--cs);white-space:nowrap}
+.lv-ok .calpill{color:var(--ok)}
+.lv-na .calpill{color:var(--ink3);background:var(--panel3)}
+.caltag{font-size:10.5px;font-weight:700;letter-spacing:.03em;text-transform:uppercase;padding:1px 6px;border-radius:5px;color:var(--ok);border:1px solid color-mix(in srgb,var(--ok) 40%,transparent)}
+.calsub{font-size:11.5px;color:var(--ink3);line-height:1.35}
+.calv{font-size:40px;line-height:1.05;font-weight:750;letter-spacing:-.02em;color:var(--ink);font-variant-numeric:tabular-nums;margin:6px 0 2px}
+.lv-ok .calv,.lv-warn .calv,.lv-bad .calv{color:color-mix(in srgb,var(--c) 75%,var(--ink))}
+.calv.na{font-size:22px;font-weight:650;color:var(--ink3);margin:14px 0 8px}
+.calbar{position:relative;height:8px;border-radius:99px;background:var(--panel3);margin:4px 0 4px;overflow:visible}
+.calbar i{position:absolute;left:0;top:0;bottom:0;width:var(--w);border-radius:99px;background:var(--c);transform-origin:left;animation:calBar .8s var(--ease) both;animation-delay:calc(var(--i,0) * 45ms + 120ms)}
+@keyframes calBar{from{transform:scaleX(0)}to{transform:scaleX(1)}}
+.calbar em{position:absolute;top:-4px;bottom:-4px;width:2px;margin-left:-1px;border-radius:2px;background:var(--ink)}
+.calbar em.id{background:none;border-left:2px dotted var(--ink3);width:0}
+.calgoal{font-size:12.5px;font-weight:650;color:var(--ink2)}
+.caln{font-size:12px;color:var(--ink3);line-height:1.35}
+.calsrc{margin-top:auto;padding-top:6px;font-size:10.5px;color:var(--ink3);letter-spacing:.02em;text-transform:uppercase}
+
+/* gráfico */
+.calchart{padding:14px 16px 8px;animation:calUp .4s var(--ease) both;animation-delay:.3s}
+.calch{display:flex;align-items:center;flex-wrap:wrap;gap:6px 14px;margin-bottom:4px}
+.calch b{font-size:13.5px}
+.calleg{display:inline-flex;align-items:center;gap:6px;font-size:12px;color:var(--ink3);margin-left:auto}
+.calleg i{display:inline-block;width:10px;height:10px;border-radius:3px;margin-left:6px}
+.calleg i.c{background:var(--accent)}.calleg i.e{background:color-mix(in srgb,var(--accent) 35%,var(--panel3))}
+.calsvgw{width:100%;overflow:hidden}
+.calsvg{display:block;width:100%;height:auto}
+.calsvg .gl{stroke:var(--line);stroke-width:1}
+.calsvg .ax{fill:var(--ink3);font-size:10.5px;font-family:var(--font)}
+.calsvg .vl{fill:var(--ink2);font-size:10.5px;font-weight:700;font-family:var(--font)}
+.calsvg rect.c{fill:var(--accent)}
+.calsvg rect.e{fill:color-mix(in srgb,var(--accent) 35%,var(--panel3))}
+.calsvg .mb{transform-box:fill-box}
+.calsvg .mb rect{transform-box:fill-box;transform-origin:bottom;animation:calGrow .6s var(--ease) both;animation-delay:calc(var(--i,0) * 25ms + 250ms)}
+.calsvg .mb.out{opacity:.32}
+
+/* notas */
+.calnote{font-size:12px;color:var(--ink3);line-height:1.5;padding:0 4px}
+.calnote p{margin:0 0 6px}
+.calnote b{color:var(--ink2)}
+.calref{font-size:11px}
+
+/* estado vacío */
+.calempty{display:flex;flex-direction:column;align-items:center;text-align:center;gap:8px;padding:34px 18px 26px;background:var(--panel);border:1px dashed var(--line2);border-radius:16px;animation:calUp .3s var(--ease) both}
+.calempty svg{width:132px;height:auto;margin-bottom:4px}
+.calempty svg .b{fill:var(--line2)}.calempty svg .s{fill:var(--accentSoft2)}.calempty svg .a{fill:var(--accent)}
+.calempty h3{margin:0;font-size:18px}
+.calempty p{margin:0;max-width:520px;color:var(--ink2);font-size:13.5px;line-height:1.5}
+.calerow{display:flex;flex-wrap:wrap;justify-content:center;gap:8px;margin-top:10px}
+
+/* entradas: Ajustes e inicio */
+.modal .calset{display:flex;align-items:center;gap:12px;margin:14px 0 4px;padding:12px 14px;border-radius:12px;border:1px solid color-mix(in srgb,var(--accent) 30%,var(--line));
+  background:linear-gradient(120deg,var(--accentSoft),var(--panel2))}
+.calset .calsi{width:36px;height:36px;flex:none;border-radius:10px;display:grid;place-items:center;color:var(--onAccent);background:var(--accent)}
+.calset .calst{flex:1;min-width:0;display:flex;flex-direction:column}
+.calset .calst b{font-size:14px}
+.calset .calst small{font-size:12px;color:var(--ink3);line-height:1.35}
+.home .calhome{display:flex;align-items:center;gap:10px;margin:14px auto 0;padding:10px 16px;border-radius:12px;border:1px solid var(--line);background:var(--panel);color:var(--ink);font-size:13.5px;font-weight:650;box-shadow:var(--shadow);transition:border-color .15s,background .15s}
+.home .calhome svg{color:var(--accent)}
+.home .calhome small{font-weight:500;color:var(--ink3);font-size:12px}
+.home .calhome:hover{border-color:var(--accent);background:var(--accentSoft)}
+
+/* teléfono */
+@media (max-width:640px){
+  .calov{padding:0;align-items:stretch}
+  .calbox{border-radius:0;border:0;min-height:100%;padding:calc(14px + env(safe-area-inset-top,0px)) 16px calc(20px + env(safe-area-inset-bottom,0px));gap:12px}
+  .calht h2{font-size:18px}
+  .calic{width:38px;height:38px;border-radius:11px}
+  .calsel{flex:1 1 100%}
+  .calseg{flex:1 1 100%}.calseg button{flex:1}
+  .calsp{display:none}
+  .calfb .btn{flex:1}
+  .calgrid{grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
+  .calcard{padding:12px 12px 11px;border-radius:14px}
+  .calv{font-size:30px}
+  .calpill{display:none}
+  .calk b{font-size:12.5px}
+  .calsum{padding:12px 14px;gap:12px}
+  .calsvg .ax,.calsvg .vl{font-size:13px}
+}
+@media (max-width:370px){.calgrid{grid-template-columns:minmax(0,1fr)}.calpill{display:inline}}
+@media (prefers-reduced-motion:reduce){.calbox,.calov,.calcard,.calsum,.calbar i,.calsvg .mb rect,.calempty{animation:none!important}}
+
+/* impresión: solo el panel, en una hoja */
+@media print{
+  html.calprint body>*:not(.calov){display:none!important}
+  html.calprint body{background:#fff!important}
+  html.calprint .calov{position:static;display:block!important;padding:0;background:none;-webkit-backdrop-filter:none;backdrop-filter:none;overflow:visible}
+  html.calprint .calbox{width:auto;border:0;box-shadow:none;padding:0;background:#fff;color:#000;gap:10pt;animation:none}
+  html.calprint .calhd,html.calprint .calfb,html.calprint .calempty .calerow{display:none!important}
+  html.calprint .calpr{display:flex;flex-direction:column;gap:2pt;padding-bottom:6pt;border-bottom:1.25pt solid #0b5f69}
+  html.calprint .calpr b{font-size:15pt}
+  html.calprint .calpr span{font-size:9pt;color:#444}
+  html.calprint *{animation:none!important;transition:none!important;print-color-adjust:exact;-webkit-print-color-adjust:exact}
+  html.calprint .calsum{background:#fff;border:.75pt solid #ccd;break-inside:avoid}
+  html.calprint .calgrid{grid-template-columns:repeat(3,minmax(0,1fr));gap:8pt}
+  html.calprint .calcard{box-shadow:none;border:.75pt solid #ccd;break-inside:avoid;background:#fff}
+  html.calprint .calv{font-size:24pt}
+  html.calprint .calpill{display:inline}
+  html.calprint .calchart{break-inside:avoid}
+  html.calprint .calnote{color:#333}
+  /* página con nombre: sin el encabezado del informe (paciente · examen) que core.js pone en @page @top-left desde la hoja 2 */
+  html.calprint body,html.calprint .calov{page:calpanel}
+}
+@page calpanel{@top-left{content:none!important}}
+@media print{
+  :root.calprint,:root.calprint[data-theme="dark"]{--bg:#fff;--panel:#fff;--panel2:#f6f8fa;--panel3:#eef2f5;--ink:#13202c;--ink2:#45566a;--ink3:#5e6e81;--line:#d5dde5;--line2:#cbd4dd;
+    --accent:#0d7480;--accentSoft:#e5f2f3;--accentSoft2:#cfe8ea;--accentInk:#0a5a62;--ok:#237a4e;--okSoft:#e6f4ec;--warn:#9a5413;--warnSoft:#fcf0e2;--bad:#b4303f;--badSoft:#fdecef;color-scheme:light}
+}
+
 .credh{margin:14px auto 0;text-align:center;font-size:12px;line-height:1.55;color:var(--muted,#64748b);max-width:720px}
 .credh b{color:var(--ink,#0f172a);font-weight:600}
 .creds{display:flex;flex-direction:column;gap:4px;margin:16px 0 4px;padding:12px 14px;border:1px solid var(--line);border-radius:12px;font-size:13px;color:var(--muted,#64748b);line-height:1.5}
 .creds>b{color:var(--ink,#0f172a)}
 @media print{.credh,.creds{display:none!important}}
+
+/* Dictado por voz en campos de texto libre */
+.dk-w{position:relative;display:block;width:100%}
+.dk-w>input[type=text]{width:100%;padding-right:36px}
+.dk-w.dk-ta>textarea{padding-right:36px}
+.dk-mic{position:absolute;right:5px;top:50%;transform:translateY(-50%);display:grid;place-items:center;width:26px;height:26px;padding:0;border-radius:50%;border:1px solid transparent;background:transparent;color:var(--ink3);cursor:pointer;opacity:.75;transition:background .15s,color .15s,border-color .15s,opacity .15s}
+.dk-w.dk-ta>.dk-mic{top:5px;transform:none}
+.dk-mic.dk-in{position:static;transform:none;flex:none}
+.dk-w:hover>.dk-mic,.dk-w:focus-within>.dk-mic,.dk-mic:focus-visible{opacity:1}
+.dk-mic:hover{border-color:var(--accent);color:var(--accentInk);background:var(--accentSoft);opacity:1}
+.dk-mic.on{opacity:1;background:var(--bad);border-color:var(--bad);color:#fff;animation:dkPulse 1.3s ease-in-out infinite}
+@keyframes dkPulse{0%,100%{box-shadow:0 0 0 0 color-mix(in srgb,var(--bad) 45%,transparent)}50%{box-shadow:0 0 0 6px transparent}}
+@media (prefers-reduced-motion:reduce){.dk-mic.on{animation:none}}
+@media (pointer:coarse){.dk-mic{width:34px;height:34px;opacity:1}.dk-w.dk-ta>.dk-mic{top:1px}.dk-w>input[type=text],.dk-w.dk-ta>textarea{padding-right:42px}}
+.dk-w.dk-off>input[type=text],.dk-w.dk-off>textarea{padding-right:revert-layer}
+.dk-na{display:flex;align-items:center;gap:7px;font-size:12px;color:var(--ink3);background:var(--panel2);border:1px dashed var(--line2);border-radius:8px;padding:6px 10px;margin:0 0 12px}
+.dk-na svg{flex:none;opacity:.7}
+@media print{.dk-mic{display:none!important}}
 
 /* ===== fotos.css — Fotos del examen: botón, galería, vista grande, etiquetas, Ajustes y sección IMÁGENES del informe ===== */
 /* botón en la barra superior */
@@ -5927,6 +6169,12 @@ try{(function(){
         { v: '2', label: 'Cada 2 cm', hint: 'Vigilancia sin displasia conocida' },
         { v: '1', label: 'Cada 1 cm', hint: 'Displasia conocida o sospechada' }],
         show: function (v) { return v.biopsias === 'seattle'; } },
+      // solo para el intervalo de vigilancia al pie (no se redacta en el hallazgo)
+      { id: 'histo', label: 'Histología previa conocida', type: 'chips', default: '', hint: 'Solo orienta el intervalo de vigilancia en las recomendaciones (ESGE 2023). Vacío = histología pendiente', options: [
+        { v: 'sin', label: 'Sin displasia', hint: 'Metaplasia intestinal sin displasia confirmada' },
+        { v: 'indef', label: 'Indefinido', hint: 'Indefinido para displasia' },
+        { v: 'dbg', label: 'Displasia bajo grado' },
+        { v: 'dag', label: 'Displasia alto grado' }] },
     ],
     text: function (v, h, ctx) {
       var c = parseFloat(v.c), m = parseFloat(v.m);
@@ -6878,6 +7126,14 @@ try{(function(){
       { id: 'eg_inc', pin: true, label: 'EGGIM · incisura', type: 'chips', options: EG_OPTS, default: '0', show: function (v) { return !!v.eggim_on; } },
       { id: 'eg_cme', pin: true, label: 'EGGIM · cuerpo curvatura menor', type: 'chips', options: EG_OPTS, default: '0', show: function (v) { return !!v.eggim_on; } },
       { id: 'eg_cma', pin: true, label: 'EGGIM · cuerpo curvatura mayor', type: 'chips', options: EG_OPTS, default: '0', show: function (v) { return !!v.eggim_on; } },
+      // solo para la vigilancia al pie (MAPS II 2019 / AGA 2020); no se redacta en el cuerpo del informe
+      { id: 'gim_riesgo', label: 'Metaplasia intestinal: histología previa / riesgo', type: 'multi', default: [], pin: true, hint: 'Solo orienta el intervalo de vigilancia en las recomendaciones (MAPS II 2019 / AGA 2020)', options: [
+        { v: 'olgim34', label: 'OLGIM III-IV', hint: 'Estadio OLGIM (u OLGA) III-IV en biopsias previas' },
+        { v: 'olgim12', label: 'OLGIM I-II', hint: 'Estadio OLGIM I-II en biopsias previas' },
+        { v: 'extensa', label: 'MI extensa', hint: 'Metaplasia intestinal en antro y cuerpo' },
+        { v: 'limitada', label: 'MI limitada', hint: 'Metaplasia intestinal limitada al antro o incisura' },
+        { v: 'incompleta', label: 'MI incompleta', hint: 'Subtipo incompleto (colónico) en la histología' },
+        { v: 'fam', label: 'Familiar con cáncer gástrico', hint: 'Antecedente de cáncer gástrico en familiar de primer grado' }] },
       { id: 'kyoto_on', label: 'Calcular puntaje de Kyoto', type: 'bool', default: false, pin: true, hint: 'Clasificación de Kyoto de gastritis: atrofia 0-2, metaplasia intestinal 0-2, hipertrofia de pliegues 0-1, nodularidad 0-1, enrojecimiento difuso 0-2 (total 0-8). Componente sin marcar = automático desde Kimura, EGGIM, pliegues y patrón nodular' },
       { id: 'ky_atr', label: 'Kyoto · atrofia', type: 'chips', default: '', pin: true, show: function (v) { return !!v.kyoto_on; }, hint: 'Sin marcar = según Kimura (C-0/C-1 → 0, C-2/C-3 → 1, O-1 a O-3 → 2)', options: [
         { v: '0', label: '0', hint: 'Sin atrofia o C-1' }, { v: '1', label: '1', hint: 'C-2 o C-3' }, { v: '2', label: '2', hint: 'O-1 a O-3' }] },
@@ -10815,7 +11071,8 @@ try{(function(){
   var ALTA_EDA = { ulcera_ar: 1, varices_lig: 1, ibp: 1, hp: 1, gep: 1 };
   function curExam() { try { var st = typeof EndoUI !== 'undefined' && EndoUI.state && EndoUI.state(); return (st && st.exam) || ''; } catch (e) { return ''; } }
   var CONTROL = [
-    { v: 'auto', label: 'Según hallazgos', hint: 'Se redacta automáticamente según los hallazgos (tamizaje normal, pólipos, preparación inadecuada, examen incompleto, EII, neoplasia)' },
+    { v: 'auto', label: 'Sugerido', hint: 'Redactado según hallazgos y guías (ESGE, USMSTF, MAPS II)' },
+    { v: 'editar', label: 'Editar', hint: 'Escribir el intervalo a mano (reemplaza el sugerido)' },
     '3 meses', '6 meses', '1 año', '3 años', '5 años', '10 años'];
 
   // ---- análisis del informe para las indicaciones ----
@@ -10850,9 +11107,9 @@ try{(function(){
       else if (f.fid === 'col_polipo') {
         if (v.reseccion === 'no') { o.unresected = true; if (deep(v)) o.deep = true; } else if (has(v.reseccion)) o.resected = true;
         if (v.reseccion !== 'no' && v.bloque === 'fragmentada' && (Number(v.size) || 0) >= 20) o.piecemeal = true;
-        if (v.reseccion !== 'no' && has(v.reseccion)) o.les.push({ n: Math.max(1, Number(v.n) || 1), size: Number(v.size) || 0, ssl: !!v.ssl, hp: (v.nice === '1' || v.jnet === '1') && !v.ssl, hgd: hgd(v) });
+        if (v.reseccion !== 'no' && has(v.reseccion)) o.les.push({ n: Math.max(1, Number(v.n) || 1), size: Number(v.size) || 0, ssl: !!v.ssl, hp: (v.nice === '1' || v.jnet === '1') && !v.ssl, hgd: hgd(v), loc: v.loc || '' });
       } else if (f.fid === 'col_polipos_mult') {
-        if (v.reseccion === 'no') o.unresected = true; else { o.resected = true; o.les.push({ n: Math.max(2, Number(v.n) || 2), size: Number(v.smax) || 0, ssl: false, hp: v.nice === '1', hgd: false }); }
+        if (v.reseccion === 'no') o.unresected = true; else { o.resected = true; o.les.push({ n: Math.max(2, Number(v.n) || 2), size: Number(v.smax) || 0, ssl: false, hp: v.nice === '1', hgd: false, loc: arr(v.locs).join(' ') }); }
       } else if (f.fid === 'col_poliposis') { o.many = true; if (v.manejo !== 'sin intervención') o.resected = true; }
       else if (f.fid === 'col_lst') {
         if (v.manejo === 'no' || !has(v.manejo)) { o.unresected = true; if (deep(v)) o.deep = true; } else o.resected = true;
@@ -10873,11 +11130,14 @@ try{(function(){
   }
   function colControl(ci) {
     if (ci.neo || ci.deep) return 'Evaluación por equipo de coloproctología con resultado de biopsias y estudio de etapificación.';
-    if (ci.prepBad) return 'Repetir colonoscopía con preparación intensificada, idealmente en un plazo no mayor a 1 año' + (ci.resected ? '; el intervalo posterior se definirá según el resultado histológico.' : '.');
-    if (ci.incomplete) return ci.stenosis ? 'Completar estudio del colon proximal con colonografía por TC.' : 'Completar estudio del colon con colonografía por TC o nueva colonoscopía.';
+    // lo que no debe perderse cuando la preparación inadecuada o el examen incompleto definen el control
+    var tail = (ci.unresected ? ' Derivación para resección endoscópica de la lesión no resecada, según lo descrito.' : '') + (ci.many ? ' Derivación a asesoría genética (más de 10 pólipos o poliposis; USMSTF 2020 / ESGE 2020).' : '');
+    if (ci.prepBad && ci.piecemeal) return 'Repetir colonoscopía con preparación intensificada en 6 meses, junto con el control del sitio de resección fragmentada (piecemeal) ≥ 20 mm (ESGE 2020: 3 a 6 meses; USMSTF 2020: 6 meses); el intervalo posterior se definirá según el resultado histológico.' + tail;
+    if (ci.prepBad) return 'Repetir colonoscopía con preparación intensificada, idealmente en un plazo no mayor a 1 año' + (ci.resected ? '; el intervalo posterior se definirá según el resultado histológico.' : '.') + tail;
+    if (ci.incomplete) return (ci.stenosis ? 'Completar estudio del colon proximal con colonografía por TC.' : 'Completar estudio del colon con colonografía por TC o nueva colonoscopía.') + (ci.piecemeal ? ' Control endoscópico del sitio de resección fragmentada (piecemeal) ≥ 20 mm en 6 meses (ESGE 2020 / USMSTF 2020).' : '') + tail;
     if (ci.unresected) return 'Derivación para resección endoscópica de la lesión no resecada, según lo descrito.';
-    if (ci.piecemeal) return 'Control endoscópico del sitio de resección en 6 meses (resección fragmentada ≥ 20 mm; USMSTF 2020 / ESGE 2020); el intervalo posterior se definirá según histología.';
-    if (ci.many) return 'Intervalo provisorio sugerido (ajustar según histología): colonoscopía en 1 año y derivación a evaluación genética (más de 10 pólipos o poliposis; USMSTF 2020).';
+    if (ci.piecemeal) return 'Control endoscópico del sitio de resección en 6 meses por resección fragmentada (piecemeal) ≥ 20 mm (ESGE 2020: 3 a 6 meses; USMSTF 2020: 6 meses); si no hay recurrencia, nueva colonoscopía al año del control (ESGE 2020 / USMSTF 2020). Intervalo posterior según histología pendiente.';
+    if (ci.many) return 'Intervalo provisorio, según histología pendiente: colonoscopía en 1 año y derivación a asesoría genética (más de 10 pólipos o poliposis; USMSTF 2020 / ESGE 2020). Se ajustará con el resultado de la biopsia.';
     if (ci.resected && ci.les.length) return colInterval(ci);
     if (ci.scar === 'con') return 'Control endoscópico del sitio de resección en 6 meses (recurrencia tratada en cicatriz), ajustar según histología.';
     if (ci.scar === 'sin' && !ci.resected && !ci.eii) return 'Próxima colonoscopía en 1 año (cicatriz de resección previa sin recurrencia; USMSTF 2020), ajustar según histología de las biopsias de la cicatriz.';
@@ -10890,27 +11150,39 @@ try{(function(){
     return 'Control con médico tratante.';
   }
 
-  // Intervalo provisorio post-polipectomía (USMSTF 2020 / ESGE 2020) asumiendo histología probable por aspecto endoscópico
+  // Intervalo provisorio post-polipectomía (ESGE 2020 / USMSTF 2020) asumiendo la histología probable por el aspecto
+  // endoscópico (NICE/JNET 1 sin SSL = hiperplásico; resto = adenoma o lesión serrada). Siempre provisorio: la
+  // histología está pendiente al informar, y el texto lo dice.
+  var RECTOSIG = /recto|sigm/i;
   function colInterval(ci) {
     var neo = ci.les.filter(function (l) { return !l.hp; }), hp = ci.les.filter(function (l) { return l.hp; });
     var n = neo.reduce(function (a, l) { return a + l.n; }, 0);
     var big = neo.some(function (l) { return l.size >= 10; }), hgd = neo.some(function (l) { return l.hgd; });
     var sslBig = neo.some(function (l) { return l.ssl && l.size >= 10; }), ssl = neo.some(function (l) { return l.ssl; });
+    var sslHgd = neo.some(function (l) { return l.ssl && l.hgd; });
+    var nS = neo.reduce(function (a, l) { return a + (l.ssl ? l.n : 0); }, 0), nA = n - nS;
     var hpBig = hp.some(function (l) { return l.size >= 10; });
-    var pre = 'Intervalo provisorio sugerido para la próxima colonoscopía (ajustar según histología): ', post = '.';
-    if (n > 10) return pre + '1 año y evaluación genética (más de 10 adenomas; USMSTF 2020)' + post;
+    var pre = 'Intervalo provisorio, según histología pendiente: ';
+    var adj = ' Se ajustará con el resultado de la biopsia.';
+    var pl = function (k, s1, s2) { return k === 1 ? '1 ' + s1 : k + ' ' + s2; };
+    // composición: "2 adenomas", "1 lesión serrada sésil", "1 adenoma y 1 lesión serrada sésil"
+    var mix = [nA ? pl(nA, 'adenoma', 'adenomas') : '', nS ? pl(nS, 'lesión serrada sésil', 'lesiones serradas sésiles') : ''].filter(has).join(' y ');
+    if (n > 10) return pre + 'colonoscopía en 1 año y derivación a asesoría genética, si se confirman más de 10 adenomas (USMSTF 2020: > 10 adenomas, 1 año; ESGE 2020: ≥ 10 adenomas, asesoría genética).' + adj;
+    if (n === 10) return pre + 'colonoscopía en 3 años y derivación a asesoría genética, si se confirman 10 adenomas (ESGE 2020: ≥ 10 adenomas, asesoría genética; USMSTF 2020: 5 a 10 adenomas, 3 años).' + adj;
     var noSize = neo.some(function (l) { return !(l.size > 0); });
     var why = [];
     if (n >= 5) why.push(n + ' lesiones');
     if (sslBig) why.push('lesión serrada ≥ 10 mm'); else if (big) why.push('lesión ≥ 10 mm');
-    if (hgd) why.push('sospecha óptica de displasia de alto grado');
-    if (why.length) return pre + '3 años (' + why.join(', ') + '; USMSTF 2020 / ESGE 2020)' + post;
-    if (hpBig) return pre + '3 a 5 años (pólipo de aspecto hiperplásico ≥ 10 mm; USMSTF 2020; ESGE 2020: 3 años)' + post;
-    if (n >= 1 && noSize) return 'Intervalo según histología y tamaño de la lesión (USMSTF 2020).';
-    if (n >= 3) return pre + '3 a 5 años (' + n + ' lesiones < 10 mm; USMSTF 2020). ESGE 2020: sin vigilancia, retorno a tamizaje' + post;
-    if (n >= 1) return pre + (ssl ? '5 a 10 años' : '7 a 10 años') + ' (' + (n === 1 ? '1 lesión' : n + ' lesiones') + ' < 10 mm; USMSTF 2020). ESGE 2020: sin vigilancia, retorno a tamizaje (colonoscopía a los 10 años o test inmunoquímico fecal)' + post;
-    if (hp.some(function (l) { return !(l.size > 0); })) return 'Intervalo según histología y tamaño de la lesión (USMSTF 2020).';
-    return pre + '10 años (pólipos de aspecto hiperplásico < 10 mm; USMSTF 2020)' + post;
+    if (sslHgd) why.push('lesión serrada con sospecha óptica de displasia'); else if (hgd) why.push('sospecha óptica de displasia de alto grado');
+    if (why.length) return pre + 'colonoscopía de vigilancia en 3 años (' + why.join(', ') + '; ESGE 2020 / USMSTF 2020: adenoma ≥ 10 mm, displasia de alto grado o componente velloso, ≥ 5 adenomas, o lesión serrada ≥ 10 mm o con displasia).' + adj;
+    if (hpBig) return pre + 'colonoscopía en 3 años si se confirma pólipo hiperplásico ≥ 10 mm (ESGE 2020: lesión serrada ≥ 10 mm, 3 años; USMSTF 2020: 3 a 5 años).' + adj;
+    if (n >= 1 && noSize) return 'Intervalo de la próxima colonoscopía según histología y tamaño de la lesión (histología pendiente; ESGE 2020 / USMSTF 2020).';
+    if (n >= 3) return pre + 'colonoscopía en 3 a 5 años si se confirman ' + mix + ' < 10 mm (USMSTF 2020); según ESGE 2020 (1 a 4 adenomas < 10 mm sin displasia de alto grado o lesiones serradas < 10 mm sin displasia), sin vigilancia: retorno a tamizaje.' + adj;
+    if (n >= 1) return pre + 'colonoscopía en ' + (ssl ? '5 a 10' : '7 a 10') + ' años si se confirma' + (n === 1 ? ' ' : 'n ') + mix + ' < 10 mm (USMSTF 2020); según ESGE 2020, sin vigilancia: retorno a tamizaje (colonoscopía a los 10 años o test inmunoquímico fecal).' + adj;
+    if (hp.some(function (l) { return !(l.size > 0); })) return 'Intervalo de la próxima colonoscopía según histología y tamaño de la lesión (histología pendiente; USMSTF 2020).';
+    var rs = hp.every(function (l) { return RECTOSIG.test(l.loc || ''); });
+    var nH = hp.reduce(function (a, l) { return a + l.n; }, 0);
+    return pre + (nH === 1 ? 'si se confirma pólipo hiperplásico < 10 mm' : 'si se confirman pólipos hiperplásicos < 10 mm') + (rs ? ' de recto-sigmoides' : '') + ', retorno a tamizaje: próxima colonoscopía en 10 años (USMSTF 2020 / ESGE 2020).' + adj;
   }
 
   // ---- EDA: hallazgos que orientan indicaciones post-procedimiento y control ----
@@ -10970,23 +11242,81 @@ try{(function(){
     if (ei.ulcGas) out.push('EDA de control con biopsias en 8 a 12 semanas para documentar cicatrización de la úlcera gástrica.');
     var b = ei.barrett;
     if (b) {
-      if (b.lesion === 'si') out.push('Barrett con lesión visible: conducta según histología, idealmente en centro con experiencia en resección endoscópica.');
-      else {
-        var m = has(b.m) ? Number(b.m) : (has(b.c) ? Number(b.c) : NaN);
-        if (!isNaN(m) && m >= 10) out.push('Barrett de segmento ≥ 10 cm (Praga M' + m + '): derivar a centro experto para vigilancia (ESGE 2023).');
-        else if (!isNaN(m) && m >= 3) out.push('Intervalo provisorio sugerido para vigilancia de Barrett: EDA en 3 años (Praga M' + m + ', 3 a < 10 cm; ESGE 2023), si la histología confirma metaplasia intestinal sin displasia.');
-        else if (!isNaN(m) && m >= 1) out.push('Intervalo provisorio sugerido para vigilancia de Barrett: EDA en 5 años (Praga M' + m + ', 1 a < 3 cm; ESGE 2023), si la histología confirma metaplasia intestinal sin displasia.');
-        else if (!isNaN(m)) out.push('Segmento columnar < 1 cm: sin indicación de vigilancia endoscópica de Barrett (ESGE 2023).');
+      // Praga: el intervalo usa la extensión máxima (M; si falta, C). Histología previa conocida en el hallazgo (b.histo).
+      var bc = has(b.c) ? Number(b.c) : NaN, bm = has(b.m) ? Number(b.m) : NaN;
+      var m = isNaN(bm) ? bc : (isNaN(bc) ? bm : Math.max(bc, bm));
+      var pr = 'Praga C' + (isNaN(bc) ? 0 : bc) + 'M' + m;
+      var hx = b.histo || '';
+      if (hx === 'indef' || hx === 'dbg' || hx === 'dag') out.push('Barrett ' + ({ indef: 'indefinido para displasia', dbg: 'con displasia de bajo grado', dag: 'con displasia de alto grado' })[hx] + ' (' + pr + '): manejo especializado en centro con experiencia; confirmar la histología con segundo patólogo experto' + (hx === 'indef' ? ', optimizar IBP y repetir EDA con biopsias en 6 meses' : ' y evaluar terapia endoscópica de erradicación') + ' (ESGE 2023 / BSG).');
+      else if (b.lesion === 'si') out.push('Barrett con lesión visible: conducta según histología, idealmente en centro con experiencia en resección endoscópica (ESGE 2023).');
+      else if (!isNaN(m)) {
+        var conf = hx === 'sin', pre = conf ? 'Barrett sin displasia: ' : 'Intervalo provisorio, según histología pendiente: ', cond = conf ? '' : ' si la histología confirma metaplasia intestinal sin displasia', adj = conf ? '' : ' Se ajustará con el resultado de las biopsias.';
+        if (m >= 10) out.push('Barrett de segmento ≥ 10 cm (' + pr + '): derivar a centro experto para vigilancia (ESGE 2023).');
+        else if (m >= 3) out.push(pre + 'EDA de vigilancia en 3 años' + cond + ' (' + pr + ', ≥ 3 cm y < 10 cm; ESGE 2023).' + adj);
+        else if (m >= 1) out.push(pre + 'EDA de vigilancia en 5 años' + cond + ' (' + pr + ', ≥ 1 cm y < 3 cm; ESGE 2023).' + adj);
+        else out.push('Segmento columnar < 1 cm: sin indicación de vigilancia endoscópica de Barrett (ESGE 2023).');
       }
     }
-    var e = ei.est, k = e.kimura || '', eg = eggimTot(e);
-    if (k === 'O-2' || k === 'O-3' || eg >= 5) out.push('Intervalo provisorio sugerido (ajustar según histología OLGA/OLGIM): EDA de vigilancia con cromoendoscopía en 3 años por atrofia/metaplasia extensa (' + [k && k !== 'C-0' ? 'Kimura-Takemoto ' + k : '', eg >= 5 ? 'EGGIM ' + eg : ''].filter(has).join(', ') + '; MAPS II).');
-    else if (k === 'C-3' || k === 'O-1') out.push('Vigilancia endoscópica según estadificación histológica (OLGA/OLGIM III-IV: EDA cada 3 años; MAPS II).');
-    else if (ei.autoinm) out.push('Vigilancia endoscópica cada 3 a 5 años por gastritis atrófica autoinmune (MAPS II), ajustar según histología.');
-    else if (/^C-[12]$/.test(k) || (eg > 0 && eg < 5) || ei.mifocal) out.push('Atrofia/metaplasia leve o limitada: sin indicación de vigilancia endoscópica, salvo antecedente familiar de cáncer gástrico o metaplasia intestinal incompleta en la histología (en ese caso, EDA cada 3 años; MAPS II).');
+    // Atrofia / metaplasia intestinal gástrica (MAPS II 2019; AGA 2020). gim_riesgo: histología previa y antecedentes.
+    var e = ei.est, k = e.kimura || '', eg = eggimTot(e), gr = arr(e.gim_riesgo), g = function (x) { return gr.indexOf(x) >= 0; };
+    var histoHi = g('olgim34') || g('extensa'), endoHi = k === 'O-2' || k === 'O-3' || eg >= 5;
+    var rf = [g('incompleta') ? 'metaplasia intestinal incompleta' : '', g('fam') ? 'antecedente familiar de cáncer gástrico' : ''].filter(has);
+    var whyHi = [g('olgim34') ? 'OLGIM III-IV' : '', g('extensa') ? 'metaplasia intestinal extensa (antro y cuerpo)' : '', k === 'O-2' || k === 'O-3' ? 'Kimura-Takemoto ' + k : '', eg >= 5 ? 'EGGIM ' + eg : ''].filter(has);
+    var EDA3 = 'EDA de alta calidad, con cromoendoscopía y biopsias según Sydney, en 3 años';
+    if (histoHi || endoHi) {
+      var w = whyHi.concat(rf).join(', ');
+      if (histoHi) out.push('Vigilancia de lesiones gástricas precursoras: ' + EDA3 + ' (' + w + '; MAPS II 2019)' + (g('fam') ? '; con antecedente familiar de cáncer gástrico puede considerarse cada 1 a 2 años (MAPS II 2019)' : '') + '.');
+      else out.push('Intervalo provisorio, según histología pendiente (OLGA/OLGIM): ' + EDA3 + ' por atrofia/metaplasia extensa (' + w + '; MAPS II 2019).' + (g('fam') ? ' Con antecedente familiar de cáncer gástrico puede considerarse cada 1 a 2 años (MAPS II 2019).' : '') + ' Se ajustará con el resultado de las biopsias.');
+    } else if (rf.length) out.push('Vigilancia de lesiones gástricas precursoras: ' + EDA3 + ' (' + rf.join(', ') + '; MAPS II 2019 / AGA 2020).');
+    else if (k === 'C-3' || k === 'O-1') out.push('Vigilancia endoscópica según estadificación histológica pendiente (OLGA/OLGIM III-IV: EDA cada 3 años; MAPS II 2019).');
+    else if (ei.autoinm) out.push('Vigilancia endoscópica cada 3 a 5 años por gastritis atrófica autoinmune (MAPS II 2019), ajustar según histología.');
+    else if (g('olgim12') || g('limitada')) out.push('Metaplasia intestinal limitada' + (g('olgim12') ? ' (OLGIM I-II)' : '') + ' sin factores de riesgo adicionales: no requiere vigilancia endoscópica rutinaria (MAPS II 2019 / AGA 2020).');
+    else if (/^C-[12]$/.test(k) || (eg > 0 && eg < 5) || ei.mifocal) out.push('Atrofia/metaplasia leve o limitada: sin indicación de vigilancia endoscópica rutinaria, salvo antecedente familiar de cáncer gástrico, metaplasia intestinal incompleta o extensa en la histología (en ese caso, EDA cada 3 años; MAPS II 2019 / AGA 2020).');
     if (ei.caust) out.push('EDA o esofagograma de control a las 3 a 4 semanas por riesgo de estenosis cáustica (Zargar ' + ei.caust + ').');
     return out.concat(ei.recs || []);
   }
+  // ---- Terapéutica de alto riesgo hemorrágico para el recordatorio de antitrombóticos (ESGE/BSG 2021, Veitch et al.) ----
+  // Alto riesgo: polipectomía, EMR/ESD, papilectomía/esfinterotomía, dilatación, tratamiento de várices, GEP, prótesis, APC.
+  // Bajo riesgo: examen diagnóstico con o sin biopsias.
+  var LES_RES = { pinza: 'polipectomía', asaf: 'polipectomía', asac: 'polipectomía', emr: 'mucosectomía', emrc: 'mucosectomía', emrl: 'mucosectomía', esd: 'disección submucosa', papil: 'papilectomía' };
+  var TX_HI = { tx_dilatacion: 'dilatación', tx_dilatacion_col: 'dilatación', tx_gep: 'gastrostomía', tx_stent: 'instalación de prótesis', tx_stent_col: 'instalación de prótesis', tx_apc: 'ablación con argón plasma', tx_apc_col: 'ablación con argón plasma', tx_rfa: 'ablación por radiofrecuencia', tx_cuerpo_extrano: '' };
+  function txRisk(ctx) {
+    var S = (ctx && ctx.sections) || {}, hi = [];
+    var add = function (x) { if (x && hi.indexOf(x) < 0) hi.push(x); };
+    Object.keys(S).forEach(function (k) {
+      ((S[k] && S[k].findings) || []).forEach(function (f) {
+        if (!f || !f.fid) return;
+        var v = f.v || {};
+        if (f.fid === 'col_polipo') { if (has(v.reseccion) && v.reseccion !== 'no') add(/EMR|ESD/.test(v.reseccion) ? 'mucosectomía' : 'polipectomía'); }
+        else if (f.fid === 'col_polipos_mult') { if (has(v.reseccion) && v.reseccion !== 'no') add('polipectomía'); }
+        else if (f.fid === 'col_lst') { if (has(v.manejo) && v.manejo !== 'no') add(/ESD/.test(v.manejo) ? 'disección submucosa' : 'mucosectomía'); }
+        else if (f.fid === 'col_cicatriz') { if (v.scar === 'con') add('resección de recurrencia'); }
+        else if (/^les_/.test(f.fid)) { if (LES_RES[v.tx]) add(LES_RES[v.tx]); }
+        else if (f.fid === 'hem_varices_eso' || f.fid === 'hem_varices_gas') { if (arr(v.txv).concat(arr(v.txg)).length) add('tratamiento de várices'); }
+        else if (TX_HI[f.fid]) add(TX_HI[f.fid]);
+      });
+    });
+    return hi;
+  }
+  var ATB = [
+    { v: 'aspirina', label: 'Aspirina' },
+    { v: 'p2y12', label: 'Clopidogrel / P2Y12', hint: 'Clopidogrel, prasugrel, ticagrelor' },
+    { v: 'avk', label: 'Warfarina / AVK', hint: 'Antagonistas de vitamina K: warfarina, acenocumarol' },
+    { v: 'acod', label: 'ACOD', hint: 'Anticoagulantes orales directos: rivaroxabán, apixabán, edoxabán, dabigatrán' },
+  ];
+  // Línea orientativa de antitrombóticos según fármacos marcados y riesgo hemorrágico de la terapéutica
+  function atbLine(v, h, hi) {
+    var d = arr(v.atb), parts = [], high = hi.length > 0, dd = h.has(v.atb_dias) ? Number(v.atb_dias) : NaN;
+    var proc = high ? ' (' + hi.slice(0, 2).join(' y ') + ')' : '';
+    if (d.indexOf('aspirina') >= 0) parts.push('aspirina en prevención secundaria, continuar');
+    if (d.indexOf('p2y12') >= 0) parts.push(high ? 'clopidogrel/inhibidor P2Y12, reiniciar en general hasta 5 días post-procedimiento, según riesgo trombótico' : 'clopidogrel/inhibidor P2Y12, continuar (procedimiento de bajo riesgo hemorrágico)');
+    var fx = function (dd) { return dd === 0 ? 'el mismo día' : dd === 1 ? 'al día siguiente' : 'en ' + h.num(dd) + ' días'; };
+    if (d.indexOf('avk') >= 0) parts.push('warfarina/AVK, ' + (!isNaN(dd) ? 'reiniciar ' + fx(dd) : (high ? 'reiniciar la noche del procedimiento con la dosis habitual, con control de INR a la semana' + proc : 'continuar (procedimiento de bajo riesgo hemorrágico)')));
+    if (d.indexOf('acod') >= 0) parts.push('ACOD, ' + (!isNaN(dd) ? 'reiniciar ' + fx(dd) : (high ? 'reiniciar en general 2 a 3 días después de la terapéutica de alto riesgo hemorrágico' + proc : 'omitir solo la dosis de la mañana del procedimiento y retomar con la dosis habitual siguiente')));
+    if (!parts.length) return '';
+    return 'Antitrombóticos (orientativo, según médico tratante; ESGE/BSG 2021): ' + parts.join('; ') + '.';
+  }
+
   // Indicaciones específicas según terapia (cada una es una línea numerada)
   function ulcLines(hosp) {
     return [
@@ -11027,8 +11357,17 @@ try{(function(){
         default: 'tratante', show: function (v) { return arr(v.ind).indexOf('anticoag') >= 0; } },
       { id: 'anticoag_dias', label: 'Reiniciar en', type: 'num', unit: 'días', min: 0, max: 30, default: 3,
         show: function (v) { return arr(v.ind).indexOf('anticoag') >= 0 && v.anticoag === 'reiniciar'; } },
+      { id: 'atb', label: 'Antitrombóticos del paciente', type: 'multi', options: ATB, default: [],
+        hint: 'Si se marca alguno, se agrega un recordatorio orientativo de reinicio según la terapéutica realizada (ESGE/BSG 2021)',
+        show: function (v) { return arr(v.ind).indexOf('anticoag') >= 0 || arr(v.atb).length > 0; } },
+      { id: 'atb_dias', label: 'Reinicio AVK/ACOD', type: 'num', unit: 'días', min: 0, max: 30, default: '', placeholder: 'auto',
+        hint: 'Vacío = 2 a 3 días si hubo terapéutica de alto riesgo hemorrágico; al día siguiente si bajo riesgo',
+        show: function (v) { var a = arr(v.atb); return a.indexOf('avk') >= 0 || a.indexOf('acod') >= 0; } },
       { id: 'control', label: 'Control / próximo examen', type: 'chips', options: CONTROL, default: 'auto',
         show: function (v) { return arr(v.ind).indexOf('control') >= 0; } },
+      { id: 'control_txt', label: 'Intervalo editado', type: 'text', wide: true, placeholder: 'ej. Colonoscopía de control en 3 años por antecedente familiar de cáncer colorrectal',
+        hint: 'Reemplaza el intervalo sugerido; vacío = se mantiene el sugerido',
+        show: function (v) { return arr(v.ind).indexOf('control') >= 0 && v.control === 'editar'; } },
       { id: 'otra', label: 'Otra indicación', type: 'text', placeholder: 'texto libre', wide: true },
     ],
     text: function (v, h, ctx) {
@@ -11049,8 +11388,10 @@ try{(function(){
       var cxv = (ctx && ctx.values) || {}, cxe = ((eda && cxv.eda_datos) || {}).contexto, cxc = ((col && cxv.col_datos) || {}).contexto;
       var cx = (cxe && cxe !== 'ambulatorio') ? cxe : (cxc || cxe);
       var hosp = v.paciente === 'hosp' || (v.paciente !== 'amb' && ((!!cx && cx !== 'ambulatorio') || (!!ei && (ei.hda || ei.ulcHR || ei.varHDA || ei.caust))));
+      if (arr(v.atb).length && sel.indexOf('anticoag') < 0) sel = sel.concat('anticoag');
       var has_ = function (k) { return sel.indexOf(k) >= 0; };
-      var ctrlAuto = has_('control') && (!h.has(v.control) || v.control === 'auto');
+      var ctrlEd = v.control === 'editar' && h.has(v.control_txt);
+      var ctrlAuto = has_('control') && (!h.has(v.control) || v.control === 'auto' || (v.control === 'editar' && !ctrlEd));
       // cáusticos Zargar ≥ IIb y post-dilatación (EDA): indicaciones propias que reemplazan la dieta genérica
       var caustTx = !!(ei && autoTx && ei.caust), dilTx = !!(ei && autoTx && ei.dil);
       if (caustTx) out.push('Ingesta de cáusticos con lesión Zargar ' + ei.caust + ': hospitalización para observación; régimen cero inicial y realimentación según evolución y tolerancia (considerar sonda nasoenteral bajo visión endoscópica si no tolera vía oral); inhibidor de bomba de protones EV; vigilar signos de perforación (dolor torácico o abdominal intenso, fiebre, enfisema subcutáneo).');
@@ -11083,18 +11424,21 @@ try{(function(){
           case 'ibp': if (has_('ulcera_ar') && !h.has(v.ibp_dosis)) break; out.push(h.has(v.ibp_dosis) ? h.sent('Inhibidor de bomba de protones:', String(v.ibp_dosis).replace(/\.\s*$/, '')) : 'Inhibidor de bomba de protones según indicación de médico tratante.'); break;
           case 'hp': out.push('Tratamiento de erradicación de Helicobacter pylori según resultado de test de ureasa y/o biopsias; confirmar erradicación con test de urea en aire espirado o antígeno fecal, al menos 4 semanas post-tratamiento y 2 semanas sin IBP.'); break;
           case 'anticoag':
+            if (v.anticoag !== 'reiniciar' && v.anticoag !== 'mantener' && arr(v.atb).length) { out.push(atbLine(v, h, txRisk(ctx))); break; }
             if (v.anticoag === 'reiniciar' && h.has(v.anticoag_dias)) out.push('Reiniciar anticoagulación/antiagregación en ' + h.num(v.anticoag_dias) + (Number(v.anticoag_dias) === 1 ? ' día' : ' días') + ', según indicación de médico tratante.');
             else if (v.anticoag === 'mantener') out.push('Mantener terapia anticoagulante/antiagregante sin cambios.');
+            else if (txRisk(ctx).length) out.push('Suspender o reiniciar terapia anticoagulante/antiagregante según indicación de médico tratante; en general (ESGE/BSG 2021): aspirina en prevención secundaria, continuar; clopidogrel/P2Y12, reiniciar hasta 5 días post-procedimiento según riesgo trombótico; warfarina/AVK, reiniciar la noche del procedimiento; ACOD, reiniciar 2 a 3 días después de terapéutica de alto riesgo hemorrágico (' + txRisk(ctx).slice(0, 2).join(' y ') + ').');
             else out.push('Suspender o reiniciar terapia anticoagulante/antiagregante según indicación de médico tratante.');
             break;
           case 'gep': out.push('Cuidados de gastrostomía: iniciar alimentación por sonda según protocolo (habitualmente a las 4-6 horas), curación diaria del sitio de inserción, girar la sonda y verificar la marca externa diariamente; consultar ante dolor, fiebre, filtración o enrojecimiento periostomal.'); break;
           case 'control':
-            if (!h.has(v.control) || v.control === 'auto') {
+            if (ctrlEd) out.push(h.sent(String(v.control_txt).trim()));
+            else if (!h.has(v.control) || v.control === 'auto' || v.control === 'editar') {
               var ec = ei ? edaControl(ei) : [];
               out.push.apply(out, ec);
               if (col) out.push(colControl(ci));
               else if (!ec.length && !has_('biopsias') && !nFr) out.push('Control con médico tratante.');
-            } else out.push((col && !eda ? 'Colonoscopía de control en ' : 'Control endoscópico en ') + v.control + '.');
+            } else out.push((col && !eda ? 'Colonoscopía de control en ' : col && eda ? 'EDA y colonoscopía de control en ' : 'EDA de control en ') + v.control + '.');
             break;
         }
       });
@@ -12399,7 +12743,7 @@ if (typeof module !== 'undefined') module.exports = EndoScales;
 (function () {
   'use strict';
   var h = EndoHelpers, R = EndoApp._R;
-  var LS = { draft: 'endoinforme.v1.draft', tpl: 'endoinforme.v1.templates', set: 'endoinforme.v1.settings', use: 'endoinforme.v1.usage', loc: 'endoinforme.v1.lastloc', tplUse: 'endoinforme.v1.tpluse', tplName: 'endoinforme.v1.tplname' };
+  var LS = { draft: 'endoinforme.v1.draft', tpl: 'endoinforme.v1.templates', set: 'endoinforme.v1.settings', use: 'endoinforme.v1.usage', loc: 'endoinforme.v1.lastloc', tplUse: 'endoinforme.v1.tpluse', tplName: 'endoinforme.v1.tplname', masop: 'endoinforme.v1.masop' };
   var EXAMS = { eda: 'Endoscopía digestiva alta', colono: 'Colonoscopía' };
   var TITLES = { eda: 'ENDOSCOPÍA DIGESTIVA ALTA', colono: 'COLONOSCOPÍA' };
   var NORMAL = { eda: 'ENDOSCOPÍA DIGESTIVA ALTA DENTRO DE LÍMITES NORMALES', colono: 'COLONOSCOPÍA SIN HALLAZGOS PATOLÓGICOS' };
@@ -12455,6 +12799,24 @@ if (typeof module !== 'undefined') module.exports = EndoScales;
     if (t === 'num' || t === 'size') { if (x === '' || x == null) return ''; var n = typeof x === 'number' ? x : parseFloat(String(x).replace(',', '.')); return isNaN(n) ? '' : n; }
     if (x == null || typeof x === 'object') return Array.isArray(x) && x.length ? String(x[0]) : '';
     return String(x);
+  }
+  // Campos avanzados/poco usados que se pliegan en "Más opciones ▸" (siguen en el informe si tienen valor)
+  var ADV_FIELDS = {
+    eda_datos: ['contexto', 'intubado', 'sed_anest', 'eritro'],
+    col_datos: ['contexto', 'intubado', 'sed_anest'],
+    estomago: ['yagi', 'kyoto_on', 'ky_atr', 'ky_mi', 'ky_pl', 'ky_nod', 'ky_eri', 'emura'],
+    alta: ['paciente', 'auto_tx', 'otra']
+  };
+  // n.º de campos con valor distinto del default (y visibles según sus condiciones)
+  function advChanged(fields, v, ctx) {
+    var n = 0;
+    (fields || []).forEach(function (f) {
+      var d = f.default !== undefined ? f.default : emptyVal(f);
+      if (JSON.stringify(v[f.id] === undefined ? d : v[f.id]) === JSON.stringify(d)) return;
+      if (!showOk(f, v, ctx || {})) return;
+      n++;
+    });
+    return n;
   }
   function sanitize(fields, v) {
     var out = defaults(fields); if (!isObj(v)) return out;
@@ -13034,11 +13396,36 @@ if (typeof module !== 'undefined') module.exports = EndoScales;
         bd.appendChild(host);
       }
       var pinned = host !== bd ? s.fields.filter(function (f, i) { return f.pin || (isHdr && i < 6); }) : [], rest = s.fields.filter(function (f) { return pinned.indexOf(f) < 0; });
+      // "Más opciones ▸": campos avanzados/poco usados que estaban a la vista (fijados o sueltos) se pliegan aparte
+      var advIds = settings.allOpen ? null : ADV_FIELDS[s.id], adv = [];
+      if (advIds) {
+        var isAdv = function (f) { return advIds.indexOf(f.id) >= 0; };
+        if (host !== bd) { adv = pinned.filter(isAdv); pinned = pinned.filter(function (f) { return !isAdv(f); }); }
+        else { adv = rest.filter(isAdv); rest = rest.filter(function (f) { return !isAdv(f); }); }
+      }
       var sCtx = function () { return fieldCtx(s, ex); };
-      var updSum = function () { if (sumEl) sumEl.textContent = fieldSummary(rest, ss.v, s.locations, sCtx()); };
-      var visP = null, vis = null, onCh = function (f) { if (f && f.quality) { state._qc = state._qc || {}; state._qc[s.id + '|' + f.id] = 1; } if (vis) vis(); if (visP) visP(); updSum(); refresh(); };
+      var advD = null, advCnt = null;
+      var updAdv = function () {
+        if (!advD) return;
+        var n = advChanged(adv, ss.v, sCtx());
+        advD.style.display = adv.some(function (f) { return showOk(f, ss.v, sCtx()); }) ? '' : 'none'; // sin campos visibles (p. ej. examen combinado): no mostrar un "Más opciones" vacío
+        advCnt.textContent = n ? n + (n === 1 ? ' con valor' : ' con valores') : '';
+        advD.classList.toggle('has', !!n);
+      };
+      var updSum = function () { if (sumEl) sumEl.textContent = fieldSummary(rest, ss.v, s.locations, sCtx()); updAdv(); };
+      var visP = null, vis = null, visA = null, onCh = function (f) { if (f && f.quality) { state._qc = state._qc || {}; state._qc[s.id + '|' + f.id] = 1; } if (vis) vis(); if (visP) visP(); if (visA) visA(); updSum(); refresh(); };
       if (pinned.length) { var pbox = el('div', { class: 'pinned' }); bd.insertBefore(pbox, host); visP = renderFields(pbox, pinned, ss.v, s.locations, onCh, sCtx); }
+      if (adv.length) {
+        advCnt = el('span', { class: 'mocnt' });
+        advD = el('details', { class: 'params masop' }, [el('summary', { title: adv.map(function (f) { return f.label; }).filter(Boolean).join(' · ') }, [el('span', { class: 'chev', html: '&#9656;' }), el('span', { class: 'lbl', text: 'Más opciones' }), advCnt])]);
+        var mo = lsGet(LS.masop, {}); if (!isObj(mo)) mo = {};
+        if (mo[s.id] || advChanged(adv, ss.v, sCtx())) advD.open = true;
+        advD.addEventListener('toggle', function () { var M = lsGet(LS.masop, {}); if (!isObj(M)) M = {}; if (advD.open) M[s.id] = 1; else delete M[s.id]; lsSet(LS.masop, M); });
+        if (host !== bd) bd.insertBefore(advD, host); else bd.appendChild(advD);
+        visA = renderFields(advD, adv, ss.v, s.locations, onCh, sCtx);
+      }
       vis = renderFields(host, rest, ss.v, s.locations, onCh, sCtx);
+      if (advD && host === bd) bd.appendChild(advD);
       updSum();
     }
     // findings
@@ -13088,11 +13475,14 @@ if (typeof module !== 'undefined') module.exports = EndoScales;
     var fCtx = function () { return fieldCtx(s, ex, fi); };
     vis = renderFields(fb, main, fi.v, s.locations, onCh, fCtx);
     if (more.length) {
-      var md = el('details', { class: 'params more' }, [el('summary', {}, [el('span', { class: 'chev', html: '&#9656;' }), el('span', { class: 'lbl', text: 'Más detalles (' + more.length + ')' })])]);
+      var mdCnt = el('span', { class: 'mocnt' });
+      var md = el('details', { class: 'params more' }, [el('summary', {}, [el('span', { class: 'chev', html: '&#9656;' }), el('span', { class: 'lbl', text: 'Más detalles (' + more.length + ')' }), mdCnt])]);
+      var updMd = function () { var n = advChanged(more, fi.v); mdCnt.textContent = n ? n + (n === 1 ? ' con valor' : ' con valores') : ''; md.classList.toggle('has', !!n); };
       if (fi._more) md.open = true;
       md.addEventListener('toggle', function () { fi._more = md.open; save(); });
       fb.appendChild(md);
       visM = renderFields(md, more, fi.v, s.locations, onCh, fCtx);
+      var visM0 = visM; visM = function () { var r = visM0 && visM0.apply(this, arguments); updMd(); return r; }; updMd();
     }
     var live = el('div', { class: 'live' }); fb.appendChild(live);
     liveEls[fi.uid] = { live: live, tag: tag, def: def, fi: fi, s: s, ex: ex, fh: fh, card: card };
@@ -13771,6 +14161,9 @@ if (typeof module !== 'undefined') module.exports = EndoScales;
     r.appendChild(railItem('frascos', 'Biopsias', null, state.frascos.length));
     r.appendChild(railItem('concl', 'Conclusión'));
     footerSecs().forEach(function (s) { r.appendChild(railItem(s.id, s.title, state.sections[s.id])); });
+    r.appendChild(el('div', { class: 'railnorm' }, [el('div', { class: 'sep', text: 'Informe normal' })].concat(['eda', 'colono'].map(function (ex) {
+      return el('button', { class: 'btn sm', type: 'button', 'data-normal': ex, html: '<span class="hnck">✓</span>' + (ex === 'colono' ? 'Colono normal · Boston 9' : esc(NORMAL_LABEL[ex])), title: 'Cargar ' + NORMAL_LABEL[ex] + ' (examen completo normal; Ctrl+Z para recuperar)', onclick: function () { loadNormal(ex); } });
+    }))));
     r.appendChild(anatMap(exams));
     if (exams.indexOf('colono') >= 0) r.appendChild(el('button', { class: 'btn sm railcalc', type: 'button', html: SVG_CALC + 'Calculadoras EII', title: 'Mayo, UCEIS, SES-CD y Rutgeerts', onclick: function () { openEII(); } }));
     // atajos plegados por defecto (se recuerda si los dejaste abiertos)
@@ -14015,6 +14408,8 @@ if (typeof module !== 'undefined') module.exports = EndoScales;
       A('Copiar conclusión', 'copiar conclusion', function () { copy('concl'); });
       A('Nuevo informe (inicio)', 'nuevo inicio limpiar otro paciente', function () { showHome(); });
       A('Plantillas', 'plantilla guardar cargar preset', function () { openTemplates(); });
+      A(NORMAL_LABEL.eda, 'eda normal endoscopia alta normal informe normal todo normal', function () { loadNormal('eda'); }, 'Informe normal');
+      A(NORMAL_LABEL.colono, 'colonoscopia normal boston 9 informe normal todo normal', function () { loadNormal('colono'); }, 'Informe normal');
       A('Imprimir', 'imprimir pdf', function () { doPrint(); });
       A('Ajustes', 'ajustes firma membrete logo institucion', function () { openSettings(); });
       A('Calculadoras EII', 'calculadora eii mayo uceis ses-cd sescd rutgeerts colitis ulcerosa crohn score puntaje', function () { openEII(); });
@@ -14302,6 +14697,7 @@ if (typeof module !== 'undefined') module.exports = EndoScales;
     var get = function (sid, fid) { return vis(sid, fid) ? V(sid)[fid] : undefined; };
     var txt = function (sid, fid) { return vis(sid, fid) ? valTxt(fldOf(sid, fid), V(sid)[fid]) : ''; };
     var r = { id: state._rid, fecha: isoDay(), examen: { eda: 'EDA', colono: 'Colonoscopía', ambos: 'EDA + Colonoscopía' }[state.exam] || state.exam, ex: exs.slice(), endo: String(settings.firma || '').trim() };
+    try { if (window.EndoPerfil && EndoPerfil.active()) r.endoId = EndoPerfil.active().id; } catch (e) {}
     // indicaciones
     var ind = [];
     if (hasE) { ind.push(txt('eda_datos', 'indicacion')); ind.push(String(V('eda_datos').indicacion_otra || '').trim()); }
@@ -14459,6 +14855,7 @@ if (typeof module !== 'undefined') module.exports = EndoScales;
     });
     box.appendChild(regPanel());
     box.appendChild(el('div', { class: 'row', style: 'margin-top:14px;justify-content:flex-end' }, [el('button', { class: 'btn primary', type: 'button', text: 'Listo', onclick: close })]));
+    try { document.dispatchEvent(new CustomEvent('endo:settings', { detail: { box: box } })); } catch (e) { }
     ov.appendChild(box); document.body.appendChild(ov);
   }
 
@@ -14754,6 +15151,34 @@ if (typeof module !== 'undefined') module.exports = EndoScales;
     var fr = (st.frascos || []).length;
     return (n || fr) ? { n: n, fr: fr, exam: st.exam } : null;
   }
+  // Informe normal en 1 clic: examen completo normal (todas las secciones normales y el cierre activo).
+  // Respeta la misma lógica que las plantillas: borra datos del paciente y deja Ctrl+Z para recuperar.
+  var NORMAL_RETIRO = null; // dato medido: se deja vacío para no falsear indicadores de calidad
+  var NORMAL_LABEL = { eda: 'EDA normal', colono: 'Colonoscopía normal (Boston 9)', ambos: 'EDA + colonoscopía normales' };
+  function normalState(ex) {
+    var st = { exam: ex, sections: {}, frascos: [] };
+    examList(ex).forEach(function (e) { sectionsOf(e).forEach(function (s) { st.sections[s.id] = { v: defaults(s.fields), findings: [], note: '' }; }); });
+    footerSecs().forEach(function (s) { st.sections[s.id] = { v: defaults(s.fields), findings: [], note: '', on: true }; });
+    if (examList(ex).indexOf('colono') >= 0 && st.sections.col_datos) {
+      var cv = st.sections.col_datos.v, has = function (id) { return (SEC.col_datos.fields || []).some(function (f) { return f.id === id; }); };
+      ['bost_d', 'bost_t', 'bost_i'].forEach(function (k) { if (has(k)) cv[k] = '3'; });
+      if (has('alcance')) cv.alcance = 'ciego';
+      if (has('ileo')) cv.ileo = 'Sí';
+      if (has('retro')) cv.retro = 'Sí';
+      if (NORMAL_RETIRO && has('retiro') && !h.has(cv.retiro)) cv.retiro = NORMAL_RETIRO;
+    }
+    return st;
+  }
+  function loadNormal(ex) {
+    if (tplEdit) endTplEdit();
+    snapshot(); var prev = undoStack.pop(); // Ctrl+Z debe traer también los datos del paciente anterior
+    resetPatient();
+    if ($('#home')) hideHome();
+    loadState(normalState(ex), NORMAL_LABEL[ex] || 'Informe normal');
+    if (prev && undoStack.length) undoStack[undoStack.length - 1] = prev;
+    window.scrollTo({ top: 0 });
+    toast(NORMAL_LABEL[ex] + ': informe completo normal. Edita solo lo distinto' + (examList(ex).indexOf('colono') >= 0 ? ' (anota el tiempo de retiro)' : '') + ' · Ctrl+Z para recuperar', 4200);
+  }
   // frecuencia clínica de los escenarios (las 7 primeras se ven en el inicio)
   var TPL_RANK = ['pre_eda_dispepsia', 'pre_eda_anemia_celiaca', 'pre_eda_hda_forrest_iia', 'pre_eda_screening_normal', 'pre_eda_varices_ligadura', 'pre_eda_ligadura_programada', 'pre_eda_barrett_seattle',
     'pre_eda_tamizaje_varices', 'pre_eda_cuerpo_extrano', 'pre_eda_urgencia_uci', 'pre_eda_sonda', 'pre_eda_causticos', 'pre_eda_bypass_ulcera_marginal',
@@ -14792,7 +15217,7 @@ if (typeof module !== 'undefined') module.exports = EndoScales;
         .sort(function (a, b) { return (b.u - a.u) || (a.r - b.r); }).map(function (x) { return x.q; });
       list.forEach(function (q) { var run0 = q.run, ed0 = q.edit; if (ed0) q.edit = function () { resetPatient(); ed0(); }; var run = function () { resetPatient(); run0(); }; q.run = function () { var U = lsGet(LS.tplUse, {}); if (!isObj(U)) U = {}; U[q.key] = (Number(U[q.key]) || 0) + 1; lsSet(LS.tplUse, U); run(); }; });
       var CAP = 7;
-      var hq = el('div', { class: 'hq' }, [el('span', { class: 'hql', text: 'Partir desde plantilla' })].concat(list.map(function (q, qi) {
+      var hq = el('div', { class: 'hq' }, [el('button', { class: 'hnorm', type: 'button', 'data-normal': ex, html: '<span class="hnck">✓</span>' + esc(NORMAL_LABEL[ex]) + '<small>1 clic · todo normal</small>', title: 'Cargar ' + NORMAL_LABEL[ex] + ' completo y editar solo lo distinto', onclick: function (e) { e.stopPropagation(); loadNormal(ex); } }), el('span', { class: 'hql', text: 'Partir desde plantilla' })].concat(list.map(function (q, qi) {
         return el('span', { class: 'hqrow' + (qi >= CAP ? ' hqx' : '') }, [
           el('button', { class: 'hqb' + (q.own ? ' own' : ''), type: 'button', text: q.label, title: q.mine ? q.label + ' (tu versión)' : q.label, onclick: function (e) { e.stopPropagation(); q.run(); } }),
           el('button', { class: 'hqe', type: 'button', html: '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20h9"/><path d="M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4Z"/></svg>', title: 'Editar esta plantilla y guardar tu versión', 'aria-label': 'Editar plantilla ' + q.label, onclick: function (e) { e.stopPropagation(); q.edit(); } }),
@@ -15014,7 +15439,7 @@ if (typeof module !== 'undefined') module.exports = EndoScales;
     setTimeout(maybeTour, 400);
   }
   window.addEventListener('beforeprint', function () { logReg(); });
-  window.EndoUI = { showHome: showHome, hideHome: hideHome, state: function () { return state; }, build: build, toText: function (p) { return toText(build(), p); }, addFinding: addFinding, loadState: loadState };
+  window.EndoUI = { showHome: showHome, hideHome: hideHome, state: function () { return state; }, build: build, toText: function (p) { return toText(build(), p); }, addFinding: addFinding, loadState: loadState, loadNormal: loadNormal };
   window.EndoUI.rapido = { snapshot: snapshot, renderAll: renderAll, copy: function (p) { copy(p); }, addSydney: addSydney, SYDNEY: SYDNEY, newReport: function (ex) { if (tplEdit) endTplEdit(); snapshot(); state = freshState(ex); resetPatient(); hideHome(); renderAll(); }, undoGroup: function (fn) { snapshot(); var top = undoStack[undoStack.length - 1]; try { fn(); } finally { var i = undoStack.lastIndexOf(top); if (i >= 0) undoStack.splice(i + 1); } }, templates: function () { return templates(); }, resetPatient: function () { resetPatient(); }, toast: function (m, ms, a) { toast(m, ms, a); } };
   window.EndoUI.mapa = { SEC: SEC, FIND: FIND, findingsFor: findingsFor, useCmp: useCmp, locChoices: locChoices, goFinding: goFinding, goSection: goSection, flashFind: flashFind, renderAll: renderAll, snapshot: snapshot, mview: mview, norm: norm, toast: function (m, ms, a) { toast(m, ms, a); } };
   window.EndoUI.hoja = { qualityItems: qualityItems, qconfirm: function (x) { state._qc = state._qc || {}; state._qc[x.sec + '|' + x.fid] = 1; save(); renderQuality(); }, copy: function () { copy(); }, print: function () { doPrint(); }, goField: goField, refresh: function () { refresh(); }, settings: function () { return settings; }, staleFinds: staleFinds };
@@ -15439,6 +15864,496 @@ window.EndoUI = window.EndoUI || {}; window.EndoUI.actualizar = { check: check }
 
 })();}catch(e){console.error("Feature actualizar.js",e);}
 ;
+/* ===== feature antitromb.js ===== */
+try{(function(){
+// Tabla desplegable de suspensión/reinicio de antitrombóticos antes de procedimientos endoscópicos.
+// Consulta rápida para el médico (no va al informe). Fuentes al pie del cuadro.
+// Se muestra en "Indicaciones al alta" (debajo del campo de antitrombóticos o al final de la sección)
+// y se puede abrir como ventana con window.EndoATB.open().
+var KEY = 'endoinforme.v1.atbtab';
+var ROWS = [
+  { g: 'Antiagregantes' },
+  { d: 'Aspirina (AAS)', lo: 'Continuar.', hi: 'Continuar. En DSE, mucosectomía de colon > 2 cm, mucosectomía alta y ampulectomía: evaluar suspender 5 días si se usa en prevención primaria / bajo riesgo trombótico.' },
+  { d: 'Clopidogrel', lo: 'Continuar.', hi: 'Bajo riesgo trombótico: suspender 7 días antes (ESGE/BSG; 5 días según ASGE). Alto riesgo trombótico*: mantener aspirina y decidir con cardiología; suspender P2Y12 5 días antes solo si es seguro.' },
+  { d: 'Prasugrel', lo: 'Continuar.', hi: 'Bajo riesgo trombótico: suspender 7 días antes. Alto riesgo trombótico*: mantener aspirina y decidir con cardiología.' },
+  { d: 'Ticagrelor', lo: 'Continuar.', hi: 'Bajo riesgo trombótico: suspender 7 días antes (ESGE/BSG; 5 días según ASGE). Alto riesgo trombótico*: mantener aspirina y decidir con cardiología.' },
+  { d: 'Reinicio P2Y12', lo: '—', hi: 'Reiniciar hasta 5 días post-procedimiento, según riesgo de sangrado y trombótico.' },
+  { g: 'Anticoagulantes' },
+  { d: 'Warfarina / acenocumarol (AVK)', lo: 'Continuar. Comprobar INR en la semana previa; si está sobre rango terapéutico, reducir dosis hasta volver al rango.', hi: 'Bajo riesgo trombótico: suspender 5 días antes y comprobar INR < 1,5 antes del procedimiento. Alto riesgo trombótico**: suspender 5 días antes con puente de heparina de bajo peso molecular (última dosis ≥ 24 h antes). Reiniciar la noche del procedimiento con la dosis habitual; mantener heparina hasta INR en rango.' },
+  { d: 'Rivaroxabán, apixabán, edoxabán', lo: 'Omitir solo la dosis de la mañana del procedimiento.', hi: 'Última dosis 3 días antes del procedimiento (2 días completos sin fármaco). Sin puente de heparina (ACG-CAG: suspender 1 a 2 días, sin contar el día del procedimiento).' },
+  { d: 'Dabigatrán', lo: 'Omitir solo la dosis de la mañana del procedimiento.', hi: 'ClCr ≥ 50 mL/min: última dosis 3 días antes. ClCr 30-50 mL/min: última dosis 5 días antes. Sin puente de heparina.' },
+  { d: 'Reinicio ACOD', lo: 'Al día siguiente.', hi: 'En general 2 a 3 días después (hasta 48-72 h), según hemostasia lograda; considerar dosis profiláctica de heparina mientras tanto si el riesgo trombótico es alto.' },
+  { d: 'Heparina de bajo peso molecular (dosis terapéutica)', lo: 'Omitir la dosis de la mañana del procedimiento.', hi: 'Última dosis ≥ 24 h antes.' }
+];
+var RISK = [
+  ['Bajo riesgo hemorrágico', 'EDA y colonoscopía diagnósticas con biopsias, CPRE con instalación de prótesis biliar o pancreática sin esfinterotomía, enteroscopía diagnóstica, cápsula, ecoendoscopía diagnóstica, prótesis enteral.'],
+  ['Alto riesgo hemorrágico', 'Polipectomía, mucosectomía y disección submucosa (DSE), esfinterotomía, ampulectomía, dilatación, gastrostomía (PEG), tratamiento de várices, ablación (APC/radiofrecuencia), ecoendoscopía con punción o drenaje.']
+];
+var NOTES = [
+  '* Alto riesgo trombótico (antiagregantes): stent coronario liberador de fármaco < 12 meses o stent metálico < 1 mes, síndrome coronario agudo reciente.',
+  '** Alto riesgo trombótico (AVK): válvula mecánica mitral o con FA, prótesis valvular con antecedente de embolia, tromboembolismo venoso < 3 meses, trombofilia grave. La guía ACG-CAG 2022 sugiere no usar puente de heparina en la mayoría de los pacientes con warfarina (no aplica a válvulas mecánicas).',
+  'Tabla orientativa. La decisión final es individual y se toma con el médico tratante o cardiología.'
+];
+var REFS = [
+  'Veitch AM, Radaelli F, Alikhan R, et al. Endoscopy in patients on antiplatelet or anticoagulant therapy: British Society of Gastroenterology (BSG) and European Society of Gastrointestinal Endoscopy (ESGE) guideline update. Gut 2021;70:1611-1628. Endoscopy 2021;53:947-969.',
+  'Abraham NS, Barkun AN, Sauer BG, et al. American College of Gastroenterology–Canadian Association of Gastroenterology Clinical Practice Guideline: Management of Anticoagulants and Antiplatelets During Acute Gastrointestinal Bleeding and the Periendoscopic Period. Am J Gastroenterol 2022;117:542-558.',
+  'ASGE Standards of Practice Committee, Acosta RD, et al. The management of antithrombotic agents for patients undergoing GI endoscopy. Gastrointest Endosc 2016;83:3-16.'
+];
+
+function mk(tag, cls, txt) { var e = document.createElement(tag); if (cls) e.className = cls; if (txt != null) e.textContent = txt; return e; }
+function getOpen() { try { return localStorage.getItem(KEY) === '1'; } catch (e) { return false; } }
+function setOpen(v) { try { localStorage.setItem(KEY, v ? '1' : '0'); } catch (e) { } }
+
+function table() {
+  var w = mk('div', 'atbt');
+  var t = mk('table'), th = mk('thead'), tr = mk('tr');
+  ['Fármaco', 'Procedimiento de bajo riesgo hemorrágico', 'Procedimiento de alto riesgo hemorrágico'].forEach(function (x) { tr.appendChild(mk('th', null, x)); });
+  th.appendChild(tr); t.appendChild(th);
+  var tb = mk('tbody');
+  ROWS.forEach(function (r) {
+    var row = mk('tr');
+    if (r.g) { var c = mk('td', 'atbg', r.g); c.colSpan = 3; row.appendChild(c); }
+    else {
+      row.appendChild(mk('td', 'atbd', r.d));
+      var a = mk('td', null, r.lo); a.setAttribute('data-h', 'Bajo riesgo'); row.appendChild(a);
+      var b = mk('td', null, r.hi); b.setAttribute('data-h', 'Alto riesgo'); row.appendChild(b);
+    }
+    tb.appendChild(row);
+  });
+  t.appendChild(tb); w.appendChild(t);
+  var rk = mk('div', 'atbrisk');
+  RISK.forEach(function (r) { var p = mk('p'); p.appendChild(mk('b', null, r[0] + ': ')); p.appendChild(document.createTextNode(r[1])); rk.appendChild(p); });
+  w.appendChild(rk);
+  var ft = mk('div', 'atbfoot');
+  NOTES.forEach(function (n) { ft.appendChild(mk('p', null, n)); });
+  var src = mk('p', 'atbsrc'); src.appendChild(mk('b', null, 'Fuentes: '));
+  w.appendChild(ft);
+  var ol = mk('ol', 'atbrefs'); REFS.forEach(function (r) { ol.appendChild(mk('li', null, r)); });
+  ft.appendChild(src); ft.appendChild(ol);
+  return w;
+}
+
+function details() {
+  var d = mk('details', 'atbtab noprint'); d.open = getOpen();
+  var s = mk('summary', null); s.appendChild(mk('span', 'atbi', '📋')); s.appendChild(mk('span', null, 'Tabla de suspensión de antitrombóticos antes de la endoscopía'));
+  s.appendChild(mk('small', null, 'BSG/ESGE 2021 · ACG-CAG 2022'));
+  d.appendChild(s); d.appendChild(table());
+  d.addEventListener('toggle', function () { setOpen(d.open); });
+  return d;
+}
+
+function place() {
+  var sec = document.getElementById('sec-alta'); if (!sec) return;
+  var cur = sec.querySelector('.atbtab');
+  var anchor = sec.querySelector('.fld[data-f="atb_dias"]') || sec.querySelector('.fld[data-f="atb"]');
+  if (anchor) {
+    if (cur && cur.previousElementSibling === anchor) return;
+    if (cur) cur.remove();
+    anchor.parentNode.insertBefore(details(), anchor.nextSibling);
+    return;
+  }
+  if (cur) return;
+  var body = sec.querySelector(':scope > .bd') || sec;
+  body.appendChild(details());
+}
+
+function open() {
+  var ov = mk('div', 'atbov'), box = mk('div', 'atbbox');
+  var hd = mk('div', 'atbhd'); hd.appendChild(mk('h2', null, 'Antitrombóticos y endoscopía'));
+  var x = mk('button', 'btn ghost', '✕'); x.type = 'button'; x.setAttribute('aria-label', 'Cerrar'); hd.appendChild(x);
+  box.appendChild(hd); box.appendChild(table()); ov.appendChild(box);
+  function close() { ov.remove(); document.removeEventListener('keydown', key, true); }
+  function key(e) { if (e.key === 'Escape') { e.stopPropagation(); close(); } }
+  x.onclick = close; ov.onclick = function (e) { if (e.target === ov) close(); };
+  document.addEventListener('keydown', key, true);
+  document.body.appendChild(ov);
+}
+window.EndoATB = { open: open };
+
+var tmr = 0;
+new MutationObserver(function () { if (tmr) return; tmr = setTimeout(function () { tmr = 0; place(); }, 60); })
+  .observe(document.body, { childList: true, subtree: true });
+place();
+
+})();}catch(e){console.error("Feature antitromb.js",e);}
+;
+/* ===== feature calidad.js ===== */
+try{(function(){
+/* ===== calidad.js — Panel de calidad por endoscopista =====
+   Lee el registro anónimo de procedimientos (localStorage 'endoinforme.v1.registro', creado por core.js al copiar o
+   imprimir un informe: regRecord) y muestra los indicadores de calidad de la colonoscopía con su meta
+   ESGE 2017 / ASGE-ACG 2015, un semáforo y el n. No guarda nada nuevo del paciente (el registro no tiene nombre,
+   RUT ni edad). Se abre desde la barra superior, Ajustes y la pantalla de inicio. API: window.EndoCalidad.open(). */
+var KREG = 'endoinforme.v1.registro', KPREF = 'endoinforme.v1.calidad', KSET = 'endoinforme.v1.settings';
+var MES = ['ene', 'feb', 'mar', 'abr', 'may', 'jun', 'jul', 'ago', 'sep', 'oct', 'nov', 'dic'];
+var MESL = ['enero', 'febrero', 'marzo', 'abril', 'mayo', 'junio', 'julio', 'agosto', 'septiembre', 'octubre', 'noviembre', 'diciembre'];
+var PER = [['3', 'Últimos 3 meses', '3 meses'], ['12', 'Últimos 12 meses', '12 meses'], ['all', 'Todo el registro', 'Todo']];
+var ALL = '*';
+var ICO = '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 20h16"/><rect x="5.5" y="11" width="3" height="6" rx=".8"/><rect x="10.5" y="7" width="3" height="10" rx=".8"/><rect x="15.5" y="4" width="3" height="13" rx=".8"/></svg>';
+
+function mk(tag, cls, html) { var e = document.createElement(tag); if (cls) e.className = cls; if (html != null) e.innerHTML = html; return e; }
+function esc(s) { return String(s == null ? '' : s).replace(/[&<>"']/g, function (c) { return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]; }); }
+function norm(s) { return String(s || '').normalize('NFD').replace(/[̀-ͯ]/g, '').toLowerCase().replace(/\s+/g, ' ').trim(); }
+function toast(m) { try { window.EndoUI.rapido.toast(m); } catch (e) { } }
+function lsJSON(k, d) { try { var x = JSON.parse(localStorage.getItem(k) || 'null'); return x == null ? d : x; } catch (e) { return d; } }
+function regList() { var a = lsJSON(KREG, []); return Array.isArray(a) ? a.filter(function (r) { return r && typeof r === 'object' && !Array.isArray(r); }) : []; }
+function pad2(n) { return ('0' + n).slice(-2); }
+function iso(d) { return d.getFullYear() + '-' + pad2(d.getMonth() + 1) + '-' + pad2(d.getDate()); }
+function num1(x) { return (Math.round(x * 10) / 10).toFixed(1).replace('.', ','); }
+function pctTxt(x, goal) { if (x == null) return '—'; var r = Math.round(x); return (goal != null && x < goal && r >= goal ? num1(Math.floor(x * 10) / 10) : String(r)) + ' %'; } // 89,7 % no se muestra como «90 %» si no cumple
+
+// ---------- datos ----------
+// El registro guarda la firma de texto ("Nombre · Especialidad"): el endoscopista es la parte antes del separador.
+function endoName(r) { var s = String(r.endo || '').trim(); return s ? s.split(/\s+[·—–|]\s+|\s+-\s+|,\s+/)[0].trim() : ''; }
+function endoKey(r) { return norm(endoName(r)) || '-'; }
+function exs(r) {
+  if (Array.isArray(r.ex) && r.ex.length) return r.ex;
+  var t = norm(r.examen); return t.indexOf('eda') >= 0 && t.indexOf('colon') >= 0 ? ['eda', 'colono'] : t.indexOf('colon') >= 0 ? ['colono'] : t.indexOf('eda') >= 0 ? ['eda'] : [];
+}
+function isCol(r) { return exs(r).indexOf('colono') >= 0; }
+function isEda(r) { return exs(r).indexOf('eda') >= 0; }
+function n0(x) { var v = +x; return isNaN(v) ? 0 : v; }
+function median(a) { if (!a.length) return null; var s = a.slice().sort(function (x, y) { return x - y; }), m = s.length >> 1; return s.length % 2 ? s[m] : (s[m - 1] + s[m]) / 2; }
+function activeKey() {
+  var p = null; try { p = window.EndoPerfil && window.EndoPerfil.active(); } catch (e) { }
+  if (p && String(p.nombre || '').trim()) return { key: norm(p.nombre), name: String(p.nombre).trim() };
+  var f = String((lsJSON(KSET, {}) || {}).firma || '').trim(); if (!f) return null;
+  var n = endoName({ endo: f }); return n ? { key: norm(n), name: n } : null;
+}
+function cutoff(per) { if (per === 'all') return ''; var d = new Date(); d.setMonth(d.getMonth() - (+per)); return iso(d); }
+function inPer(r, cut) { return !cut || String(r.fecha || '') >= cut; }
+function endos(L) {
+  var m = {}, order = [];
+  L.forEach(function (r) { var k = endoKey(r); if (!m[k]) { m[k] = { key: k, name: endoName(r) || 'Sin endoscopista', n: 0 }; order.push(k); } m[k].n++; m[k].name = endoName(r) || m[k].name; });
+  return order.map(function (k) { return m[k]; }).sort(function (a, b) { return b.n - a.n; });
+}
+// eventos adversos: texto "Sin eventos adversos" / "Desaturación transitoria, Perforación" (multi) / "a / b" (EDA + colono)
+function evList(r) { return String(r.eventos || '').split(/\s*\/\s*|,\s*/).map(function (s) { return s.trim(); }).filter(Boolean); }
+function evAdv(r) { return evList(r).filter(function (s) { return !/^sin eventos/i.test(s); }); }
+
+function stats(L) {
+  var C = L.filter(isCol), E = L.filter(isEda), S = { n: L.length, nC: C.length, nE: E.length };
+  var cec = C.filter(function (r) { return r.cecal === 'Sí' || r.cecal === 'No'; });
+  S.cecal = { num: cec.filter(function (r) { return r.cecal === 'Sí'; }).length, den: cec.length, excl: C.filter(function (r) { return r.cecal === 'n/a'; }).length };
+  S.pdr = { num: C.filter(function (r) { return n0(r.nPol) > 0; }).length, den: C.length };
+  // ADR verdadera solo si un futuro hook guarda la histología (r.adenoHist = 'Sí'/'No'); si no, sospecha endoscópica
+  var hist = C.filter(function (r) { return r.adenoHist === 'Sí' || r.adenoHist === 'No'; });
+  if (hist.length) S.adr = { num: hist.filter(function (r) { return r.adenoHist === 'Sí'; }).length, den: hist.length, hist: true };
+  else { var withAd = C.filter(function (r) { return r.adeno === 'Sí' || r.adeno === 'No'; }); S.adr = { num: withAd.filter(function (r) { return r.adeno === 'Sí'; }).length, den: withAd.length, hist: false }; }
+  var rt = C.filter(function (r) { return typeof r.retiro === 'number' && r.retiro > 0; }), rtD = rt.filter(function (r) { return !(n0(r.nRes) > 0); });
+  var use = rtD.length ? rtD : rt;
+  S.retiro = { med: median(use.map(function (r) { return r.retiro; })), den: use.length, ge6: use.filter(function (r) { return r.retiro >= 6; }).length, diag: !!rtD.length, all: rt.length };
+  var bp = C.filter(function (r) { return r.bOk === 'Sí' || r.bOk === 'No'; });
+  S.prep = { num: bp.filter(function (r) { return r.bOk === 'Sí'; }).length, den: bp.length, med: median(bp.map(function (r) { return n0(r.bTot); })) };
+  var ev = L.filter(function (r) { return evList(r).length; }), types = {};
+  ev.forEach(function (r) { evAdv(r).forEach(function (t) { types[t] = (types[t] || 0) + 1; }); });
+  S.compl = { num: ev.filter(function (r) { return evAdv(r).length; }).length, den: ev.length, types: types, perf: ev.filter(function (r) { return evAdv(r).some(function (t) { return /perfora/i.test(t); }); }).length };
+  return S;
+}
+function pct(o) { return o.den ? 100 * o.num / o.den : null; }
+// semáforo: verde ≥ meta; ámbar a ≤ band puntos bajo la meta; rojo más abajo
+function light(v, goal, band) { return v == null ? 'na' : v >= goal ? 'ok' : v >= goal - band ? 'warn' : 'bad'; }
+var LIGHT_TXT = { ok: 'En meta', warn: 'Cerca de la meta', bad: 'Bajo la meta', na: 'Sin datos' };
+
+// ---------- preferencias (solo comodidad de este navegador) ----------
+var pref = (function () { var p = lsJSON(KPREF, {}); return { per: p && /^(3|12|all)$/.test(p.per) ? p.per : '12' }; })();
+function savePref() { try { localStorage.setItem(KPREF, JSON.stringify({ per: pref.per })); } catch (e) { } }
+
+// ---------- panel ----------
+var cur = null;
+function open() {
+  if (cur) return;
+  var L = regList(), act = activeKey(), E = endos(L);
+  var sel = act ? act.key : ALL;
+  if (!act && E.length === 1) sel = E[0].key;
+  var prevFocus = document.activeElement;
+  var ov = mk('div', 'calov'), box = mk('div', 'calbox');
+  box.setAttribute('role', 'dialog'); box.setAttribute('aria-modal', 'true'); box.setAttribute('aria-label', 'Panel de calidad');
+  ov.appendChild(box);
+  var close = function () {
+    if (!cur) return; cur = null;
+    window.removeEventListener('keydown', key, true);
+    document.documentElement.classList.remove('calprint');
+    ov.classList.add('out'); setTimeout(function () { ov.remove(); }, 160);
+    try { if (prevFocus && prevFocus.focus) prevFocus.focus({ preventScroll: true }); } catch (e) { }
+  };
+  var key = function (e) {
+    if (e.key === 'Escape') { e.preventDefault(); e.stopPropagation(); close(); return; }
+    if (e.key === 'Tab') { // foco atrapado dentro del panel
+      var f = Array.prototype.filter.call(box.querySelectorAll('button,select,[tabindex="0"]'), function (x) { return !x.disabled && x.offsetParent !== null; });
+      if (f.length) { var i = f.indexOf(document.activeElement); if (e.shiftKey && i <= 0) { e.preventDefault(); f[f.length - 1].focus(); } else if (!e.shiftKey && i === f.length - 1) { e.preventDefault(); f[0].focus(); } }
+    }
+    e.stopPropagation(); // que los atajos del editor y del inicio (1, 2, 3, Ctrl+K…) no actúen detrás del panel
+    if ((e.ctrlKey || e.metaKey) && (e.key === 'p' || e.key === 'P')) { e.preventDefault(); printIt(); }
+  };
+  ov.addEventListener('mousedown', function (e) { if (e.target === ov) close(); });
+  window.addEventListener('keydown', key, true);
+  cur = { close: close };
+
+  function draw(anim) {
+    L = regList(); E = endos(L);
+    var cut = cutoff(pref.per), Lp = L.filter(function (r) { return inPer(r, cut); });
+    var mine = sel === ALL ? Lp : Lp.filter(function (r) { return endoKey(r) === sel; });
+    var S = stats(mine), who = sel === ALL ? 'Todos los endoscopistas' : nameOf(sel);
+    box.innerHTML = '';
+    // encabezado
+    var hd = mk('div', 'calhd', '<div class="calic">' + ICO.replace(/16/g, '22') + '</div><div class="calht"><h2>Panel de calidad</h2><p>Indicadores de colonoscopía · metas ESGE 2017 y ASGE-ACG 2015</p></div>');
+    var x = mk('button', 'btn ghost calx', '✕'); x.type = 'button'; x.title = 'Cerrar (Esc)'; x.setAttribute('aria-label', 'Cerrar'); x.onclick = close; hd.appendChild(x);
+    box.appendChild(hd);
+    // filtros
+    var fb = mk('div', 'calfb');
+    var sw = mk('label', 'calsel', '<span>Endoscopista</span>'), s = mk('select');
+    s.setAttribute('aria-label', 'Endoscopista');
+    var opts = [];
+    if (act && !E.some(function (e) { return e.key === act.key; })) opts.push({ key: act.key, name: act.name, n: 0 });
+    opts = opts.concat(E);
+    opts.forEach(function (e) { var o = mk('option'); o.value = e.key; o.textContent = e.name + (act && e.key === act.key ? ' (tú)' : '') + ' · ' + e.n; s.appendChild(o); });
+    var oa = mk('option'); oa.value = ALL; oa.textContent = 'Todos · ' + L.length; s.appendChild(oa);
+    s.value = sel; if (s.value !== sel) { sel = ALL; s.value = ALL; }
+    s.onchange = function () { sel = s.value; draw(true); };
+    sw.appendChild(s); fb.appendChild(sw);
+    var seg = mk('div', 'calseg'); seg.setAttribute('role', 'group'); seg.setAttribute('aria-label', 'Período');
+    PER.forEach(function (p) {
+      var b = mk('button', pref.per === p[0] ? 'on' : '', esc(p[2])); b.type = 'button'; b.title = p[1]; b.setAttribute('aria-pressed', pref.per === p[0] ? 'true' : 'false');
+      b.onclick = function () { pref.per = p[0]; savePref(); draw(true); }; seg.appendChild(b);
+    });
+    fb.appendChild(seg);
+    var sp = mk('span', 'calsp'); fb.appendChild(sp);
+    var bx = mk('button', 'btn sm', '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3v12m0 0 4-4m-4 4-4-4M5 21h14"/></svg>Exportar CSV');
+    bx.type = 'button'; bx.title = 'Indicadores resumidos por endoscopista (período elegido)'; bx.disabled = !Lp.length; bx.onclick = function () { exportCSV(Lp); };
+    var bp = mk('button', 'btn sm', '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M7 9V3h10v6M7 17H4v-7h16v7h-3M7 14h10v7H7z"/></svg>Imprimir');
+    bp.type = 'button'; bp.disabled = !mine.length; bp.onclick = printIt;
+    fb.appendChild(bx); fb.appendChild(bp);
+    box.appendChild(fb);
+    // encabezado de impresión
+    box.appendChild(mk('div', 'calpr', '<b>Panel de calidad · ' + esc(who) + '</b><span>' + esc(perLabel(cut)) + ' · generado el ' + esc(fechaLarga(iso(new Date()))) + ' · EndoInforme</span>'));
+
+    if (!L.length) { fb.remove(); box.appendChild(emptyState(true)); return; } // sin registro: filtros y botones vacíos no aportan
+    if (!mine.length) { box.appendChild(emptyState(false, who)); return; }
+
+    // resumen
+    var met = 0, tot = 0;
+    var kp = [
+      kpiCecal(S), kpiAdr(S), kpiPdr(S), kpiRet(S), kpiPrep(S)
+    ];
+    kp.forEach(function (k) { if (k.lv !== 'na') { tot++; if (k.lv === 'ok') met++; } });
+    var sum = mk('div', 'calsum');
+    var ringP = tot ? met / tot : 0, R = 26, CIRC = 2 * Math.PI * R;
+    sum.innerHTML = '<div class="calring ' + (tot ? (met === tot ? 'ok' : met >= tot / 2 ? 'warn' : 'bad') : 'na') + '"><svg viewBox="0 0 64 64" aria-hidden="true"><circle cx="32" cy="32" r="' + R + '" class="trk"/><circle cx="32" cy="32" r="' + R + '" class="val" style="stroke-dasharray:' + CIRC.toFixed(1) + ';stroke-dashoffset:' + (CIRC * (1 - ringP)).toFixed(1) + '"/></svg><b>' + met + '<small>/' + tot + '</small></b></div>' +
+      '<div class="calsumt"><b>' + esc(who) + '</b><span>' + (tot ? met + ' de ' + tot + ' indicadores de colonoscopía en meta' : 'Aún sin indicadores de colonoscopía medibles') + '</span>' +
+      '<small>' + esc(perLabel(cut)) + ' · ' + S.n + ' procedimiento' + (S.n === 1 ? '' : 's') + ' (' + S.nC + ' colonoscopía' + (S.nC === 1 ? '' : 's') + ' · ' + S.nE + ' EDA)</small></div>';
+    box.appendChild(sum);
+    // tarjetas
+    var g = mk('div', 'calgrid');
+    kp.forEach(function (k, i) { g.appendChild(card(k, i)); });
+    g.appendChild(card(kpiCompl(S), 5));
+    g.appendChild(card(kpiVol(S), 6));
+    box.appendChild(g);
+    // gráfico mensual
+    var ch = mk('div', 'calcard calchart');
+    ch.innerHTML = '<div class="calch"><b>Exámenes por mes</b><span class="calleg"><i class="c"></i>Colonoscopía<i class="e"></i>EDA</span></div>';
+    ch.appendChild(chart(sel === ALL ? L : L.filter(function (r) { return endoKey(r) === sel; }), cut));
+    box.appendChild(ch);
+    // notas
+    box.appendChild(mk('div', 'calnote',
+      '<p><b>Cómo se calcula.</b> Registro anónimo de este dispositivo (se suma un procedimiento al copiar o imprimir un informe; sin nombre, RUT ni edad). ' +
+      'Intubación cecal: ciego alcanzado sobre colonoscopías con alcance registrado (se excluyen colon operado / muñón rectal). ' +
+      'Retiro: mediana en colonoscopías sin resección (ESGE: ≥ 6 min en ≥ 90 % de los exámenes). ' +
+      'Preparación adecuada: Boston total ≥ 6 con cada segmento ≥ 2. ' +
+      'PDR: colonoscopías con ≥ 1 pólipo registrado. ADR estimada: adenoma sospechado por diagnóstico óptico (NICE 2, JNET 2A-3 o LST) mientras la histología no se registre. ' +
+      'Idealmente ADR y PDR se miden en colonoscopías de tamizaje en ≥ 50 años; el registro no guarda edad ni separa la indicación de tamizaje.</p>' +
+      '<p class="calref">Referencias: Kaminski MF et al. Performance measures for lower gastrointestinal endoscopy: ESGE Quality Improvement Initiative. Endoscopy 2017;49:378-97. · Rex DK et al. Quality indicators for colonoscopy (ASGE/ACG). Gastrointest Endosc 2015;81:31-53.</p>'));
+    if (anim) countUp(box);
+  }
+  function nameOf(k) { if (act && act.key === k) return act.name; var e = E.filter(function (x) { return x.key === k; })[0]; return e ? e.name : 'Endoscopista'; }
+  function perLabel(cut) { return cut ? PER.filter(function (p) { return p[0] === pref.per; })[0][1] + ' (desde ' + fechaLarga(cut) + ')' : 'Todo el registro'; }
+  function emptyState(none, who) {
+    var e = mk('div', 'calempty');
+    e.innerHTML = '<svg viewBox="0 0 120 84" aria-hidden="true"><rect x="8" y="60" width="104" height="3" rx="1.5" class="b"/><rect x="20" y="40" width="14" height="20" rx="3" class="s"/><rect x="42" y="28" width="14" height="32" rx="3" class="s"/><rect x="64" y="46" width="14" height="14" rx="3" class="s"/><rect x="86" y="18" width="14" height="42" rx="3" class="a"/><circle cx="93" cy="10" r="4" class="a"/></svg>' +
+      (none ? '<h3>Tu panel se llena solo</h3><p>Aún no hay procedimientos registrados. Cada informe que <b>copias</b> o <b>imprimes</b> se suma aquí de forma anónima (sin nombre ni RUT) y verás tu intubación cecal, PDR, tiempo de retiro y preparación frente a las metas internacionales.</p>'
+        : '<h3>Sin procedimientos en este período</h3><p>No hay registros de <b>' + esc(who) + '</b> en ' + esc(PER.filter(function (p) { return p[0] === pref.per; })[0][1].toLowerCase()) + '.</p>');
+    var row = mk('div', 'calerow');
+    if (!none) {
+      if (sel !== ALL) { var b1 = mk('button', 'btn', 'Ver todos los endoscopistas'); b1.type = 'button'; b1.onclick = function () { sel = ALL; draw(true); }; row.appendChild(b1); }
+      if (pref.per !== 'all') { var b2 = mk('button', 'btn', 'Ver todo el registro'); b2.type = 'button'; b2.onclick = function () { pref.per = 'all'; savePref(); draw(true); }; row.appendChild(b2); }
+    }
+    var b3 = mk('button', 'btn primary', none ? 'Entendido' : 'Cerrar'); b3.type = 'button'; b3.onclick = close; row.appendChild(b3);
+    e.appendChild(row);
+    return e;
+  }
+  function printIt() {
+    Array.prototype.forEach.call(box.querySelectorAll('.calv[data-num]'), function (el) { el.textContent = el.getAttribute('data-v'); el.removeAttribute('data-num'); }); // sin conteo a medias en el papel
+    var h = document.documentElement; h.classList.add('calprint');
+    var done = function () { h.classList.remove('calprint'); window.removeEventListener('afterprint', done); };
+    window.addEventListener('afterprint', done);
+    setTimeout(function () { try { window.print(); } catch (e) { } setTimeout(done, 1500); }, 30);
+  }
+  document.body.appendChild(ov);
+  draw(true);
+  setTimeout(function () { var f = box.querySelector('select') || box.querySelector('.calempty .primary') || box.querySelector('button'); if (f) try { f.focus({ preventScroll: true }); } catch (e) { } }, 40);
+}
+
+function fechaLarga(s) { var m = /^(\d{4})-(\d{2})-(\d{2})/.exec(s || ''); return m ? (+m[3]) + ' de ' + MESL[+m[2] - 1] + ' de ' + m[1] : s; }
+
+// ---------- indicadores ----------
+function frac(o, unit) { return o.den ? o.num + ' de ' + o.den + ' ' + unit : 'sin datos'; }
+function kpiCecal(S) {
+  var v = pct(S.cecal), lv = light(v, 90, 5);
+  return { id: 'cecal', t: 'Intubación cecal', v: v, txt: pctTxt(v, 90), lv: lv, scale: 100, goal: 90, ideal: 95,
+    goalTxt: 'Meta ≥ 90 % · ideal ≥ 95 %', n: frac(S.cecal, 'colonoscopías') + (S.cecal.excl ? ' · ' + S.cecal.excl + ' excluida' + (S.cecal.excl === 1 ? '' : 's') + ' (colon operado)' : ''),
+    tag: v != null && v >= 95 ? 'Ideal' : null, src: 'ESGE 2017 · ASGE-ACG 2015' };
+}
+function kpiAdr(S) {
+  var v = pct(S.adr), hist = S.adr.hist;
+  return { id: 'adr', t: hist ? 'ADR' : 'ADR estimada', sub: hist ? 'Tasa de detección de adenomas (histología)' : 'Sospecha endoscópica · histología pendiente', v: v, txt: pctTxt(v, 25), lv: light(v, 25, 5), scale: 50, goal: 25,
+    goalTxt: 'Meta ≥ 25 %', n: frac(S.adr, 'colonoscopías'), src: 'ESGE 2017 · ASGE-ACG 2015', est: !hist };
+}
+function kpiPdr(S) {
+  var v = pct(S.pdr);
+  return { id: 'pdr', t: 'PDR', sub: 'Detección de pólipos · proxy de ADR mientras la histología está pendiente', v: v, txt: pctTxt(v, 40), lv: light(v, 40, 5), scale: 80, goal: 40,
+    goalTxt: 'Referencia ≥ 40 % (≈ ADR 25 %)', n: frac(S.pdr, 'colonoscopías'), src: 'Proxy de ADR (sin meta formal ESGE)' };
+}
+function kpiRet(S) {
+  var R = S.retiro, v = R.med;
+  return { id: 'retiro', t: 'Tiempo de retiro', sub: 'Mediana' + (R.den ? (R.diag ? ' · colonoscopías sin resección' : ' · todas (todas con resección)') : ''), v: v, txt: v == null ? '—' : num1(v) + ' min', lv: v == null ? 'na' : v < 6 ? light(v, 6, 1) : (R.den && R.ge6 / R.den >= 0.9 ? 'ok' : 'warn'), scale: 12, goal: 6, unit: 'min',
+    goalTxt: 'Meta ≥ 6 min', n: R.den ? R.den + ' colonoscopía' + (R.den === 1 ? '' : 's') + ' · ' + Math.round(100 * R.ge6 / R.den) + ' % con ≥ 6 min' : 'sin datos', src: 'ESGE 2017 · ASGE-ACG 2015' };
+}
+function kpiPrep(S) {
+  var v = pct(S.prep);
+  return { id: 'prep', t: 'Preparación adecuada', sub: 'Boston ≥ 6 y cada segmento ≥ 2', v: v, txt: pctTxt(v, 90), lv: light(v, 90, 5), scale: 100, goal: 90,
+    goalTxt: 'Meta ≥ 90 %', n: frac(S.prep, 'colonoscopías') + (S.prep.med != null ? ' · Boston mediano ' + String(S.prep.med).replace('.', ',') : ''), src: 'ESGE 2017 · ASGE-ACG 2015' };
+}
+function kpiCompl(S) {
+  var C = S.compl, v = pct(C), ty = Object.keys(C.types).sort(function (a, b) { return C.types[b] - C.types[a]; });
+  return { id: 'compl', t: 'Eventos adversos', sub: 'Inmediatos, registrados en el informe', v: v, txt: v == null ? '—' : (v > 0 && v < 1 ? '<1' : Math.round(v)) + ' %', lv: v == null ? 'na' : 'info', info: true,
+    goalTxt: 'Perforación: meta < 1/1000 (diagnóstica)',
+    n: C.den ? C.num + ' de ' + C.den + ' procedimientos' + (ty.length ? ' · ' + ty.map(function (t) { return t.toLowerCase() + ' ' + C.types[t]; }).join(', ') : '') : 'sin datos', src: 'EDA y colonoscopía' };
+}
+function kpiVol(S) {
+  return { id: 'vol', t: 'Volumen', sub: 'Procedimientos del período', v: S.n, txt: String(S.n), lv: 'info', info: true, vol: true,
+    goalTxt: S.nC + ' colonoscopía' + (S.nC === 1 ? '' : 's') + ' · ' + S.nE + ' EDA', n: 'Un examen combinado cuenta en EDA y en colonoscopía', src: '' };
+}
+function nb(t) { return String(t).replace(/(\d) (%|min\b)/g, '$1\u00a0$2').replace(/([≥<]) (\d)/g, '$1\u00a0$2'); } // «90 %», «≥ 6 min» sin cortar
+function card(k, i) {
+  k.goalTxt = nb(k.goalTxt); k.n = nb(k.n);
+  var c = mk('div', 'calcard kpi lv-' + k.lv); c.style.setProperty('--i', i); c.setAttribute('data-kpi', k.id);
+  var bar = '';
+  if (!k.info && k.lv !== 'na') {
+    var w = Math.max(0, Math.min(100, 100 * k.v / k.scale)), gpos = Math.min(100, 100 * k.goal / k.scale);
+    bar = '<div class="calbar" aria-hidden="true"><i style="--w:' + w.toFixed(1) + '%"></i><em style="left:' + gpos.toFixed(1) + '%" title="Meta"></em>' + (k.ideal ? '<em class="id" style="left:' + (100 * k.ideal / k.scale).toFixed(1) + '%" title="Ideal"></em>' : '') + '</div>';
+  }
+  var pill = k.info ? '' : '<span class="calpill">' + (k.lv === 'na' ? 'Sin datos' : LIGHT_TXT[k.lv]) + '</span>';
+  c.innerHTML = '<div class="calk"><span class="caldot"></span><b>' + esc(k.t) + '</b>' + (k.tag ? '<span class="caltag">' + esc(k.tag) + '</span>' : '') + pill + '</div>' +
+    (k.sub ? '<div class="calsub">' + esc(k.sub) + '</div>' : '') +
+    '<div class="calv' + (k.lv === 'na' ? ' na' : '') + '" data-v="' + esc(k.txt) + '"' + (k.v != null ? ' data-num="' + k.v + '"' : '') + '>' + (k.lv === 'na' ? 'sin datos' : esc(k.txt)) + '</div>' +
+    bar + '<div class="calgoal">' + esc(k.goalTxt) + '</div><div class="caln">' + (k.vol ? '' : 'n: ') + esc(k.n) + '</div>' + (k.src ? '<div class="calsrc">' + esc(k.src) + '</div>' : '');
+  return c;
+}
+function countUp(root) {
+  var red = false; try { red = window.matchMedia('(prefers-reduced-motion: reduce)').matches; } catch (e) { }
+  if (red) return;
+  Array.prototype.forEach.call(root.querySelectorAll('.calv[data-num]'), function (el) {
+    var fin = el.getAttribute('data-v'), to = +el.getAttribute('data-num'); if (!isFinite(to) || to <= 0) return;
+    var m = /^([<]?)([\d,]+)(.*)$/.exec(fin); if (!m || m[1]) return;
+    var dec = m[2].indexOf(',') >= 0, t0 = null, D = 650;
+    var step = function (t) {
+      if (!el.isConnected || !el.hasAttribute('data-num')) return; if (t0 == null) t0 = t;
+      var p = Math.min(1, (t - t0) / D), e = 1 - Math.pow(1 - p, 3), x = to * e;
+      el.textContent = p >= 1 ? fin : (dec ? num1(x) : String(Math.round(x))) + m[3];
+      if (p < 1) requestAnimationFrame(step);
+    };
+    requestAnimationFrame(step);
+  });
+}
+
+// ---------- gráfico mensual (SVG inline) ----------
+function chart(L, cut) {
+  var now = new Date(), last = now.getFullYear() * 12 + now.getMonth(), first = last - 11;
+  if (!cut) { var mn = last; L.forEach(function (r) { var m = /^(\d{4})-(\d{2})/.exec(r.fecha || ''); if (m) mn = Math.min(mn, +m[1] * 12 + (+m[2] - 1)); }); first = Math.max(last - 23, Math.min(first, mn)); }
+  var cm = cut ? (+cut.slice(0, 4)) * 12 + (+cut.slice(5, 7) - 1) : -1;
+  var M = [];
+  for (var k = first; k <= last; k++) M.push({ k: k, c: 0, e: 0 });
+  L.forEach(function (r) { var m = /^(\d{4})-(\d{2})/.exec(r.fecha || ''); if (!m) return; var b = M[+m[1] * 12 + (+m[2] - 1) - first]; if (!b) return; if (isCol(r)) b.c++; if (isEda(r)) b.e++; });
+  var mx = Math.max(1, Math.max.apply(null, M.map(function (b) { return b.c + b.e; })));
+  var nice = mx <= 4 ? Math.ceil(mx / 2) * 2 : Math.ceil(mx / 4) * 4;
+  var W = 640, H = 190, P = { l: 26, r: 6, t: 16, b: 26 }, iw = W - P.l - P.r, ih = H - P.t - P.b, bw = iw / M.length, gw = Math.min(28, bw * 0.62);
+  var s = '<svg class="calsvg" viewBox="0 0 ' + W + ' ' + H + '" role="img" aria-label="Exámenes por mes">';
+  [0, 0.5, 1].forEach(function (f) { var y = P.t + ih * (1 - f); s += '<line class="gl" x1="' + P.l + '" x2="' + (W - P.r) + '" y1="' + y.toFixed(1) + '" y2="' + y.toFixed(1) + '"/><text class="ax" x="' + (P.l - 6) + '" y="' + (y + 3.5).toFixed(1) + '" text-anchor="end">' + Math.round(nice * f) + '</text>'; });
+  M.forEach(function (b, i) {
+    var x = P.l + bw * i + (bw - gw) / 2, hc = ih * b.c / nice, he = ih * b.e / nice, y0 = P.t + ih, out = b.k < cm;
+    var mo = b.k % 12, yr = Math.floor(b.k / 12), lab = MES[mo];
+    s += '<g class="mb' + (out ? ' out' : '') + '" style="--i:' + i + '"><title>' + MESL[mo] + ' ' + yr + ': ' + b.c + ' colonoscopía' + (b.c === 1 ? '' : 's') + ', ' + b.e + ' EDA</title>';
+    if (b.c) s += '<rect class="c" x="' + x.toFixed(1) + '" y="' + (y0 - hc).toFixed(1) + '" width="' + gw.toFixed(1) + '" height="' + hc.toFixed(1) + '" rx="3"/>';
+    if (b.e) s += '<rect class="e" x="' + x.toFixed(1) + '" y="' + (y0 - hc - he - (b.c ? 1.5 : 0)).toFixed(1) + '" width="' + gw.toFixed(1) + '" height="' + he.toFixed(1) + '" rx="3"/>';
+    if (b.c + b.e) s += '<text class="vl" x="' + (x + gw / 2).toFixed(1) + '" y="' + (y0 - hc - he - 5).toFixed(1) + '" text-anchor="middle">' + (b.c + b.e) + '</text>';
+    if (M.length <= 12 || i % 2 === (M.length - 1) % 2) s += '<text class="ax" x="' + (x + gw / 2).toFixed(1) + '" y="' + (H - 9) + '" text-anchor="middle">' + lab + (mo === 0 || i === 0 ? ' ' + String(yr).slice(2) : '') + '</text>';
+    s += '</g>';
+  });
+  s += '</svg>';
+  var w = mk('div', 'calsvgw', s);
+  return w;
+}
+
+// ---------- CSV por endoscopista ----------
+function exportCSV(Lp) {
+  var cut = cutoff(pref.per), per = PER.filter(function (p) { return p[0] === pref.per; })[0][1];
+  var E = endos(Lp), groups = E.map(function (e) { return { name: e.name, L: Lp.filter(function (r) { return endoKey(r) === e.key; }) }; });
+  if (E.length > 1) groups.push({ name: 'Todos', L: Lp });
+  var head = ['Endoscopista', 'Período', 'Desde', 'Hasta', 'Procedimientos', 'EDA', 'Colonoscopías',
+    'Intubación cecal (%)', 'Intubación cecal (n/N)', 'ADR estimada (%)', 'ADR (n/N)', 'ADR basada en', 'PDR (%)', 'PDR (n/N)',
+    'Retiro mediano (min)', 'Retiro ≥ 6 min (%)', 'Retiro (N)', 'Preparación adecuada (%)', 'Preparación (n/N)', 'Eventos adversos (%)', 'Eventos adversos (n/N)'];
+  var p1 = function (o) { var v = pct(o); return v == null ? '' : num1(v); }, nn = function (o) { return o.den ? o.num + '/' + o.den : ''; };
+  var rows = groups.map(function (g) {
+    var S = stats(g.L), R = S.retiro;
+    return [g.name, per, cut || (g.L.map(function (r) { return r.fecha || ''; }).filter(Boolean).sort()[0] || ''), iso(new Date()), S.n, S.nE, S.nC,
+      p1(S.cecal), nn(S.cecal), p1(S.adr), nn(S.adr), S.adr.hist ? 'Histología' : 'Sospecha endoscópica (NICE 2 / JNET 2A-3 / LST)', p1(S.pdr), nn(S.pdr),
+      R.med == null ? '' : num1(R.med), R.den ? num1(100 * R.ge6 / R.den) : '', R.den || '', p1(S.prep), nn(S.prep), p1(S.compl), nn(S.compl)];
+  });
+  var csv = function (sep) {
+    var cell = function (x) { var t = x == null ? '' : String(x); return /[";\n\r\t]/.test(t) || t.indexOf(sep) >= 0 ? '"' + t.replace(/"/g, '""') + '"' : t; };
+    return [head].concat(rows).map(function (r) { return r.map(cell).join(sep); }).join('\r\n');
+  };
+  if (window.ENDO_ARTIFACT) { try { navigator.clipboard.writeText(csv('\t')).then(function () { toast('Indicadores copiados: pégalos en Excel'); }, function () { toast('No se pudo copiar'); }); } catch (e) { toast('No se pudo copiar'); } return; }
+  var name = 'calidad-endoinforme-' + iso(new Date()) + '.csv';
+  var a = document.createElement('a'); a.href = URL.createObjectURL(new Blob(['﻿' + csv(';')], { type: 'text/csv;charset=utf-8' })); a.download = name;
+  document.body.appendChild(a); a.click(); a.remove(); setTimeout(function () { URL.revokeObjectURL(a.href); }, 4000);
+  toast('Exportado: ' + name);
+}
+
+// ---------- puntos de entrada: barra superior, Ajustes e inicio ----------
+function topBtn() {
+  var tb = document.querySelector('.top .tb'); if (!tb || tb.querySelector('.calbtn')) return;
+  var b = mk('button', 'btn ghost calbtn', ICO); b.type = 'button'; b.title = 'Panel de calidad'; b.setAttribute('aria-label', 'Panel de calidad'); b.onclick = open;
+  var gear = tb.querySelector('button[title="Ajustes"]'); tb.insertBefore(b, gear || null);
+}
+function settingsSec() {
+  Array.prototype.forEach.call(document.querySelectorAll('.modal'), function (m) {
+    var t = m.querySelector('h2'); if (!t || t.textContent !== 'Ajustes' || m.querySelector('.calset')) return;
+    var n = regList().length;
+    var s = mk('div', 'calset', '<span class="calsi">' + ICO.replace(/16/g, '20') + '</span><span class="calst"><b>Panel de calidad</b><small>' + (n ? n + ' procedimiento' + (n === 1 ? '' : 's') + ' · intubación cecal, ADR/PDR, retiro y preparación vs. metas ESGE / ASGE' : 'Indicadores de colonoscopía frente a las metas ESGE / ASGE') + '</small></span>');
+    var b = mk('button', 'btn sm primary', 'Abrir panel'); b.type = 'button';
+    b.onclick = function () { var o = m.closest('.ov'); if (o) o.remove(); open(); };
+    s.appendChild(b);
+    var reg = m.querySelector('.regp');
+    if (reg) m.insertBefore(s, reg); else { var rows = m.querySelectorAll(':scope > .row'), row = rows[rows.length - 1]; if (row) m.insertBefore(s, row); else m.appendChild(s); }
+  });
+}
+function homeBtn() {
+  var hin = document.querySelector('#home .hin'); if (!hin || hin.getAttribute('data-cal')) return;
+  hin.setAttribute('data-cal', '1');
+  var n = regList().length; if (!n) return;
+  var b = mk('button', 'calhome', ICO + '<span>Panel de calidad</span><small>' + n + ' procedimiento' + (n === 1 ? '' : 's') + '</small>'); b.type = 'button'; b.onclick = open;
+  var foot = hin.querySelector('.hfoot'); hin.insertBefore(b, foot || null);
+}
+function inject() { topBtn(); settingsSec(); homeBtn(); }
+try { new MutationObserver(inject).observe(document.body, { childList: true, subtree: true }); } catch (e) { }
+inject();
+window.EndoCalidad = { open: open, close: function () { if (cur) cur.close(); }, stats: function (endo, per) {
+  var cut = cutoff(per || 'all'); return stats(regList().filter(function (r) { return inPer(r, cut) && (!endo || endo === ALL || endoKey(r) === norm(endo)); }));
+} };
+
+})();}catch(e){console.error("Feature calidad.js",e);}
+;
 /* ===== feature creditos.js ===== */
 try{(function(){
 // Créditos y copyright: pie discreto en el inicio + "Acerca de" en Ajustes. Nunca en el informe copiado ni impreso.
@@ -15461,6 +16376,145 @@ new MutationObserver(inject).observe(document.body, { childList: true });
 inject();
 
 })();}catch(e){console.error("Feature creditos.js",e);}
+;
+/* ===== feature dictado.js ===== */
+try{(function(){
+// Dictado por voz en los campos de texto libre (notas de sección, "Otra indicación", "Observación",
+// "Describir", líneas editadas de la conclusión…). Mismo patrón que el dictado del buscador (rapido.js):
+// SpeechRecognition es-CL con resultados interinos. Puntuación por voz: "punto", "coma", "punto y coma",
+// "dos puntos", "punto aparte" / "nueva línea". El texto dictado dispara input/change como si se escribiera.
+// No guarda nada: el audio lo procesa el navegador y el texto queda solo en el informe en memoria.
+'use strict';
+var UI = window.EndoUI;
+if (!UI) return;
+var SR = window.SpeechRecognition || window.webkitSpeechRecognition;
+var off = !SR; // sin soporte (Firefox; WebView de Tauri en macOS): sin botones, aviso en Ajustes
+var NA_TXT = 'Dictado no disponible en este navegador';
+var MIC_SVG = '<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="9" y="2" width="6" height="12" rx="3"/><path d="M5 10a7 7 0 0 0 14 0"/><path d="M12 17v4"/><path d="M8 21h8"/></svg>';
+// campos de texto que NO son texto libre (horas, equipo)
+var SKIP_F = { h_ini: 1, h_fin: 1, equipo: 1 };
+var SEL = '#ed textarea, #ed .fld[data-f] input[type=text], #ed #sec-concl input[type=text]';
+
+function toast(m, ms) { try { UI.rapido.toast(m, ms); } catch (e) { } }
+
+// ---------- puntuación por voz ----------
+function punct(raw, multiline) {
+  var t = ' ' + String(raw || '').replace(/\s+/g, ' ') + ' ';
+  t = t.replace(/\s(punto y aparte|punto aparte|nueva l[ií]nea|nuevo p[aá]rrafo)(?=\s)/gi, multiline ? '.\n' : '. ');
+  t = t.replace(/\spunto y coma(?=\s)/gi, ';');
+  t = t.replace(/\sdos puntos(?=\s)/gi, ':');
+  t = t.replace(/\spunto final(?=\s)/gi, '.');
+  t = t.replace(/\spunto(?=\s)/gi, '.');
+  t = t.replace(/\scoma(?=\s)/gi, ',');
+  t = t.replace(/[ \t]+/g, ' ').replace(/ +([.,;:])/g, '$1').replace(/([.,;:])(?=[A-Za-zÁÉÍÓÚÑáéíóúñü])/g, '$1 ')
+    .replace(/([,;:])\s*\./g, '.').replace(/\.{2,}/g, '.').replace(/ *\n */g, '\n').replace(/^ +| +$/g, '');
+  // mayúscula tras punto o salto de línea
+  t = t.replace(/([.!?]\s+|\n)([a-záéíóúñü])/g, function (m, a, b) { return a + b.toUpperCase(); });
+  return t;
+}
+function join(base, dict) {
+  if (!dict) return base;
+  var capital = !base.replace(/\s+$/, '') || /[.!?\n]\s*$/.test(base);
+  if (capital) dict = dict.charAt(0).toUpperCase() + dict.slice(1);
+  var sep = !base || /[\s\n]$/.test(base) || /^[.,;:]/.test(dict) ? '' : ' ';
+  return base + sep + dict;
+}
+UI.dictado = { punct: punct, join: join };
+
+// ---------- grabación (una a la vez) ----------
+var cur = null; // { rec, target, btn }
+function fire(t, type) { try { t.dispatchEvent(new Event(type, { bubbles: true })); } catch (e) { } }
+function stop() { if (cur && cur.rec) { try { cur.rec.stop(); } catch (e) { } } }
+function setBtn(b, on) { if (!b) return; b.classList.toggle('on', on); b.setAttribute('aria-pressed', on ? 'true' : 'false'); }
+function disableAll() {
+  off = true;
+  Array.prototype.forEach.call(document.querySelectorAll('.dk-mic'), function (b) { b.remove(); });
+  Array.prototype.forEach.call(document.querySelectorAll('.dk-w'), function (w) { w.classList.add('dk-off'); });
+}
+function start(target, btn, lang) {
+  if (cur) { var same = cur.target === target; stop(); if (same) return; }
+  var rec;
+  try { rec = new SR(); } catch (e) { toast(NA_TXT); disableAll(); return; }
+  var multi = target.tagName === 'TEXTAREA';
+  rec.lang = lang || 'es-CL'; rec.interimResults = true; rec.continuous = true; rec.maxAlternatives = 1;
+  var base = target.value || '', retried = false, me = { rec: rec, target: target, btn: btn };
+  cur = me;
+  rec.onresult = function (e) {
+    if (!document.body.contains(target)) { stop(); return; }
+    var all = '';
+    for (var i = 0; i < e.results.length; i++) { var r = e.results[i]; all += (r[0] && r[0].transcript || '') + ' '; }
+    target.value = join(base, punct(all, multi));
+    fire(target, 'input');
+    if (multi && target.scrollHeight > target.clientHeight) { target.style.height = (target.scrollHeight + 2) + 'px'; }
+  };
+  rec.onerror = function (e) {
+    var er = e && e.error;
+    if (er === 'language-not-supported' && rec.lang !== 'es-ES' && !retried) { retried = true; rec.onend = null; cur = null; setBtn(btn, false); start(target, btn, 'es-ES'); return; }
+    if (er === 'service-not-allowed') { toast(NA_TXT, 4000); disableAll(); }
+    else if (er === 'network') toast('Dictado no disponible sin internet en este navegador', 5000);
+    else if (er === 'not-allowed') toast('Micrófono bloqueado: permite el acceso en el navegador');
+    else if (er === 'no-speech') toast('No se escuchó nada');
+    else if (er && er !== 'aborted') toast('Dictado interrumpido');
+  };
+  rec.onend = function () {
+    if (cur === me) cur = null;
+    setBtn(btn, false);
+    if (document.body.contains(target)) { var v = target.value.replace(/[ \t]+$/, ''); if (v !== target.value) { target.value = v; fire(target, 'input'); } fire(target, 'change'); }
+  };
+  try { rec.start(); setBtn(btn, true); try { target.focus({ preventScroll: true }); } catch (x) { } }
+  catch (e) { cur = null; setBtn(btn, false); toast('No se pudo iniciar el dictado'); }
+}
+
+// ---------- botones 🎤 ----------
+function eligible(t) {
+  if (t._dk || t.disabled || t.readOnly) return false;
+  if (t.closest('.pal, .ov, .memb')) return false;
+  var f = t.closest('.fld[data-f]'); if (f && SKIP_F[f.getAttribute('data-f')]) return false;
+  return true;
+}
+function addMic(t) {
+  t._dk = 1;
+  var inline = t.classList.contains('cxe') || !!t.closest('#sec-concl');
+  var b = document.createElement('button');
+  b.type = 'button'; b.className = 'dk-mic'; b.innerHTML = MIC_SVG;
+  b.title = 'Dictar por voz (Ctrl+M). Di "punto", "coma" o "punto aparte"';
+  b.setAttribute('aria-label', 'Dictar por voz'); b.setAttribute('aria-pressed', 'false'); b.setAttribute('tabindex', '-1');
+  // no quitar el foco al campo (la conclusión editada se guarda al perder el foco)
+  b.addEventListener('mousedown', function (e) { e.preventDefault(); });
+  b.addEventListener('click', function (e) { e.preventDefault(); e.stopPropagation(); start(t, b); });
+  t._dkMic = b;
+  if (inline) { t.parentNode.insertBefore(b, t.nextSibling); b.classList.add('dk-in'); return; }
+  var w = document.createElement('span');
+  w.className = 'dk-w' + (t.tagName === 'TEXTAREA' ? ' dk-ta' : '');
+  t.parentNode.insertBefore(w, t); w.appendChild(t); w.appendChild(b);
+}
+var pend = false;
+function scan() {
+  pend = false;
+  if (off) return;
+  Array.prototype.forEach.call(document.querySelectorAll(SEL), function (t) { if (eligible(t)) addMic(t); });
+}
+function later() { if (!pend) { pend = true; (window.requestAnimationFrame || setTimeout)(scan); } }
+if (!off) {
+  var ed = document.getElementById('ed');
+  if (ed && 'MutationObserver' in window) new MutationObserver(later).observe(ed, { childList: true, subtree: true });
+  later();
+  document.addEventListener('keydown', function (e) {
+    if (off || !(e.ctrlKey || e.metaKey) || e.shiftKey || e.altKey || String(e.key).toLowerCase() !== 'm') return;
+    var a = document.activeElement; if (!a || !a._dkMic || document.querySelector('.ov')) return;
+    e.preventDefault(); start(a, a._dkMic);
+  });
+  document.addEventListener('endo:newreport', stop);
+}
+// ---------- aviso en Ajustes ----------
+document.addEventListener('endo:settings', function (ev) {
+  var box = ev.detail && ev.detail.box; if (!box || !off || box.querySelector('.dk-na')) return;
+  var n = document.createElement('div'); n.className = 'dk-na'; n.setAttribute('role', 'note');
+  n.innerHTML = MIC_SVG + '<span>' + NA_TXT + '</span>';
+  var sub = box.querySelector('.sub'); if (sub && sub.nextSibling) box.insertBefore(n, sub.nextSibling); else box.appendChild(n);
+});
+
+})();}catch(e){console.error("Feature dictado.js",e);}
 ;
 /* ===== feature disco.js ===== */
 try{(function(){
@@ -18056,7 +19110,7 @@ new MutationObserver(scanHome).observe(document.body, { childList: true });
 scanHome();
 
 })();}catch(e){console.error("Feature rapido.js",e);}
-window.ENDO_VERSION="202611271005";window.ENDO_WEB_URL="";</script>
+window.ENDO_VERSION="202611271300";window.ENDO_WEB_URL="";</script>
 <script>
 if ('serviceWorker' in navigator && location.protocol.indexOf('http') === 0) { navigator.serviceWorker.register('sw.js').catch(function(){}); }
 </script>
