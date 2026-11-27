@@ -1010,6 +1010,26 @@ mark.rvmk.on,mark.rvmk:hover{background:#f8c867;box-shadow:0 0 0 2px #f8c867,0 0
   .sheet .paper .sig small{display:block;font-size:11.5px;color:var(--d-ink3)}
   @container (max-width:430px){.sheet .memb .mrow{flex-wrap:wrap}.sheet .memb .mf{border-left:0;padding:0 10px}}
 }
+/* Recomendaciones post-procedimiento: al pie, después de la firma */
+.paper .recblk{margin-top:22px;padding:10px 14px 12px;border:1px solid var(--line,#e2e8ed);border-radius:8px;background:color-mix(in srgb,var(--accent,#0b5f69) 4%,transparent)}
+.paper .recblk h3{margin-top:0!important}
+.paper .recblk p{white-space:pre-line;font-size:.94em;line-height:1.5}
+@media print{
+  .paper .recblk{margin-top:12pt;padding:6pt 9pt 7pt;border:.5pt solid var(--d-rule)!important;border-radius:3pt;background:var(--d-tint)!important;break-inside:auto}
+  .paper .recblk h3{margin:0 0 2pt!important;font-size:7.75pt}
+  .paper .recblk p{font-size:8.5pt!important;line-height:1.38!important;color:var(--d-ink2)!important;orphans:2;widows:2}
+}
+@media print{
+  .paper h3{margin:8pt 0 2pt}
+  .paper .sig{margin-top:6pt!important}
+  .paper .sig .sgimg,.paper .sig .sgimg.empty{height:11mm}
+  .paper .sig .sgimg img{max-height:11mm}
+  .paper .recblk{margin-top:8pt;padding:4pt 8pt 5pt}
+  .paper .recblk p{font-size:8pt!important;line-height:1.3!important}
+}
+@media print{html,body{padding-bottom:0!important;margin-bottom:0!important}}
+@page{size:letter;margin:12mm 16mm 12mm}
+@media print{.paper .hdr{line-height:1.38!important;padding-top:4pt!important;padding-bottom:4pt!important}}
 
 .instwrap{display:flex;justify-content:center;margin-top:10px}
 .instbtn{display:inline-flex;align-items:center;gap:8px;font:inherit;font-weight:600;font-size:14px;cursor:pointer;border-radius:999px;padding:9px 16px;border:1px solid var(--accent,#0f766e);background:transparent;color:var(--accent,#0f766e);transition:background-color .12s,color .12s,transform .08s}
@@ -11698,7 +11718,9 @@ if (typeof module !== 'undefined') module.exports = EndoScales;
   function findingsFor(secId) { return R.findings.filter(function (f) { return (f.where || []).indexOf(secId) >= 0; }); }
 
   // ---------- state ----------
-  var settings = Object.assign({ scaleTip: true, firma: '', conclNum: false, altaDefault: false, theme: '', titles: true, rich: true, confirmCopy: true }, (function (x) { return isObj(x) ? x : {}; })(lsGet(LS.set, {})));
+  var settings = Object.assign({ scaleTip: true, firma: '', conclNum: false, altaDefault: true, theme: '', titles: true, rich: true, confirmCopy: true }, (function (x) { return isObj(x) ? x : {}; })(lsGet(LS.set, {})));
+  if (!settings._recMig) { settings.altaDefault = true; settings._recMig = 1; try { localStorage.setItem(LS.set, JSON.stringify(settings)); } catch (e) { } }
+  function recTitle(ex) { ex = ex || []; var e = ex.indexOf('eda') >= 0, c = ex.indexOf('colono') >= 0; return e && c ? 'Recomendaciones post-endoscopía y post-colonoscopía' : c ? 'Recomendaciones post-colonoscopía' : 'Recomendaciones post-endoscopía'; }
   var usage = (function (x) { return isObj(x) ? x : {}; })(lsGet(LS.use, {}));
   var lastLoc = (function (x) { return isObj(x) ? x : {}; })(lsGet(LS.loc, {}));
   var state, undoStack = [];
@@ -11830,7 +11852,7 @@ if (typeof module !== 'undefined') module.exports = EndoScales;
       if (state.frascos.length && !ss._noAutoBx) (s.fields || []).forEach(function (f) { if (f.type === 'multi' && optsOf(f).some(function (o) { return o.v === 'biopsias'; }) && (fv[f.id] || []).indexOf('biopsias') < 0) { var ord = optsOf(f).map(function (o) { return o.v; }); fv[f.id] = (fv[f.id] || []).concat('biopsias').sort(function (a, b) { return ord.indexOf(a) - ord.indexOf(b); }); } });
       var t = String(call(s.text, [fv, h, ctxOf(s, exams[0], { hasFindings: false, nFrascos: state.frascos.length, exams: exams })], s.id + '.text')).trim();
       if (h.has(ss.note)) t = (t ? t + '\n' : '') + ss.note.trim();
-      if (t) out.footer.push({ id: s.id, title: s.title, text: t });
+      if (t) out.footer.push({ id: s.id, title: s.id === 'alta' ? recTitle(exams) : s.title, text: t });
     });
     return out;
   }
@@ -11886,9 +11908,9 @@ if (typeof module !== 'undefined') module.exports = EndoScales;
       ls.forEach(function (c, i) { H.push('<p' + (links ? ' data-k="' + esc(c.key) + '" style="cursor:pointer" title="Clic: ir al origen de esta línea"' : '') + '>' + (settings.conclNum ? (i + 1) + '. ' : '') + tagify(esc(c.text)) + '.</p>'); });
     });
     H.push('</div>');
-    m.footer.forEach(function (f) { H.push('<h3>' + esc(upper(f.title)) + ':</h3><p data-s="' + f.id + '"' + (links ? ' style="cursor:pointer"' : '') + '>' + esc(f.text) + '</p>'); });
     if (h.has(settings.firma)) H.push('<p class="firmatxt" style="margin-top:18px">' + esc(settings.firma) + '</p>');
     H.push('<div class="sig"><span></span>' + esc(settings.firma || 'Firma y timbre del endoscopista') + '</div></div>');
+    m.footer.forEach(function (f) { H.push('<div class="recblk"><h3>' + esc(upper(f.title)) + ':</h3><p data-s="' + f.id + '"' + (links ? ' style="cursor:pointer" title="Clic: editar recomendaciones"' : '') + '>' + esc(f.text) + '</p></div>'); });
     return H.join('');
   }
 
@@ -15377,7 +15399,7 @@ new MutationObserver(scanHome).observe(document.body, { childList: true });
 scanHome();
 
 })();}catch(e){console.error("Feature rapido.js",e);}
-window.ENDO_VERSION="202611270245";window.ENDO_WEB_URL="";</script>
+window.ENDO_VERSION="202611270255";window.ENDO_WEB_URL="";</script>
 <script>
 if ('serviceWorker' in navigator && location.protocol.indexOf('http') === 0) { navigator.serviceWorker.register('sw.js').catch(function(){}); }
 </script>
