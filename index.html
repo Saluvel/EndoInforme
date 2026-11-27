@@ -872,6 +872,46 @@ details.params[open]>summary .chev{transform:rotate(90deg)}
 details.params.qhas:not([open]){border-color:var(--qyLine)}
 .hd .qcnt{flex:none}
 @media (max-width:820px){.qcnt{font-size:0;padding:0 7px;margin-left:6px;flex:none}.qcnt::before{content:attr(data-n);font-size:11px}}
+/* v1.1.0: una sola acción obvia por pantalla */
+.pvbar .btn.primary.big{font-size:15px;padding:10px 22px;min-height:42px;flex:1 1 auto;justify-content:center;max-width:320px}
+.pvbar .btn.primary.big.pulse{animation:pvpulse 1.2s ease-in-out 2}
+@keyframes pvpulse{0%,100%{box-shadow:0 0 0 0 color-mix(in srgb,var(--ok) 0%,transparent)}50%{box-shadow:0 0 0 6px color-mix(in srgb,var(--ok) 35%,transparent)}}
+.pvmenu{position:relative}
+.pvmenu .pvmore{display:inline-flex;align-items:center;gap:5px;min-height:42px;padding:8px 12px}
+.pvmenu .pvlist{display:none;position:absolute;right:0;top:calc(100% + 6px);z-index:60;min-width:220px;padding:6px;border:1px solid var(--line);border-radius:12px;background:var(--panel);box-shadow:0 12px 32px rgba(0,0,0,.16)}
+.pvmenu.open .pvlist{display:block}
+.pvmenu .pvi{display:flex;align-items:center;gap:9px;width:100%;text-align:left;border:0;background:none;padding:9px 10px;border-radius:8px;font-family:inherit;font-weight:600;font-size:13.5px;line-height:1.2;color:var(--ink);cursor:pointer;white-space:nowrap}
+.pvmenu .rvbtn .rvtx{display:inline!important}
+.pvmenu .pvi:hover,.pvmenu .pvi:focus-visible{background:var(--panel2);outline:none}
+.pvmenu .pvi svg{width:16px;height:16px;flex:none;color:var(--ink3)}
+.pvmenu .pvi.copied svg{color:#fff}
+@media (max-width:820px){.pvbar .btn.primary.big{max-width:none}}
+/* Biopsias: "Más sitios" plegado */
+.frmore{margin-top:8px;border:1px dashed var(--line2);border-radius:10px;padding:0 10px}
+.frmore>summary{cursor:pointer;list-style:none;display:flex;align-items:baseline;gap:8px;padding:9px 0;font-weight:700;font-size:13px;color:var(--ink2)}
+.frmore>summary::-webkit-details-marker{display:none}
+.frmore>summary::before{content:"▸";color:var(--ink3);transition:transform .15s}
+.frmore[open]>summary::before{transform:rotate(90deg)}
+.frmore>summary small{font-weight:500;color:var(--ink3);font-size:11.5px}
+.frmore[open]{padding-bottom:10px}
+.frddi.frddmore{color:var(--accent);font-weight:700;border-top:1px solid var(--line);border-radius:0 0 8px 8px;margin-top:4px}
+/* Indicaciones al alta: "Más (N) ▸" */
+.chip.chipmore{border-style:dashed;background:none;color:var(--ink2);font-weight:700}
+/* Calidad: botón "Confirmar N datos" y asistente uno por uno */
+.qual .qc.go{background:var(--accent);border-color:var(--accent);color:var(--onAccent);font-weight:800;font-size:12.5px;padding:4px 12px}
+.qual .qc.go:hover{filter:brightness(1.08)}
+.qual .qc.lnk{border-color:transparent;background:none;color:var(--ink3);text-decoration:underline;text-underline-offset:2px}
+.qual .qc.lnk:hover{color:var(--ink);border-color:transparent}
+.qual.done .qt{font-size:13.5px}
+.qwiz{position:fixed;z-index:70;left:50%;bottom:calc(18px + env(safe-area-inset-bottom,0px));transform:translateX(-50%);width:min(440px,calc(100vw - 32px));padding:12px 14px;border:1px solid var(--line);border-left:4px solid var(--accent);border-radius:14px;background:var(--panel);box-shadow:0 14px 40px rgba(0,0,0,.22);animation:qwin .18s ease-out}
+@keyframes qwin{from{opacity:0;transform:translate(-50%,8px)}to{opacity:1;transform:translate(-50%,0)}}
+.qwiz .qwt{display:flex;gap:8px;align-items:baseline;font-size:14px}
+.qwiz .qwt b{color:var(--accent);white-space:nowrap}
+.qwiz .qwt span{font-weight:700;color:var(--ink);min-width:0;overflow:hidden;text-overflow:ellipsis}
+.qwiz .qwm{font-size:12.5px;color:var(--ink2);margin:3px 0 9px}
+.qwiz .qwb{display:flex;gap:6px;flex-wrap:wrap}
+@media print{.qwiz{display:none!important}}
+@media (max-width:820px){.qwiz{bottom:calc(84px + env(safe-area-inset-bottom,0px))}body:has(.qwiz) .fab{display:none!important}}
 
 /* Pantalla de bloqueo con clave numérica */
 .acclock{position:fixed;inset:0;z-index:20000;display:flex;align-items:center;justify-content:center;padding:16px;
@@ -11645,7 +11685,7 @@ try{(function(){
     id: 'alta', exam: 'both', order: 90, title: 'Indicaciones al alta',
     kind: 'footer',
     fields: [
-      Object.defineProperty({ id: 'ind', label: 'Indicaciones', type: 'multi', default: ['liviano', 'sedacion', 'urgencia', 'control'], wide: true }, 'options', {
+      Object.defineProperty({ id: 'ind', label: 'Indicaciones', type: 'multi', default: ['liviano', 'sedacion', 'urgencia', 'control'], wide: true, topN: 5, topDef: ['liviano', 'sedacion', 'urgencia', 'control', 'biopsias', 'ibp', 'hp', 'liquido', 'sinresiduo', 'anticoag'] }, 'options', {
         enumerable: true, get: function () { return curExam() === 'colono' ? ALTA.filter(function (o) { return !ALTA_EDA[o.v]; }) : ALTA; } }),
       { id: 'paciente', label: 'Paciente', type: 'chips', default: 'auto', options: [
         { v: 'auto', label: 'Automático', hint: 'Hospitalizado si hay contexto hospitalizado/urgencia/UCI/pabellón en Datos del examen, si la indicación es HDA, o hay úlcera Forrest Ia-IIb o ligadura en contexto de sangrado; si no, ambulatorio' },
@@ -13483,6 +13523,24 @@ if (typeof module !== 'undefined') module.exports = EndoScales;
     row.appendChild(tot); box.appendChild(row); upd();
     return box;
   }
+  // ---------- opciones más usadas (aprende del uso de cada médico: se cuenta al copiar el informe) ----------
+  var USO_KEY = 'endoinforme.v1.uso', topOpen = {};
+  function usoWho() { try { return (window.EndoPerfil && EndoPerfil.active() && EndoPerfil.active().id) || '_'; } catch (e) { return '_'; } }
+  function topOpts(sid, f, all) {
+    var u = ((lsGet(USO_KEY, {}) || {})[usoWho()] || {})[sid + '.' + f.id] || {}, def = Array.isArray(f.default) ? f.default : [];
+    var td = f.topDef || def, sc = function (o) { var k = td.indexOf(o.v); return (u[o.v] || 0) + (k >= 0 ? 0.9 - k * 0.05 : 0); };
+    return all.map(function (o, i) { return { v: o.v, s: sc(o), i: i }; }).sort(function (a, b) { return b.s - a.s || a.i - b.i; }).slice(0, f.topN).map(function (x) { return x.v; });
+  }
+  function usoLog() {
+    try {
+      var all = lsGet(USO_KEY, {}) || {}, who = usoWho(), me = all[who] = all[who] || {}, n = 0;
+      activeSecs().forEach(function (sid) { var s = SEC[sid], ss = state.sections[sid]; if (!s || !ss || ss.on === false) return; (s.fields || []).forEach(function (f) {
+        if (!f.topN || !Array.isArray(ss.v[f.id])) return; var k = sid + '.' + f.id, m = me[k] = me[k] || {};
+        ss.v[f.id].forEach(function (x) { m[x] = Math.min(999, (m[x] || 0) + 1); n++; });
+      }); });
+      if (n) lsSet(USO_KEY, all);
+    } catch (e) { }
+  }
   function renderFields(host, fields, v, locs, onChange, ctxFn) {
     var grid = el('div', { class: 'fields' }), items = [];
     var ids = (fields || []).map(function (f) { return f.id; });
@@ -13525,7 +13583,17 @@ if (typeof module !== 'undefined') module.exports = EndoScales;
             }
           };
           wrap.appendChild(b);
+          b._v = o.v;
         });
+        // f.topN: a la vista solo las N opciones más usadas por este médico (+ las marcadas); el resto detrás de "Más…"
+        if (many && f.topN && typeof ctxFn === 'function') {
+          var tsid = (ctxFn() || {}).section, all = optsOrLocs(f, locs);
+          if (tsid && all.length > f.topN + 1 && !topOpen[tsid + '.' + f.id]) {
+            var top = topOpts(tsid, f, all), sel = v[f.id] || [], hid = [];
+            Array.prototype.forEach.call(wrap.children, function (c) { if (top.indexOf(c._v) < 0 && sel.indexOf(c._v) < 0) { c.style.display = 'none'; hid.push(c); } });
+            if (hid.length) wrap.appendChild(el('button', { class: 'chip chipmore', type: 'button', text: 'Más (' + hid.length + ') ▸', title: 'Ver todas las indicaciones. Arriba quedan las que más usas', onclick: function (e) { topOpen[tsid + '.' + f.id] = 1; hid.forEach(function (c) { c.style.display = ''; }); e.currentTarget.remove(); } }));
+          }
+        }
         wrap.addEventListener('keydown', function (e) {
           if (e.ctrlKey || e.metaKey || e.altKey) return;
           var bs = Array.prototype.slice.call(wrap.querySelectorAll('.chip')), i = bs.indexOf(document.activeElement); if (i < 0) return;
@@ -13824,6 +13892,7 @@ if (typeof module !== 'undefined') module.exports = EndoScales;
     if (/microscop/.test(t) && n < 2) return 'Colitis microscópica: ≥ 2 biopsias de colon derecho y ≥ 2 de colon izquierdo.';
     return '';
   }
+  var frMoreOpen = null; // "Más sitios" abierto/cerrado por el médico (null = automático)
   function frascosCard() {
     var on = frOn();
     var card = el('div', { class: 'card sec' + (on ? '' : ' bxoff'), id: 'sec-frascos' });
@@ -13838,7 +13907,7 @@ if (typeof module !== 'undefined') module.exports = EndoScales;
     state.frascos.forEach(function (f, i) {
       var inp = el('input', { class: 's', type: 'text', value: f.sitio || '', placeholder: 'Sitio / contenido del frasco' });
       inp.oninput = function () { f.sitio = inp.value; f.manual = true; refresh(); openFrDD(inp, f); var c = document.querySelector('#sec-frascos .bd'); if (c && c._updHints) c._updHints(); };
-      inp.onfocus = function () { openFrDD(inp, f); }; inp.onclick = function () { if (!frDD) openFrDD(inp, f); }; inp.onblur = function () { setTimeout(closeFrDD, 120); };
+      inp.onfocus = function () { openFrDD(inp, f); }; inp.onclick = function () { if (!frDD) openFrDD(inp, f); }; inp.onblur = function () { inp._ddAll = false; setTimeout(closeFrDD, 120); };
       inp.onkeydown = function (e) { if (e.key === 'Escape') closeFrDD(); else navFrDD(e); };
       var n = el('input', { type: 'number', inputmode: 'numeric', pattern: '[0-9]*', value: f.n, min: 0, style: 'width:46px;text-align:center', title: 'Nº de muestras' });
       n.oninput = function () { f.n = n.value; f.manual = true; refresh(); var c = document.querySelector('#sec-frascos .bd'); if (c && c._updHints) c._updHints(); };
@@ -13856,6 +13925,13 @@ if (typeof module !== 'undefined') module.exports = EndoScales;
     bd._updHints = updHints; setTimeout(updHints, 0);
     var exams = examList(state.exam), two = exams.length > 1;
     var sg = el('div', { id: 'frsug', class: 'frsug' }); bd.appendChild(sg); renderFrSug(sg);
+    // "Más sitios": Sydney y botones rápidos plegados; a la vista solo lo sugerido. Se abre solo si no hay nada sugerido ni frascos.
+    var sugN = frSugList().filter(function (x) { return !x.done; }).length;
+    var more = el('details', { class: 'frmore' });
+    more.open = frMoreOpen != null ? frMoreOpen : (!sugN && !state.frascos.length);
+    more.appendChild(el('summary', { html: '<span>Más sitios</span><small>' + (exams.indexOf('eda') >= 0 ? 'Sydney, duodeno, esófago' : '') + (two ? ' · ' : '') + (exams.indexOf('colono') >= 0 ? 'escalonadas, segmentos de colon' : '') + '</small>' }));
+    more.addEventListener('toggle', function () { frMoreOpen = more.open; });
+    bd.appendChild(more);
     // Botones rápidos separados por examen: Sydney y sitios altos solo en EDA; escalonadas y segmentos solo en colonoscopía
     exams.forEach(function (ex) {
       var blk = el('div', { class: 'frblk frblk-' + ex });
@@ -13872,7 +13948,7 @@ if (typeof module !== 'undefined') module.exports = EndoScales;
       var q = el('div', { class: 'addrow' });
       if (ex === 'colono') q.appendChild(el('button', { class: 'addbig', type: 'button', text: 'Biopsias escalonadas', title: 'Un frasco por segmento', onclick: function () { snapshot(); FR_QUICK.colono.forEach(function (x) { addFrasco(x[0].charAt(0).toLowerCase() + x[0].slice(1), x[1], true, false, 'colono'); }); renderAll(); } }));
       FR_QUICK[ex].forEach(function (x) { q.appendChild(el('button', { class: 'quick', type: 'button', text: x[0], onclick: function () { addFrasco(x[0].charAt(0).toLowerCase() + x[0].slice(1), x[1], false, false, ex); } })); });
-      blk.appendChild(q); bd.appendChild(blk);
+      blk.appendChild(q); more.appendChild(blk);
     });
     if (!state.frascos.length) bd.appendChild(el('div', { class: 'empty', html: 'Tip: en cada hallazgo, el botón ' + SVG.jar + ' lo envía directo a un frasco nuevo con su rótulo.' }));
     return card;
@@ -13924,8 +14000,13 @@ if (typeof module !== 'undefined') module.exports = EndoScales;
       box.appendChild(el('div', { class: 'frddh' + (cls ? ' ' + cls : ''), text: title }));
       items.forEach(function (t) { box.appendChild(el('button', { class: 'frddi' + (cls ? ' ' + cls : ''), type: 'button', text: h.cap(t), onmousedown: function (e) { e.preventDefault(); pick(t, ex || sugEx(t)); } })); });
     };
-    grp('Sugerido para este examen', frSiteSug(), 'sug');
-    FR_SITES.forEach(function (g) { if (exs.indexOf(g[2]) >= 0) grp(g[0], g[1], '', g[2]); });
+    var sugs = frSiteSug();
+    grp('Sugerido para este examen', sugs, 'sug');
+    var hasSug = box.children.length > 0;
+    // con sugerencias y sin texto escrito: solo lo sugerido, el resto detrás de "Más sitios…"
+    if (hasSug && !q && !inp._ddAll) {
+      box.appendChild(el('button', { class: 'frddi frddmore', type: 'button', text: 'Más sitios…', onmousedown: function (e) { e.preventDefault(); inp._ddAll = true; openFrDD(inp, f); } }));
+    } else FR_SITES.forEach(function (g) { if (exs.indexOf(g[2]) >= 0) grp(g[0], g[1], '', g[2]); });
     if (!box.children.length) return;
     document.body.appendChild(box); frDD = box; box._inp = inp;
     var r = inp.getBoundingClientRect(), H = Math.min(320, window.innerHeight - r.bottom - 12);
@@ -14303,17 +14384,55 @@ if (typeof module !== 'undefined') module.exports = EndoScales;
     var pend = it.filter(function (x) { return !x.ok; }), nDef = pend.filter(function (x) { return !x.empty; }).length, nEmp = pend.length - nDef;
     q.classList.toggle('done', ok === it.length); q.classList.toggle('hasmiss', nEmp > 0); q.classList.toggle('hasdef', nDef > 0);
     // anillo neutro (gris) que se va llenando en verde a medida que confirmas
-    q.appendChild(el('div', { class: 'qring', title: 'Calidad: ' + ok + ' de ' + it.length + ' datos confirmados', html: '<svg width="38" height="38" viewBox="0 0 38 38" aria-hidden="true"><circle cx="19" cy="19" r="15" fill="none" stroke="var(--line)" stroke-width="4"/><circle cx="19" cy="19" r="15" fill="none" stroke="var(--ok)" stroke-width="4" stroke-linecap="round" stroke-dasharray="' + (C * pct).toFixed(1) + ' ' + C.toFixed(1) + '" transform="rotate(-90 19 19)"/></svg><b>' + ok + '/' + it.length + '</b>' }));
+    q.appendChild(el('div', { class: 'qring', title: 'Calidad: ' + ok + ' de ' + it.length + ' datos confirmados', html: '<svg width="38" height="38" viewBox="0 0 38 38" aria-hidden="true"><circle cx="19" cy="19" r="15" fill="none" stroke="var(--line)" stroke-width="4"/><circle cx="19" cy="19" r="15" fill="none" stroke="var(--ok)" stroke-width="4" stroke-linecap="round" stroke-dasharray="' + (C * pct).toFixed(1) + ' ' + C.toFixed(1) + '" transform="rotate(-90 19 19)"/></svg><b' + (String(ok).length + String(it.length).length > 3 ? ' style="font-size:8.5px;letter-spacing:-.02em"' : '') + '>' + ok + '/' + it.length + '</b>' }));
     var pl = function (n, a, b) { return n + ' ' + (n === 1 ? a : b); };
-    var qt = ok === it.length ? 'Calidad confirmada' : nDef ? 'Revisa ' + pl(nDef, 'dato por confirmar', 'datos por confirmar') + (nEmp ? ' · ' + pl(nEmp, 'falta', 'faltan') : '') : (nEmp === 1 ? 'Falta 1 dato' : 'Faltan ' + nEmp + ' datos');
+    // Una sola acción obvia: "Confirmar N datos" recorre los pendientes uno por uno y termina en "Informe listo ✓"
+    var qt = ok === it.length ? 'Informe listo ✓' : (nEmp ? pl(nEmp, 'dato falta', 'datos faltan') + (nDef ? ' y ' + pl(nDef, 'está por confirmar', 'están por confirmar') : '') : pl(nDef, 'dato asumido por confirmar', 'datos asumidos por confirmar'));
     var body = el('div', { class: 'qbody' }, [el('div', { class: 'qt', text: qt })]);
     var chips = el('div', { class: 'qchips' });
-    if (nDef && !qualOpen) chips.appendChild(el('button', { class: 'qc more', type: 'button', text: 'Ver cuáles', title: 'Valores asumidos o sin dato medido (resaltados en amarillo en el editor)', onclick: function () { qualOpen = true; renderQuality(); } }));
-    pend.filter(function (x) { return x.empty || qualOpen; }).forEach(function (x) { chips.appendChild(el('button', { class: 'qc' + (x.empty ? ' empty' : ' def'), type: 'button', text: x.label + (x.empty ? ' · falta' : x.blank ? ' · vacío' : ''), title: x.empty ? 'Sin dato: completar' : x.blank ? 'Sin dato: no se escribe en el informe. Complétalo o confírmalo vacío' : 'Valor asumido: revisar y confirmar', onclick: function () { goField(x.sec, x.fid); } })); });
-    if (ok < it.length) chips.appendChild(el('button', { class: 'qc all', type: 'button', text: '✓ Todo correcto', title: 'Confirmar los valores actuales (los vacíos opcionales quedan vacíos y no se escriben; los que faltan siguen pendientes)', onclick: function () { state._qc = state._qc || {}; it.forEach(function (x) { if (!x.empty) state._qc[x.sec + '|' + x.fid] = 1; }); save(); renderQuality(); } }));
+    if (pend.length) {
+      chips.appendChild(el('button', { class: 'qc go', type: 'button', text: 'Confirmar ' + pl(pend.length, 'dato', 'datos') + ' ›', title: 'Te lleva a cada dato pendiente, uno por uno', onclick: function () { qwStart(); } }));
+      chips.appendChild(el('button', { class: 'qc lnk', type: 'button', text: qualOpen ? 'Ocultar lista' : 'Ver lista', title: 'Ver todos los datos pendientes (resaltados en amarillo en el editor)', onclick: function () { qualOpen = !qualOpen; renderQuality(); } }));
+      if (nDef) chips.appendChild(el('button', { class: 'qc lnk', type: 'button', text: '✓ Todo correcto', title: 'Confirmar de una vez los valores actuales (los vacíos opcionales quedan vacíos y no se escriben; los que faltan siguen pendientes)', onclick: function () { state._qc = state._qc || {}; it.forEach(function (x) { if (!x.empty) state._qc[x.sec + '|' + x.fid] = 1; }); save(); renderQuality(); } }));
+      if (qualOpen) pend.forEach(function (x) { chips.appendChild(el('button', { class: 'qc' + (x.empty ? ' empty' : ' def'), type: 'button', text: x.label + (x.empty ? ' · falta' : x.blank ? ' · vacío' : ''), title: x.empty ? 'Sin dato: completar' : x.blank ? 'Sin dato: no se escribe en el informe. Complétalo o confírmalo vacío' : 'Valor asumido: revisar y confirmar', onclick: function () { goField(x.sec, x.fid); } })); });
+    }
     body.appendChild(chips); q.appendChild(body);
     markFields(it);
   }
+  // ---------- asistente "Confirmar N datos": uno por uno ----------
+  var QW = null;
+  function qwKey(x) { return x.sec + '|' + x.fid; }
+  function qwStart() { qwClose(); QW = { skip: {}, done: 0 }; qwNext(); }
+  function qwClose() { if (QW && QW.box) QW.box.remove(); QW = null; }
+  function qwNext() {
+    if (!QW) return;
+    var pend = qualityPending(), x = pend.filter(function (y) { return !QW.skip[qwKey(y)]; })[0];
+    if (QW.box) QW.box.remove();
+    if (!x) {
+      var left = pend.length; qwClose(); renderQuality();
+      if (!left) { toast('✓ Informe listo'); var c = $('#pvbar .btn.primary'); if (c) { c.classList.add('pulse'); setTimeout(function () { c.classList.remove('pulse'); }, 2400); try { c.focus({ preventScroll: true }); } catch (e) { } } }
+      else toast(left === 1 ? 'Queda 1 dato pendiente (resaltado en amarillo)' : 'Quedan ' + left + ' datos pendientes (resaltados en amarillo)');
+      return;
+    }
+    QW.cur = x; goField(x.sec, x.fid);
+    var tot = QW.done + pend.filter(function (y) { return !QW.skip[qwKey(y)]; }).length, idx = QW.done + 1;
+    var msg = x.empty ? 'Falta este dato: márcalo y luego sigue' : x.blank ? 'Sin dato: complétalo, o déjalo vacío (no se escribe)' : '¿Está correcto el valor marcado?';
+    var okBtn = el('button', { class: 'btn primary sm', type: 'button', text: x.empty ? 'Listo, siguiente ›' : x.blank ? 'Dejar así ✓' : 'Correcto ✓', onclick: function () {
+      var now = qualityPending().filter(function (y) { return qwKey(y) === qwKey(x); })[0];
+      if (now && now.empty) { toast('Este dato aún falta: márcalo o usa "Saltar"'); return; }
+      if (now) { state._qc = state._qc || {}; state._qc[qwKey(x)] = 1; save(); }
+      QW.done++; renderQuality(); qwNext(); } });
+    var box = el('div', { class: 'qwiz', role: 'dialog', 'aria-label': 'Confirmar datos' }, [
+      el('div', { class: 'qwt' }, [el('b', { text: 'Dato ' + idx + ' de ' + tot }), el('span', { text: x.label })]),
+      el('div', { class: 'qwm', text: msg }),
+      el('div', { class: 'qwb' }, [okBtn,
+        el('button', { class: 'btn sm', type: 'button', text: 'Saltar', onclick: function () { QW.skip[qwKey(x)] = 1; qwNext(); } }),
+        el('button', { class: 'btn ghost sm', type: 'button', text: 'Salir', onclick: function () { qwClose(); } })])]);
+    document.body.appendChild(box); QW.box = box;
+    var ed = $('#ed'), er = ed && ed.getBoundingClientRect(); if (er && er.width > 0 && window.innerWidth > 820) box.style.left = (er.left + er.width / 2) + 'px';
+    if (!x.empty && !x.blank) setTimeout(function () { try { okBtn.focus({ preventScroll: true }); } catch (e) { } }, 450);
+  }
+  document.addEventListener('keydown', function (e) { if (QW && e.key === 'Escape' && !$('.ov')) { e.preventDefault(); qwClose(); } }, true);
   // Resalta en amarillo, en el editor, cada campo por confirmar (asumido o sin dato) y marca "tu preferencia"
   function markFields(it) {
     Array.prototype.forEach.call(document.querySelectorAll('.fld.qpend, .fld.qpref'), function (b) { b.classList.remove('qpend', 'qpref', 'qmiss'); Array.prototype.forEach.call(b.querySelectorAll('.qtag'), function (t) { t.remove(); }); });
@@ -14629,7 +14748,7 @@ if (typeof module !== 'undefined') module.exports = EndoScales;
     var label = { body: 'Cuerpo del informe', concl: 'Conclusión' }[part] || 'Informe completo';
     var btn = srcBtn || copyBtns[part || 'all'];
     var ok = function () {
-      toast('✓ ' + label + ' copiado'); logReg(); try { document.dispatchEvent(new CustomEvent('endo:copied', { detail: { part: part || '' } })); } catch (e) { }
+      toast('✓ ' + label + ' copiado'); logReg(); if (!part) usoLog(); try { document.dispatchEvent(new CustomEvent('endo:copied', { detail: { part: part || '' } })); } catch (e) { }
       if (!btn) return;
       if (!btn._html) btn._html = btn.innerHTML;
       clearTimeout(btn._t); if (!btn.classList.contains('copied')) btn.style.minWidth = btn.offsetWidth + 'px'; btn.classList.add('copied');
@@ -15769,9 +15888,17 @@ if (typeof module !== 'undefined') module.exports = EndoScales;
     renderMemb();
     var bar = $('#pvbar');
     bar.innerHTML = '';
-    bar.appendChild(copyBtns.all = el('button', { class: 'btn primary', type: 'button', html: SVG.copy + 'Copiar informe', title: 'Copiar informe completo (Ctrl+Enter)', onclick: function () { copy(); } }));
-    bar.appendChild(copyBtns.body = el('button', { class: 'btn cpart', type: 'button', text: 'Copiar cuerpo', title: 'Copiar solo el cuerpo (sin datos ni conclusión)', onclick: function () { copy('body'); } }));
-    bar.appendChild(copyBtns.concl = el('button', { class: 'btn cpart', type: 'button', text: 'Copiar conclusión', title: 'Copiar solo la conclusión', onclick: function () { copy('concl'); } }));
+    bar.appendChild(copyBtns.all = el('button', { class: 'btn primary big', type: 'button', html: SVG.copy + 'Copiar informe', title: 'Copiar informe completo (Ctrl+Enter)', onclick: function () { copy(); } }));
+    // Una sola acción grande (Copiar informe); el resto en un menú pequeño al lado
+    var pvList = el('div', { class: 'pvlist', role: 'menu' });
+    var pvMenu = el('div', { class: 'pvmenu' }, [el('button', { class: 'btn pvmore', type: 'button', 'aria-haspopup': 'menu', 'aria-expanded': 'false', title: 'Más: revisar, copiar por partes, imprimir', html: '<span>Más</span><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9l6 6 6-6"/></svg>', onclick: function (e) { e.stopPropagation(); pvToggle(); } }), pvList]);
+    var pvToggle = function (on) { on = on == null ? !pvMenu.classList.contains('open') : on; pvMenu.classList.toggle('open', on); pvMenu.firstChild.setAttribute('aria-expanded', on ? 'true' : 'false'); if (on) { var f = pvList.querySelector('button'); if (f) try { f.focus({ preventScroll: true }); } catch (x) { } } };
+    document.addEventListener('click', function (e) { if (!pvMenu.contains(e.target)) pvToggle(false); });
+    pvMenu.addEventListener('keydown', function (e) { if (e.key === 'Escape' && pvMenu.classList.contains('open')) { e.preventDefault(); e.stopPropagation(); pvToggle(false); pvMenu.firstChild.focus(); } else if ((e.key === 'ArrowDown' || e.key === 'ArrowUp') && pvMenu.classList.contains('open')) { e.preventDefault(); var bs = Array.prototype.slice.call(pvList.querySelectorAll('button')), i = bs.indexOf(document.activeElement); i = e.key === 'ArrowDown' ? Math.min(bs.length - 1, i + 1) : Math.max(0, i - 1); bs[i].focus(); } });
+    pvList.addEventListener('click', function (e) { if (e.target.closest('button')) setTimeout(function () { pvToggle(false); }, 0); });
+    pvList.appendChild(copyBtns.body = el('button', { class: 'pvi cpart', type: 'button', role: 'menuitem', html: SVG.copy + 'Copiar cuerpo', title: 'Copiar solo el cuerpo (sin datos ni conclusión)', onclick: function () { copy('body'); } }));
+    pvList.appendChild(copyBtns.concl = el('button', { class: 'pvi cpart', type: 'button', role: 'menuitem', html: SVG.copy + 'Copiar conclusión', title: 'Copiar solo la conclusión', onclick: function () { copy('concl'); } }));
+    bar.appendChild(pvMenu);
     // teléfono: botón flotante de copiar (la barra queda bajo el editor)
     var fab = copyBtns.fab = el('button', { class: 'btn primary fab', type: 'button', html: SVG.copy + 'Copiar informe', title: 'Copiar informe completo',
       style: 'position:fixed;z-index:40;right:calc(14px + env(safe-area-inset-right, 0px));box-shadow:0 6px 20px rgba(0,0,0,.22);border-radius:999px;padding:12px 18px;display:none',
@@ -15780,7 +15907,7 @@ if (typeof module !== 'undefined') module.exports = EndoScales;
     var mq = window.matchMedia ? window.matchMedia('(max-width: 820px)') : null;
     var fabVis = function () { fab.style.display = mq && mq.matches ? 'inline-flex' : 'none'; };
     fabVis(); if (mq) { if (mq.addEventListener) mq.addEventListener('change', fabVis); else if (mq.addListener) mq.addListener(fabVis); }
-    if (!window.ENDO_ARTIFACT) bar.appendChild(el('button', { class: 'btn ghost', type: 'button', html: SVG.print, title: 'Imprimir', onclick: function () { doPrint(); } }));
+    if (!window.ENDO_ARTIFACT) pvList.appendChild(el('button', { class: 'pvi', type: 'button', role: 'menuitem', html: SVG.print + 'Imprimir', title: 'Imprimir (Ctrl+P)', onclick: function () { doPrint(); } }));
     document.addEventListener('keydown', function (e) {
       var inField = /INPUT|TEXTAREA|SELECT/.test((document.activeElement || {}).tagName || '');
       if ($('#home:not(.out)')) return;
@@ -18282,6 +18409,8 @@ function addButton() {
   var b = mk('button', 'btn rvbtn'); b.type = 'button'; b.innerHTML = EYE + '<span class="rvtx">Revisar</span>'; b.setAttribute('aria-label', 'Revisar');
   b.title = 'Revisión final: la hoja tal como se imprimirá, con los datos por confirmar (Alt+R)';
   b.setAttribute('aria-keyshortcuts', 'Alt+R'); b.onclick = openReview;
+  var list = bar.querySelector('.pvlist');
+  if (list) { b.className = 'pvi rvbtn'; b.setAttribute('role', 'menuitem'); b.innerHTML = EYE + '<span class="rvtx">Revisar (hoja final)</span>'; list.insertBefore(b, list.firstChild); return; }
   var pr = bar.querySelector('.btn.primary');
   if (pr && pr.nextSibling) bar.insertBefore(b, pr.nextSibling); else bar.appendChild(b);
 }
@@ -20443,7 +20572,7 @@ document.addEventListener('endo:settings', function (e) { try { section(e.detail
 window.EndoRespaldo = { exportar: exportar, importar: importar, deshacer: deshacer, resumen: function () { return resumen(snapshotAll()); }, validar: function (x) { var v = validar(x); return v.error ? { error: v.error } : { ok: true, resumen: v.res }; } };
 
 })();}catch(e){console.error("Feature respaldo.js",e);}
-window.ENDO_VERSION="202611271946";window.ENDO_WEB_URL="https://saluvel.github.io/EndoInforme/";</script>
+window.ENDO_VERSION="202611272011";window.ENDO_WEB_URL="https://saluvel.github.io/EndoInforme/";</script>
 <script>
 if ('serviceWorker' in navigator && location.protocol.indexOf('http') === 0) { navigator.serviceWorker.register('sw.js').catch(function(){}); }
 </script>
