@@ -796,6 +796,10 @@ a.scl .sci{font-size:.85em;margin-left:3px;text-decoration:none;display:inline-b
 .logozone .lzplus{font-size:22px;color:var(--accent);line-height:1}
 .memb .mlogo,.sheet .memb .mlogo{height:48px;max-width:200px}
 @media print{.memb .mlogo,.sheet .memb .mlogo{height:9mm;max-width:45mm}}
+/* Listas con scroll en columna flex: los ítems nunca se encogen (evita textos de 2 líneas montados) */
+.mpl>*,.rail>*,.rvlist>*,.pal .list>*,.scpop .scfigs>*{flex-shrink:0}
+.mpi{height:auto;line-height:1.3}
+.mpi small{line-height:1.25;margin-top:1px}
 
 .credh{margin:14px auto 0;text-align:center;font-size:12px;line-height:1.55;color:var(--muted,#64748b);max-width:720px}
 .credh b{color:var(--ink,#0f172a);font-weight:600}
@@ -15399,7 +15403,7 @@ new MutationObserver(scanHome).observe(document.body, { childList: true });
 scanHome();
 
 })();}catch(e){console.error("Feature rapido.js",e);}
-window.ENDO_VERSION="202611270255";window.ENDO_WEB_URL="https://saluvel.github.io/EndoInforme/";</script>
+window.ENDO_VERSION="202611270314";window.ENDO_WEB_URL="https://saluvel.github.io/EndoInforme/";</script>
 <script>
 if ('serviceWorker' in navigator && location.protocol.indexOf('http') === 0) { navigator.serviceWorker.register('sw.js').catch(function(){}); }
 </script>
