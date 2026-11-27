@@ -14810,8 +14810,8 @@ var GEO = {
   bulb: { d: 'M101.5 99 C105 95.5 110 95.5 113 99.5', w: 12 },
   col: { d: 'M29 110 L29 38 C29 33 33 29 40 29 C52 29 58 38 70 38 C84 38 92 17 102 17 C107 17 110 21 110 29 L110 90 C110 104 98 101 88 104 C77 107.5 80 119 68 122.5 C67.6 130 67.5 138 67.4 145', w: 13 },
   cec: { d: 'M29 104 L29 114', w: 19 },
-  app: { d: 'M25 122 C21 130 23 136 28 139', w: 3.4 },
-  ile: { d: 'M3 101 C10 99 15 102 20 105.5', w: 6.5 }
+  app: { d: 'M33 121 C37 128 36 134 31.5 138.5', w: 3.4 },
+  ile: { d: 'M54 99 C48 98 44 101 38 105.5', w: 6.5 }
 };
 var EDA = [
   { id: 'eso_sup', sec: 'esofago', org: 'eso', z: '0,0 130,0 130,22 0,22', name: 'Esófago, tercio superior', s: 'Tercio superior', l: [43, 13, 'end'], m: [51, 12], pref: ['tercio superior', 'tercio superior del esófago'], re: /superior/ },
@@ -14827,7 +14827,7 @@ var EDA = [
   { id: 'd2', sec: 'duodeno', org: 'duo', z: '60,107 130,107 130,150 60,150', name: 'Segunda porción duodenal', s: 'Segunda porción', l: [123, 121, 'start'], m: [116, 120], pref: ['segunda porción', 'segunda porción duodenal'], re: /segunda|papila|rodilla|tercera|porci/ }
 ];
 var COL = [
-  { id: 'ileon', sec: 'ileon', org: 'ile', name: 'Íleon terminal', s: 'Íleon', l: [4, 93, 'start'], m: [9, 100.5], pref: ['íleon terminal'], re: /./ },
+  { id: 'ileon', sec: 'ileon', org: 'ile', name: 'Íleon terminal', s: 'Íleon', l: [57, 95, 'start'], m: [49, 99], pref: ['íleon terminal'], re: /./ },
   { id: 'ciego', sec: 'colon', org: 'col', z: '0,100 46,100 46,150 0,150', name: 'Ciego', s: 'Ciego', l: [15, 125, 'end'], m: [29, 111], pref: ['ciego'], re: /ciego|cecal|apendic|ileocecal/ },
   { id: 'asc', sec: 'colon', org: 'col', z: '0,36 46,36 46,100 0,100', name: 'Colon ascendente', s: 'Ascendente', l: [18, 68, 'end'], m: [29, 68], pref: ['colon ascendente'], re: /ascend/ },
   { id: 'hep', sec: 'colon', org: 'col', z: '0,0 50,0 50,36 0,36', name: 'Ángulo hepático', s: 'Á. hepático', l: [30, 24, 'end'], m: [33, 32], pref: ['ángulo hepático'], re: /hep[aá]t/ },
@@ -14918,22 +14918,26 @@ function overlay(r, u) {
 }
 function svgFor(kind, big) {
   var regs = kind === 'eda' ? EDA : COL, u = ++NID, label = kind === 'eda' ? 'Mapa EDA' : 'Mapa colon';
-  var vb = big ? (kind === 'eda' ? '-26 -2 178 154' : '-30 -2 186 154') : '0 0 130 150';
+  var vb = big ? (kind === 'eda' ? '-35 -2 170 154' : '-13 -2 168 154') : '0 0 130 150';
   var p = ['<svg viewBox="' + vb + '" class="mmap' + (big ? ' big' : '') + '" role="group" aria-label="' + esc(label) + '">'];
   p.push('<defs><radialGradient id="gs' + u + '" cx=".36" cy=".3" r=".78"><stop offset="0" style="stop-color:var(--mIn)"/><stop offset=".55" style="stop-color:var(--mMuc)"/><stop offset="1" style="stop-color:var(--mWall)"/></radialGradient>' +
     '<radialGradient id="gk' + u + '" cx=".35" cy=".3" r=".8"><stop offset="0" style="stop-color:var(--mkHi)"/><stop offset="1" style="stop-color:var(--mk)"/></radialGradient>' +
     '<clipPath id="cs' + u + '"><path d="' + GEO.sto.d + '"/></clipPath>' +
     regs.filter(function (r) { return r.z; }).map(function (r) { return '<clipPath id="z' + r.id + u + '"><polygon points="' + r.z + '"/></clipPath>'; }).join('') + '</defs>');
-  p.push('<g class="o-base" aria-hidden="true">' + anatomy(kind, u) + '</g>');
+  // EDA en espejo: el estómago mira hacia la izquierda (vista anatómica). Rótulos y marcadores se reflejan aparte.
+  var FL = kind === 'eda', fx = function (x) { return FL ? +(130 - x).toFixed(2) : x; }, fa = function (a) { return !FL ? a : a === 'start' ? 'end' : a === 'end' ? 'start' : a; };
+  var TF = FL ? ' transform="matrix(-1 0 0 1 130 0)"' : '';
+  p.push('<g class="o-base" aria-hidden="true"' + TF + '>' + anatomy(kind, u) + '</g>');
   regs.forEach(function (r) {
     if (!M.SEC[r.sec] || !st().sections[r.sec]) return;
     var k = count(r.id), nm = esc(r.name) + (k ? ', ' + k + (k === 1 ? ' hallazgo' : ' hallazgos') : '');
     p.push('<g class="mreg' + (k ? ' f' : '') + '" data-reg="' + r.id + '" tabindex="0" role="button" aria-label="' + nm + '">' +
       '<title>' + esc(r.name) + (k ? ' · ' + k + (k === 1 ? ' hallazgo' : ' hallazgos') : '') + ' · clic: agregar hallazgo aquí</title>' +
-      '<g' + (r.z ? ' clip-path="url(#z' + r.id + u + ')"' : '') + '>' + overlay(r, u) + '</g>' +
-      (big ? '<text class="mlab" x="' + r.l[0] + '" y="' + r.l[1] + '" text-anchor="' + r.l[2] + '">' + esc(r.s) + (k ? ' · ' + k : '') + '</text>' : '') + '</g>');
+      '<g' + TF + '><g' + (r.z ? ' clip-path="url(#z' + r.id + u + ')"' : '') + '>' + overlay(r, u) + '</g></g>' +
+      (big ? '<text class="mlab" x="' + fx(r.l[0]) + '" y="' + r.l[1] + '" text-anchor="' + fa(r.l[2]) + '">' + esc(r.s) + (k ? ' · ' + k : '') + '</text>' : '') + '</g>');
   });
   markers(regs).forEach(function (mk) {
+    mk.x = fx(mk.x);
     var isNew = !FIRST && !SEEN[mk.uid]; SEEN[mk.uid] = 1;
     p.push('<g class="mmk' + (isNew ? ' new' : '') + '" data-uid="' + mk.uid + '" tabindex="0" role="button" aria-label="Ir a ' + esc(mk.label) + '"><title>' + esc((mk.n ? '#' + mk.n + ' ' : '') + mk.label) + ' · clic: ir a la tarjeta</title>' +
       (isNew ? '<circle class="mping" cx="' + mk.x + '" cy="' + mk.y + '" r="4.6"/>' : '') +
@@ -15690,7 +15694,7 @@ new MutationObserver(scanHome).observe(document.body, { childList: true });
 scanHome();
 
 })();}catch(e){console.error("Feature rapido.js",e);}
-window.ENDO_VERSION="202611270340";window.ENDO_WEB_URL="";</script>
+window.ENDO_VERSION="202611270415";window.ENDO_WEB_URL="";</script>
 <script>
 if ('serviceWorker' in navigator && location.protocol.indexOf('http') === 0) { navigator.serviceWorker.register('sw.js').catch(function(){}); }
 </script>
