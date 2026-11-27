@@ -908,6 +908,8 @@ html.acc-locked body>*:not(.acclock){filter:blur(14px);pointer-events:none;user-
 .acccodein:focus{outline:2px solid var(--accent);outline-offset:1px}
 .accnote{font-size:11.5px;color:var(--ink3);text-align:center;margin:4px 0 0;line-height:1.4}
 @media (max-width:380px){.acccode{font-size:21px;padding:12px}}
+.accmaster{display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap;margin-top:10px;padding-top:10px;border-top:1px dashed var(--line2)}
+.accmaster>div{display:grid;gap:2px;flex:1 1 220px}.accmaster span{font-size:12px;color:var(--ink3)}
 
 .updset{flex-wrap:wrap}
 .updst{flex:1 1 100%;font-size:12.5px;color:var(--ink3);line-height:1.45}
@@ -15702,12 +15704,13 @@ function tryGate(ui, ok) {
 function lock() {
   if (document.querySelector('.acclock.acclk')) return;
   var m = mode();
-  if (m === 'none') { markUnlocked(true); return; }
   markUnlocked(false);
   var sc = screen({ cls: 'acclk', lockApp: true });
   sc.ov.setAttribute('aria-label', 'Ingresar clave');
-  if (m === 'legacy') {
-    padView(sc.box, { title: 'EndoInforme', sub: 'Ingresa tu clave de acceso', auto: function (v) { return check(v); }, onEnter: function (v, ui) { if (tryGate(ui, check(v))) finishUnlock(sc, ''); } });
+  // Sin claves personales (instalación nueva o usuarios sin clave): se pide la clave maestra de instalación
+  if (m !== 'users') {
+    var nuevo = !usuarios().list.length;
+    padView(sc.box, { title: nuevo ? 'Bienvenido a EndoInforme' : 'EndoInforme', sub: nuevo ? 'Primera vez en este equipo: ingresa la <b>clave maestra</b> de instalación.' : 'Ingresa la clave maestra de acceso', auto: function (v) { return check(v); }, onEnter: function (v, ui) { if (tryGate(ui, check(v))) finishUnlock(sc, ''); } });
     return;
   }
   var U = pinUsers(), act = usuarios().active, sel = U.filter(function (u) { return u.id === act; })[0] || U[0];
@@ -15788,6 +15791,21 @@ function openNewCode() {
   var id = activeId(); if (!id || !hasPin(id)) return;
   verifyThen(id, 'Nuevo código de recuperación', function (sc) { var c = newRecovery(id); if (!c) { sc.close(); toast('No se pudo guardar'); return; } showCode(sc, c, function () { sc.close(); toast('Código de recuperación nuevo ✓ (el anterior ya no sirve)'); }); });
 }
+// Cambiar la clave maestra de instalación (pide la actual primero)
+function openMaster() {
+  var sc = screen({}), first = '';
+  var cancel = function () { var f = h('div', 'accfoot'); f.appendChild(linkBtn('Cancelar', function () { sc.close(); })); return f; };
+  var step2 = function () {
+    padView(sc.box, { title: 'Nueva clave maestra', sub: 'De ' + MIN + ' a ' + MAX + ' números. Se pide al instalar o cuando no hay claves personales.', foot: cancel(), onEsc: function () { sc.close(); },
+      onEnter: function (v, ui) { if (/^(\d)\1+$/.test(v) || '0123456789'.indexOf(v) >= 0 || '9876543210'.indexOf(v) >= 0) { ui.clear(); ui.shake(); ui.msg('Muy fácil de adivinar: evita repetidos y secuencias.'); return; } first = v; step3(); } });
+  };
+  var step3 = function () {
+    padView(sc.box, { title: 'Repite la clave maestra', sub: 'Para confirmar.', foot: cancel(), onEsc: function () { sc.close(); },
+      onEnter: function (v, ui) { if (v !== first) { ui.clear(); ui.shake(); ui.msg('No coincide. Inténtalo de nuevo.'); return; } if (!setPin(v)) { ui.msg('No se pudo guardar en este equipo.'); return; } sc.close(); toast('Clave maestra actualizada ✓'); } });
+  };
+  padView(sc.box, { title: 'Cambiar clave maestra', sub: 'Primero ingresa la clave maestra actual.', foot: cancel(), onEsc: function () { sc.close(); },
+    onEnter: function (v, ui) { if (tryGate(ui, check(v))) step2(); } });
+}
 function inject() {
   document.querySelectorAll('.modal').forEach(function (m) {
     var t = m.querySelector('h2'); if (!t || t.textContent !== 'Ajustes') return;
@@ -15801,8 +15819,10 @@ function inject() {
     var mkb = function (txt, cls, fn) { var b = h('button', 'btn sm' + (cls ? ' ' + cls : ''), txt); b.type = 'button'; b.onclick = fn; row.appendChild(b); };
     if (id && hasPin(id)) { mkb('Cambiar clave', '', openChange); mkb('Nuevo código de recuperación', 'ghost', openNewCode); }
     else mkb(id ? 'Crear mi clave' : 'Crear usuario', 'primary', openChange);
-    if (mode() !== 'none') mkb('Bloquear ahora', 'ghost', function () { var ov = m.closest('.ov'); if (ov) ov.remove(); lock(); });
+    mkb('Bloquear ahora', 'ghost', function () { var ov = m.closest('.ov'); if (ov) ov.remove(); lock(); });
     sec.appendChild(row);
+    var ms = h('div', 'accmaster'); ms.appendChild(h('div', null, '<b>Clave maestra de instalación</b><span>Se pide al instalar EndoInforme en un equipo nuevo y cuando aún no hay claves personales.</span>'));
+    var mb = h('button', 'btn sm ghost', 'Cambiar clave maestra'); mb.type = 'button'; mb.onclick = openMaster; ms.appendChild(mb); sec.appendChild(ms);
     if (old) { old.replaceWith(sec); return; }
     var anchor = m.querySelector('.creds');
     if (anchor) m.insertBefore(sec, anchor); else { var rows = m.querySelectorAll(':scope > .row'), last = rows[rows.length - 1]; if (last) m.insertBefore(sec, last); else m.appendChild(sec); }
@@ -15811,7 +15831,7 @@ function inject() {
 new MutationObserver(inject).observe(document.body, { childList: true, subtree: true });
 inject();
 if (!unlocked()) lock();
-window.EndoUI = window.EndoUI || {}; window.EndoUI.acceso = { lock: lock, change: openChange };
+window.EndoUI = window.EndoUI || {}; window.EndoUI.acceso = { lock: lock, change: openChange, master: openMaster };
 window.EndoAcceso = { hasPin: hasPin, crearPara: crearPara, cambiarA: cambiarA, mode: mode, lock: lock };
 
 })();}catch(e){console.error("Feature acceso.js",e);}
@@ -19136,7 +19156,7 @@ new MutationObserver(scanHome).observe(document.body, { childList: true });
 scanHome();
 
 })();}catch(e){console.error("Feature rapido.js",e);}
-window.ENDO_VERSION="202611271351";window.ENDO_WEB_URL="https://saluvel.github.io/EndoInforme/";</script>
+window.ENDO_VERSION="202611271638";window.ENDO_WEB_URL="https://saluvel.github.io/EndoInforme/";</script>
 <script>
 if ('serviceWorker' in navigator && location.protocol.indexOf('http') === 0) { navigator.serviceWorker.register('sw.js').catch(function(){}); }
 </script>
