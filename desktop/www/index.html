@@ -14161,7 +14161,7 @@ function h(tag, cls, html) { var x = document.createElement(tag); if (cls) x.cla
 function inject() {
   var home = document.getElementById('home');
   if (home && !home.querySelector('.credh')) {
-    var c = h('div', 'credh', 'Herramienta creada por <b>' + AUTOR + '</b> — ' + CARGO + '<br>' + EMP + ' · © ' + YEAR + ' ' + EMP + '. Todos los derechos reservados.' + (window.ENDO_VERSION ? ' · v' + window.ENDO_VERSION : ''));
+    var c = h('div', 'credh', 'Herramienta creada por <b>' + AUTOR + '</b> — ' + CARGO + '<br>© ' + YEAR + ' ' + EMP + '. Todos los derechos reservados.' + (window.ENDO_VERSION ? ' · v' + window.ENDO_VERSION : ''));
     var foot = home.querySelector('.hfoot'); if (foot) foot.parentNode.insertBefore(c, foot.nextSibling); else (home.querySelector('.hin') || home).appendChild(c);
   }
   document.querySelectorAll('.modal').forEach(function (m) {
@@ -15403,7 +15403,7 @@ new MutationObserver(scanHome).observe(document.body, { childList: true });
 scanHome();
 
 })();}catch(e){console.error("Feature rapido.js",e);}
-window.ENDO_VERSION="202611270314";window.ENDO_WEB_URL="";</script>
+window.ENDO_VERSION="202611270317";window.ENDO_WEB_URL="";</script>
 <script>
 if ('serviceWorker' in navigator && location.protocol.indexOf('http') === 0) { navigator.serviceWorker.register('sw.js').catch(function(){}); }
 </script>
