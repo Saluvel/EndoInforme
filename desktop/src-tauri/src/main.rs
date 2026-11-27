@@ -38,8 +38,13 @@ fn info_app() -> serde_json::Value {
 // Abre en el navegador del sistema SOLO descargas del repositorio oficial (actualizaciones)
 #[tauri::command]
 fn abrir_url(url: String) -> Result<(), String> {
-    let ok = url.starts_with("https://github.com/Saluvel/EndoInforme/releases/")
+    // Releases (sin caracteres especiales), o issue nuevo / correo (URL codificada: solo caracteres URL seguros, sin comillas ni shell)
+    let rel = url.starts_with("https://github.com/Saluvel/EndoInforme/releases/")
         && !url.chars().any(|c| c.is_whitespace() || c == '"' || c == '\'' || c == '&' || c == '|' || c == '^' || c == '%' || c == '`');
+    let enc = (url.starts_with("https://github.com/Saluvel/EndoInforme/issues/new?") || url.starts_with("mailto:?"))
+        && url.len() < 8000
+        && url.chars().all(|c| c.is_ascii_alphanumeric() || "-._~:/?#@!$&()*+,;=%".contains(c));
+    let ok = rel || enc;
     if !ok {
         return Err("URL no permitida".into());
     }

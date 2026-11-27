@@ -28,6 +28,8 @@
   --ring:rgba(13,116,128,.32);
   /* estados */
   --ok:#237a4e; --okSoft:#e6f4ec; --warn:#9a5413; --warnSoft:#fcf0e2; --bad:#b4303f; --badSoft:#fdecef;
+  /* datos por confirmar (asumidos o sin dato medido): amarillo */
+  --qy:#fff7d1; --qyLine:#e0b52f; --qyInk:#6e5200;
   /* hoja del informe */
   --paper:#ffffff; --paperInk:#1a2632; --paperTint:#f5f8fa; --paperRule:#dfe5eb;
   --shadow:0 1px 2px rgba(19,32,44,.05),0 4px 14px rgba(19,32,44,.05);
@@ -48,6 +50,7 @@
   --accent:#4fb8c1; --accent2:#6fcad2; --accentSoft:#12303a; --accentSoft2:#174049; --accentInk:#a3e0e5; --onAccent:#04252a;
   --ring:rgba(79,184,193,.38);
   --ok:#62cf98; --okSoft:#13301f; --warn:#e9ae62; --warnSoft:#33261a; --bad:#f08593; --badSoft:#3a1820;
+  --qy:#352d10; --qyLine:#a88a2c; --qyInk:#f3d67c;
   --paper:#151d25; --paperInk:#dde5ec; --paperTint:#1a242d; --paperRule:#2a3542;
   --shadow:0 1px 2px rgba(0,0,0,.35),0 6px 18px rgba(0,0,0,.22);
   --shadowHi:0 1px 2px rgba(0,0,0,.4),0 12px 30px rgba(0,0,0,.35);
@@ -850,6 +853,25 @@ details.params[open]>summary .chev{transform:rotate(90deg)}
 .frhint{margin:-4px 0 8px 64px;font-size:12px;line-height:1.35;color:var(--warn);background:var(--warnSoft);border-radius:var(--r3);padding:5px 9px}
 .frhint.ok{color:var(--ok);background:var(--okSoft)}
 @media (max-width:700px){.frhint{margin-left:0}}
+/* ===== Datos por confirmar (asumidos / sin dato medido): campo resaltado en amarillo ===== */
+.fld.qpend{background:var(--qy);box-shadow:0 0 0 1px var(--qyLine);border-radius:10px;padding:6px 8px;margin:-6px -8px}
+.fld.qpend>label{color:var(--qyInk)}
+.fld .qtag{display:inline-block;margin-left:8px;font:inherit;font-size:10.5px;font-weight:700;letter-spacing:.02em;text-transform:none;line-height:16px;padding:0 7px;border-radius:999px;border:1px solid var(--qyLine);background:var(--panel);color:var(--qyInk);vertical-align:1px;white-space:nowrap}
+.fld button.qtag{cursor:pointer}
+.fld button.qtag:hover,.fld button.qtag:focus-visible{background:var(--okSoft);border-color:var(--ok);color:var(--ok)}
+.fld.qmiss .qtag{border-style:dashed}
+.fld.qpref .qtag.pref{border-color:color-mix(in srgb,var(--accent) 45%,var(--line));background:var(--accentSoft);color:var(--accentInk)}
+.fld .prefbar{display:flex;gap:6px;flex-wrap:wrap;margin-top:4px}
+.fld .prefb{font:inherit;font-size:11.5px;font-weight:600;padding:1px 9px;border-radius:999px;border:1px dashed var(--line2);background:transparent;color:var(--accent);cursor:pointer}
+.fld .prefb:hover{border-color:var(--accent);border-style:solid}
+.fld .prefb.x{color:var(--ink3)}
+.qual.hasdef:not(.done){background:color-mix(in srgb,var(--qy) 70%,var(--panel));border-color:var(--qyLine)}
+.qual .qc.def{border-color:var(--qyLine);background:var(--qy);color:var(--qyInk)}
+@media (max-width:820px){.fld .prefb{min-height:36px}.fld .qtag{line-height:20px}}
+.qcnt{display:inline-block;margin-left:8px;font-size:11px;font-weight:700;line-height:18px;padding:0 8px;border-radius:999px;background:var(--qy);color:var(--qyInk);border:1px solid var(--qyLine);white-space:nowrap;text-transform:none;letter-spacing:0}
+details.params.qhas:not([open]){border-color:var(--qyLine)}
+.hd .qcnt{flex:none}
+@media (max-width:820px){.qcnt{font-size:0;padding:0 7px;margin-left:6px;flex:none}.qcnt::before{content:attr(data-n);font-size:11px}}
 
 /* Pantalla de bloqueo con clave numérica */
 .acclock{position:fixed;inset:0;z-index:20000;display:flex;align-items:center;justify-content:center;padding:16px;
@@ -1804,6 +1826,119 @@ mark.rvmk.on,mark.rvmk:hover{background:#f8c867;box-shadow:0 0 0 2px #f8c867,0 0
 @media print{.ov.mappop,.ov.mapov{display:none!important}.paper h3{color:inherit!important}}
 @media (prefers-reduced-motion:reduce){.mmap .r-ov,.mmap .mmk .mdot,.mmap .mmk.new .mdot,.mmap .mmk .mping,.mmap .mreg.sel>g,.mmap .mreg>g,.find.mapahl,.mtip{transition:none!important;animation:none!important}}
 
+/* ===== patologia.css — solicitud AP, resultado y carta al paciente ===== */
+.apbtns{display:inline-flex;gap:6px;flex-wrap:wrap}
+.apbtns .apb{white-space:nowrap}
+.apbtns .apb i{font-style:normal;margin-left:4px;min-width:17px;height:17px;padding:0 4px;border-radius:9px;background:var(--ok);color:#fff;font-size:11px;font-weight:700;display:inline-flex;align-items:center;justify-content:center}
+.apbtns .apb.apdone{border-color:var(--ok);color:var(--ok)}
+@media (max-width:560px){.apbtns .apb span{display:none}.apbtns .apb{padding-left:8px;padding-right:8px}}
+
+.apov{position:fixed;inset:0;z-index:2100;background:rgba(10,18,26,.5);display:flex;align-items:flex-start;justify-content:center;padding:3vh 16px;overflow:auto;-webkit-backdrop-filter:blur(2px);backdrop-filter:blur(2px)}
+.apbox{background:var(--panel);color:var(--ink);border-radius:var(--r);width:100%;max-width:860px;box-shadow:var(--shadow);overflow:hidden;animation:apin .18s var(--ease,ease-out)}
+@keyframes apin{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
+.apbar{position:sticky;top:0;z-index:2;display:flex;align-items:center;gap:6px;flex-wrap:wrap;padding:10px 12px;border-bottom:1px solid var(--line);background:var(--panel)}
+.apbar>b{font-size:15.5px}
+.apbar .sp{flex:1}
+.aptip{margin:8px 14px 0;font-size:12px;color:var(--ink3)}
+
+/* ---- hoja (solicitud y carta): papel blanco en ambos temas ---- */
+.apsheet{--pi:#16212c;--pi2:#45566a;--pr:#cfd8df;--pa:#0b5f69;--pt:#f3f6f8;margin:12px auto 16px;width:calc(100% - 28px);max-width:780px;background:#fff;color:var(--pi);border-radius:4px;box-shadow:0 0 0 1px rgba(0,0,0,.06),0 8px 26px rgba(15,30,45,.14);padding:34px 40px 30px;font-family:var(--doc-font,"Segoe UI",Arial,sans-serif);font-size:13px;line-height:1.45}
+.aphd{display:flex;align-items:center;gap:12px;padding-bottom:9px;border-bottom:1.5px solid var(--pa);margin-bottom:12px;flex-wrap:wrap}
+.aplogo{height:38px;max-width:140px;object-fit:contain}
+.apinst{display:flex;flex-direction:column;line-height:1.2}
+.apinst b{font-size:15px;font-weight:650}
+.apinst small{font-size:11px;color:var(--pi2)}
+.apttl{margin-left:auto;font-weight:700;letter-spacing:.1em;font-size:12px;color:var(--pa);text-align:right}
+.apgrid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:6px 12px;background:var(--pt);border-radius:4px;padding:8px 12px;margin-bottom:8px}
+.apkv{display:flex;flex-direction:column;min-width:0}
+.apkv.w2{grid-column:span 2}
+.apkv span{font-size:9.5px;font-weight:600;letter-spacing:.08em;text-transform:uppercase;color:var(--pi2)}
+.apkv b{font-weight:600;overflow-wrap:anywhere}
+.apsheet h4{margin:11px 0 3px;font-size:10.5px;letter-spacing:.12em;text-transform:uppercase;color:var(--pa)}
+.apsheet p{margin:0}
+.aped{outline:0;border:1px dashed transparent;border-radius:3px;padding:2px 4px;margin:0 -5px;min-height:1.4em;white-space:pre-wrap}
+.aped:hover{border-color:var(--pr)}
+.aped:focus{border-color:var(--pa);background:#f7fbfb}
+.aped:empty::before{content:attr(data-ph);color:#9aa6b2}
+.apsheet .apsosp{border-color:var(--pr)}
+.aptab{width:100%;border-collapse:collapse;margin-top:2px;font-size:12.5px}
+.aptab th{text-align:left;font-size:10px;letter-spacing:.06em;text-transform:uppercase;color:var(--pi2);border-bottom:1px solid var(--pa);padding:4px 6px}
+.aptab td{border-bottom:1px solid var(--pr);padding:5px 6px;vertical-align:top}
+.aptab .apn{font-weight:700;width:30px;color:var(--pa)}
+.aptab .apnum{width:62px;text-align:center;font-variant-numeric:tabular-nums}
+.aptab .apnota{width:40%;color:var(--pi2)}
+.aptab .apnota .aped{margin:0;padding:1px 3px}
+.aptot{margin-top:6px!important;font-size:11.5px;color:var(--pi2)}
+.apsyd{margin-top:8px!important;padding:6px 10px;border-left:3px solid var(--pa);background:var(--pt);font-size:12px}
+.apfoot{display:flex;align-items:flex-end;justify-content:space-between;gap:16px;margin-top:22px;flex-wrap:wrap}
+.apdate{font-size:12px;color:var(--pi2)}
+.apsig{margin-left:auto;width:250px;max-width:100%;text-align:center;display:flex;flex-direction:column;align-items:center;font-size:12px}
+.apsigimg{height:52px;display:flex;align-items:flex-end;justify-content:center}
+.apsigimg img{max-height:52px;max-width:200px;object-fit:contain}
+.apsigline{display:block;width:100%;border-top:1px solid var(--pi);margin:2px 0 4px}
+.apsig small{color:var(--pi2)}
+.apletter{font-size:14px;line-height:1.55}
+.apletter .apctx{margin:4px -5px 0}
+
+/* ---- resultado ---- */
+.aplist{display:grid;gap:10px;padding:12px 14px}
+.apfr{border:1px solid var(--line2);border-radius:var(--r2,10px);background:var(--panel2);overflow:hidden}
+.apfr.done{border-color:var(--ok);box-shadow:inset 3px 0 0 var(--ok)}
+.apfrh{display:flex;align-items:center;gap:8px;padding:8px 10px;border-bottom:1px solid var(--line);flex-wrap:wrap}
+.apfrn{font-weight:700;color:var(--accentInk);white-space:nowrap}
+.apfrs{flex:1;min-width:140px;font-size:13px;color:var(--ink2)}
+.aporg{font:inherit;font-size:12px;padding:3px 6px;border:1px solid var(--line2);border-radius:6px;background:var(--panel);color:var(--ink)}
+.apfrb{padding:8px 10px;display:grid;gap:8px}
+.apchips{display:flex;flex-wrap:wrap;gap:6px;align-items:center}
+.apsep{width:1px;height:20px;background:var(--line2);margin:0 2px}
+.apchip{font:inherit;font-size:12.5px;padding:5px 10px;border-radius:999px;border:1px solid var(--line2);background:var(--panel);color:var(--ink);cursor:pointer;min-height:30px}
+.apchip:hover{border-color:var(--accent)}
+.apchip.on{background:var(--accent);border-color:var(--accent);color:#fff;font-weight:600}
+.apeos{display:inline-flex;align-items:center;gap:6px;font-size:12.5px;color:var(--ink2)}
+.apeos input{width:70px;font:inherit;padding:4px 6px;border:1px solid var(--line2);border-radius:6px;background:var(--panel);color:var(--ink)}
+.apeost{font-size:12px;color:var(--ink3)}
+.apeost.hi{color:var(--warn)}
+.aptxt{width:100%;box-sizing:border-box;font:inherit;font-size:13px;padding:6px 8px;border:1px solid var(--line2);border-radius:6px;background:var(--panel);color:var(--ink);resize:vertical}
+.apprev{margin:0 14px 14px;padding:10px 12px;border-radius:var(--r2,10px);background:var(--accentSoft);border:1px solid var(--accentSoft2,var(--line))}
+.apprevh{font-weight:700;color:var(--accentInk);margin-bottom:4px;font-size:13px}
+.apprev p{margin:4px 0 0;font-size:12.5px;line-height:1.45}
+.apprev p.ok::before{content:'✓ ';color:var(--ok);font-weight:700}
+.apprev p.prov{color:var(--warn)}
+@media (max-width:600px){
+  .apov{padding:0}
+  .apbox{border-radius:0;min-height:100%}
+  .apsheet{width:calc(100% - 16px);padding:18px 16px;margin:10px auto}
+  .apgrid{grid-template-columns:repeat(2,minmax(0,1fr))}
+  .apttl{margin-left:0;text-align:left;width:100%}
+  .aptab .apnota{width:auto}
+  .aptab thead{display:none}
+  .aptab,.aptab tbody,.aptab tr,.aptab td{display:block;width:auto!important}
+  .aptab tr{border-bottom:1px solid var(--pr);padding:4px 0}
+  .aptab td{border:0;padding:2px 0;text-align:left!important}
+  .aptab .apnum::before{content:'Muestras: ';color:var(--pi2)}
+  .aptab .apn::before{content:'Frasco '}
+  .apbar>b{width:100%}
+}
+
+/* ---- impresión: SOLO la hoja (solicitud o carta), en una página sin el encabezado del informe ---- */
+@page apdoc{size:letter;margin:14mm 16mm;@top-left{content:none!important}@bottom-right{content:none!important}}
+@media print{
+  html.apprint body>*:not(.apov){display:none!important}
+  html.apprint body{background:#fff!important}
+  html.apprint body,html.apprint .apov{page:apdoc}
+  html.apprint .apov{position:static;display:block!important;padding:0;background:none;-webkit-backdrop-filter:none;backdrop-filter:none;overflow:visible}
+  html.apprint .apbox{max-width:none;box-shadow:none;border-radius:0;background:#fff;animation:none;overflow:visible}
+  html.apprint .apbar,html.apprint .aptip,html.apprint .aplist,html.apprint .apprev{display:none!important}
+  html.apprint .apsheet{box-shadow:none;margin:0;padding:0;width:auto;max-width:none;border-radius:0;font-size:10.5pt}
+  html.apprint .apletter{font-size:11.5pt}
+  html.apprint .aped{border-color:transparent!important;background:none!important}
+  html.apprint .aped:empty::before{content:''}
+  html.apprint .aptab tr{break-inside:avoid}
+  html.apprint .apfoot,html.apprint .apsig{break-inside:avoid}
+  html.apprint *{print-color-adjust:exact;-webkit-print-color-adjust:exact;animation:none!important}
+}
+@media print{.apbtns{display:none!important}}
+
 /* ===== perfil.css — Perfil del médico (Ajustes) + selector de firma en la hoja ===== */
 .modal .perf{margin:4px 0 14px;padding:14px 16px;border:1px solid var(--line);border-radius:12px;background:var(--panel2);display:flex;flex-direction:column;gap:12px}
 .perf .perfh b{display:block;font-size:14px;color:var(--ink)}
@@ -1904,6 +2039,91 @@ mark.rvmk.on,mark.rvmk:hover{background:#f8c867;box-shadow:0 0 0 2px #f8c867,0 0
 .home .rp-rm{border:0;border-left:1px solid var(--line);background:transparent;color:var(--ink3);padding:0 10px;font-size:15px;line-height:1;cursor:pointer}
 .home .rp-rm:hover{color:var(--bad);background:var(--badSoft)}
 @media (max-width:600px){.home .rp-ct{max-width:200px}}
+
+/* ===== reportar.css — Reportar problema (features/reportar.js) ===== */
+.replink{display:inline-flex;align-items:center;gap:5px;border:0;background:none;padding:4px 6px;border-radius:6px;font:inherit;font-size:12px;color:var(--ink3);cursor:pointer;text-decoration:underline;text-decoration-color:var(--line2);text-underline-offset:3px}
+.replink:hover{color:var(--accentInk);text-decoration-color:currentColor}
+.replink:focus-visible{outline:none;box-shadow:0 0 0 3px var(--ring)}
+.replink.rephome{display:flex;margin:6px auto 0}
+.replink.repstat{display:flex;margin:2px 0 0 auto;font-size:11.5px}
+.repset{display:flex;align-items:center;gap:12px;flex-wrap:wrap;margin:16px 0 4px;padding:12px 14px;border:1px solid var(--line);border-radius:12px}
+.repsi{width:36px;height:36px;flex:none;border-radius:10px;display:grid;place-items:center;color:var(--accentInk);background:var(--accentSoft)}
+.repst{flex:1 1 200px;min-width:0;display:flex;flex-direction:column;gap:2px}
+.repst b{font-size:14px;color:var(--ink)}
+.repst small{font-size:12px;color:var(--ink3);line-height:1.4}
+
+.repov{position:fixed;inset:0;z-index:9500;display:flex;align-items:flex-start;justify-content:center;overflow:auto;overscroll-behavior:contain;
+  padding:clamp(12px,6vh,64px) 16px calc(24px + env(safe-area-inset-bottom,0px));background:color-mix(in srgb,#0a1622 46%,transparent);
+  -webkit-backdrop-filter:blur(5px);backdrop-filter:blur(5px);animation:repFade .15s ease}
+.repbox{width:min(560px,100%);background:var(--panel);color:var(--ink);border:1px solid var(--line);border-radius:16px;box-shadow:var(--shadow);
+  padding:18px 18px 16px;display:flex;flex-direction:column;gap:12px;animation:repPop .2s var(--ease);box-sizing:border-box}
+.rephd{display:flex;align-items:flex-start;gap:12px}
+.repic{width:40px;height:40px;flex:none;border-radius:12px;display:grid;place-items:center;color:var(--onAccent);background:var(--accent)}
+.repht{flex:1;min-width:0}
+.repht h3{margin:0;font-size:17px;line-height:1.25}
+.repht small{display:block;margin-top:2px;font-size:12.5px;color:var(--ink3);line-height:1.4}
+.repx{width:34px;height:34px;padding:0;flex:none;border-radius:9px}
+.repwarn{margin:0;font-size:12.5px;line-height:1.45;padding:8px 10px;border-radius:8px;background:var(--warnSoft);color:var(--warn)}
+.repwarn b{color:inherit}
+.repfld{display:flex;flex-direction:column;gap:4px}
+.repfld>span{font-size:12.5px;font-weight:700;color:var(--ink2)}
+.repfld textarea{width:100%;box-sizing:border-box;font:inherit;font-size:14px;line-height:1.45;padding:8px 10px;border:1px solid var(--line2);border-radius:9px;background:var(--panel);color:var(--ink);resize:vertical;min-height:44px}
+.repfld textarea:focus{outline:none;border-color:var(--accent);box-shadow:0 0 0 3px var(--ring)}
+.repdet{border:1px solid var(--line);border-radius:9px;background:var(--panel2)}
+.repdet summary{cursor:pointer;padding:8px 10px;font-size:12.5px;font-weight:600;color:var(--ink2)}
+.reppre{margin:0;padding:0 10px 10px;font:11.5px/1.5 var(--mono);color:var(--ink2);white-space:pre-wrap;word-break:break-word;max-height:220px;overflow:auto}
+.repbtns{display:flex;flex-wrap:wrap;gap:8px}
+@media (max-width:520px){.repbtns .btn{flex:1 1 calc(50% - 8px)}}
+@keyframes repFade{from{opacity:0}to{opacity:1}}
+@keyframes repPop{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
+@media print{.replink,.repset,.repov{display:none!important}}
+
+/* ===== respaldo.css — Respaldo y traspaso (features/respaldo.js) ===== */
+.rspset{display:flex;flex-direction:column;gap:10px;margin:16px 0 4px;padding:14px;border:1px solid var(--line);border-radius:12px;background:var(--panel2)}
+.rsphd{display:flex;align-items:flex-start;gap:12px}
+.rspic{width:36px;height:36px;flex:none;border-radius:10px;display:grid;place-items:center;color:var(--onAccent);background:var(--accent)}
+.rspht{flex:1;min-width:0;display:flex;flex-direction:column;gap:2px}
+.rspht b{font-size:14px;color:var(--ink)}
+.rspht small{font-size:12px;color:var(--ink3);line-height:1.4}
+.rspnow{font-size:12.5px;color:var(--ink2);font-weight:600;padding:6px 10px;border-radius:8px;background:var(--panel);border:1px dashed var(--line2);align-self:flex-start}
+.rsptg{margin:2px 0}
+.rspnote{margin:0;font-size:12.5px;line-height:1.45;color:var(--ink2);padding:8px 10px;border-radius:8px;background:var(--accentSoft)}
+.rspnote.warn{background:var(--warnSoft);color:var(--warn)}
+.rspnote.warn b{color:inherit}
+.rspbtns{display:flex;flex-wrap:wrap;gap:8px}
+.rspbtns .btn svg{margin-right:6px;vertical-align:-3px}
+
+.rspov{position:fixed;inset:0;z-index:9500;display:flex;align-items:flex-start;justify-content:center;overflow:auto;overscroll-behavior:contain;
+  padding:clamp(12px,8vh,80px) 16px calc(24px + env(safe-area-inset-bottom,0px));background:color-mix(in srgb,#0a1622 46%,transparent);
+  -webkit-backdrop-filter:blur(5px);backdrop-filter:blur(5px);animation:rspFade .15s ease}
+.rspbox{width:min(520px,100%);background:var(--panel);color:var(--ink);border:1px solid var(--line);border-radius:16px;box-shadow:var(--shadow);
+  padding:18px 18px 16px;display:flex;flex-direction:column;gap:12px;animation:rspPop .2s var(--ease)}
+.rspbox h3{margin:0;font-size:17px;display:flex;align-items:center;gap:10px}
+.rspbox h3 svg{color:var(--accent);flex:none}
+.rspsub{margin:-4px 0 0;font-size:12.5px;color:var(--ink3)}
+.rspgrid{display:grid;grid-template-columns:repeat(4,1fr);gap:8px}
+.rspst{display:flex;flex-direction:column;align-items:flex-start;padding:10px;border-radius:10px;background:var(--panel2);border:1px solid var(--line)}
+.rspst b{font-size:22px;line-height:1.1;color:var(--accentInk)}
+.rspst span{font-size:12px;font-weight:600;color:var(--ink2)}
+.rspst small{font-size:11px;color:var(--ink3)}
+.rspopts{display:flex;flex-direction:column;gap:8px}
+.rspopt{display:flex;align-items:flex-start;gap:10px;text-align:left;padding:10px 12px;border-radius:10px;border:1px solid var(--line2);background:var(--panel);color:var(--ink);cursor:pointer;font:inherit}
+.rspopt i{width:16px;height:16px;flex:none;margin-top:2px;border-radius:50%;border:2px solid var(--line2);box-sizing:border-box}
+.rspopt.on{border-color:var(--accent);background:var(--accentSoft)}
+.rspopt.on i{border:5px solid var(--accent)}
+.rspopt span{display:flex;flex-direction:column;gap:2px}
+.rspopt b{font-size:13.5px}
+.rspopt small{font-size:12px;color:var(--ink3);line-height:1.4}
+.rspopt:focus-visible{outline:none;box-shadow:0 0 0 3px var(--ring)}
+.rspfine{margin:0;font-size:11.5px;color:var(--ink3)}
+.rsperr{margin:0;font-size:13.5px;color:var(--bad);background:var(--badSoft);padding:10px 12px;border-radius:10px}
+.rsprow{display:flex;justify-content:flex-end;gap:8px;flex-wrap:wrap}
+.rspbox .btn.danger{background:var(--bad);border-color:var(--bad);color:#fff}
+.rspta{width:100%;box-sizing:border-box;font:12px var(--mono);border:1px solid var(--line2);border-radius:8px;padding:8px;background:var(--panel2);color:var(--ink);resize:vertical}
+@keyframes rspFade{from{opacity:0}to{opacity:1}}
+@keyframes rspPop{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
+@media (max-width:520px){.rspgrid{grid-template-columns:repeat(2,1fr)}}
+@media print{.rspset,.rspov{display:none!important}}
 </style>
 </head>
 <body>
@@ -2184,17 +2404,17 @@ try{(function(){
         { v: 'Hemorragia digestiva baja', label: 'HDB', hint: 'Hemorragia digestiva baja (hematoquecia) en estudio' }
       ] },
       { id: 'indic_txt', label: 'Otra indicación', type: 'text', placeholder: 'texto libre', wide: true },
-      { id: 'premed', quality: true, label: 'Premedicación / sedación', type: 'multi', wide: true, show: function (v, ctx) { return !comboExam(ctx); }, hint: 'En examen combinado (EDA + colonoscopía) la sedación se registra una sola vez en Datos del examen de la EDA', default: ['Lidocaína gel', 'Midazolam', 'Fentanilo'], options: [
+      { id: 'premed', quality: true, pref: 'sed', prefHead: true, label: 'Premedicación / sedación', type: 'multi', wide: true, show: function (v, ctx) { return !comboExam(ctx); }, hint: 'En examen combinado (EDA + colonoscopía) la sedación se registra una sola vez en Datos del examen de la EDA', default: ['Lidocaína gel', 'Midazolam', 'Fentanilo'], options: [
         { v: 'Lidocaína gel', label: 'Lidocaína gel' },
         { v: 'Midazolam', label: 'Midazolam' },
         { v: 'Fentanilo', label: 'Fentanilo' },
         { v: 'Propofol', label: 'Propofol (anestesista)', hint: 'Sedación profunda administrada por anestesiólogo' },
         { v: 'Sin sedación', label: 'Sin sedación' }
       ] },
-      { id: 'midaz', quality: true, label: 'Midazolam', type: 'num', unit: 'mg', min: 0, max: 15, step: 0.5, default: 3, show: function (v) { return sedOn(v, 'Midazolam'); } },
-      { id: 'fenta', quality: true, label: 'Fentanilo', type: 'num', unit: 'µg', min: 0, max: 300, step: 25, default: 50, show: function (v) { return sedOn(v, 'Fentanilo'); } },
-      { id: 'propo', quality: true, label: 'Propofol', type: 'num', unit: 'mg', min: 0, max: 1000, step: 10, show: function (v) { return sedOn(v, 'Propofol'); } },
-      { id: 'consent', quality: true, label: 'Consentimiento informado', type: 'bool', default: true, show: function (v, ctx) { return !comboExam(ctx); }, hint: 'En examen combinado se registra una sola vez en Datos del examen de la EDA' },
+      { id: 'midaz', quality: true, qsoft: true, pref: 'sed', label: 'Midazolam', type: 'num', unit: 'mg', min: 0, max: 15, step: 0.5, placeholder: 'dosis', show: function (v) { return sedOn(v, 'Midazolam'); } },
+      { id: 'fenta', quality: true, qsoft: true, pref: 'sed', label: 'Fentanilo', type: 'num', unit: 'µg', min: 0, max: 300, step: 25, placeholder: 'dosis', show: function (v) { return sedOn(v, 'Fentanilo'); } },
+      { id: 'propo', quality: true, qsoft: true, pref: 'sed', placeholder: 'dosis', label: 'Propofol', type: 'num', unit: 'mg', min: 0, max: 1000, step: 10, show: function (v) { return sedOn(v, 'Propofol'); } },
+      { id: 'consent', quality: true, label: 'Consentimiento informado', type: 'chips', default: '', options: [{ v: 'true', label: 'Sí' }, { v: 'false', label: 'No' }], show: function (v, ctx) { return !comboExam(ctx); }, hint: 'Dato administrativo: no se asume (sin marcar no se escribe). En examen combinado se registra una sola vez en Datos del examen de la EDA' },
       { id: 'equipo', label: 'Equipo (opcional)', type: 'text', placeholder: 'ej. colonoscopio HD' },
       { id: 'co2', label: 'Insuflación con CO2', type: 'bool', default: false },
       { id: 'prep', label: 'Producto de preparación', type: 'chips', default: '', options: [
@@ -2211,9 +2431,9 @@ try{(function(){
         { v: 'el día previo', label: 'Día previo' },
         { v: 'el mismo día', label: 'Mismo día' }
       ], show: function (v) { return has(v.prep) && v.prep !== 'sin preparación' && v.prep !== 'enema evacuante'; } },
-      { id: 'bost_d', quality: true, pin: true, show: function () { return !volvulo(); }, label: 'Boston colon derecho', type: 'chips', default: '3', options: BOSTON, hint: 'Ciego y colon ascendente' },
-      { id: 'bost_t', quality: true, pin: true, show: function () { return !volvulo(); }, label: 'Boston colon transverso', type: 'chips', default: '3', options: BOSTON, hint: 'Incluye ángulos hepático y esplénico' },
-      { id: 'bost_i', quality: true, pin: true, show: function () { return !volvulo(); }, label: 'Boston colon izquierdo', type: 'chips', default: '3', options: BOSTON, hint: 'Descendente, sigmoides y recto' },
+      { id: 'bost_d', quality: true, qsoft: true, pin: true, show: function () { return !volvulo(); }, label: 'Boston colon derecho', type: 'chips', default: '', options: BOSTON, hint: 'Ciego y colon ascendente' },
+      { id: 'bost_t', quality: true, qsoft: true, pin: true, show: function () { return !volvulo(); }, label: 'Boston colon transverso', type: 'chips', default: '', options: BOSTON, hint: 'Incluye ángulos hepático y esplénico' },
+      { id: 'bost_i', quality: true, qsoft: true, pin: true, show: function () { return !volvulo(); }, label: 'Boston colon izquierdo', type: 'chips', default: '', options: BOSTON, hint: 'Descendente, sigmoides y recto' },
       { id: 'insp_anal', label: 'Inspección anal', type: 'multi', default: ['normal'], options: [
         { v: 'normal', label: 'Normal' },
         { v: 'hemorroides externas', label: 'Hemorroides externas' },
@@ -2250,8 +2470,8 @@ try{(function(){
         { v: 'intolerancia del paciente', label: 'Intolerancia' },
         { v: 'riesgo de perforación', label: 'Riesgo de perforación' }
       ], show: function (v) { return v.alcance === 'incompleto'; } },
-      { id: 'ileo', label: 'Ileoscopía', type: 'chips', default: 'Sí', options: ['Sí', 'No'], show: function (v) { return v.alcance !== 'incompleto' && v.alcance !== 'muñón' && !volvulo(); } },
-      { id: 'ileo_cm', label: 'Íleon explorado', type: 'num', unit: 'cm', min: 1, max: 40, default: 10, show: function (v) { return v.ileo === 'Sí' && v.alcance !== 'incompleto' && v.alcance !== 'muñón' && !volvulo(); } },
+      { id: 'ileo', quality: true, label: 'Ileoscopía', type: 'chips', default: 'Sí', options: ['Sí', 'No'], show: function (v) { return v.alcance !== 'incompleto' && v.alcance !== 'muñón' && !volvulo(); } },
+      { id: 'ileo_cm', quality: true, qsoft: true, label: 'Íleon explorado', type: 'num', unit: 'cm', min: 1, max: 40, placeholder: 'cm', show: function (v) { return v.ileo === 'Sí' && v.alcance !== 'incompleto' && v.alcance !== 'muñón' && !volvulo(); } },
       { id: 'retro', label: 'Retrovisión rectal', type: 'chips', default: 'Sí', options: ['Sí', 'No'] },
       { id: 'retiro', quality: true, label: 'Tiempo de retiro', type: 'num', unit: 'min', min: 1, max: 60, default: '', show: function () { return !volvulo(); }, hint: 'Indicador de calidad: ≥ 6 min en examen sin terapéutica' },
       { id: 'insercion', label: 'Longitud de inserción', type: 'num', unit: 'cm', min: 10, max: 200, hint: 'Opcional: cm de endoscopio insertado al alcanzar el punto máximo' },
@@ -2263,7 +2483,7 @@ try{(function(){
       { id: 'asa', label: 'ASA', type: 'chips', default: '', options: ASA, hint: 'Clasificación del estado físico ASA', show: function (v, ctx) { return !comboExam(ctx); } },
       { id: 'h_ini', label: 'Hora de inicio', type: 'text', placeholder: 'hh:mm', show: function (v, ctx) { return !comboExam(ctx); } },
       { id: 'h_fin', label: 'Hora de término', type: 'text', placeholder: 'hh:mm', hint: 'Con inicio y término se calcula la duración', show: function (v, ctx) { return !comboExam(ctx); } },
-      { id: 'eventos', quality: true, label: 'Eventos adversos', type: 'multi', default: ['sin'], options: EVENTOS, wide: true, show: function (v, ctx) { return !comboExam(ctx); } },
+      { id: 'eventos', quality: true, qsoft: true, label: 'Eventos adversos', type: 'multi', default: [], hint: 'No se asume "sin eventos": márcalo al terminar', options: EVENTOS, wide: true, show: function (v, ctx) { return !comboExam(ctx); } },
       { id: 'eventos_txt', label: 'Otro evento adverso', type: 'text', placeholder: 'ej. reacción vagal', show: function (v, ctx) { return arr(v.eventos).indexOf('otro') >= 0 && !comboExam(ctx); } },
       { id: 'fotos', label: 'Fotodocumentación (n.º de imágenes)', type: 'num', min: 0, max: 200, step: 1 },
       { id: 'fotos_sitios', label: 'Fotos de reparos', type: 'multi', default: [], options: FOTO_SITIOS, hint: 'Reparos anatómicos fotodocumentados (indicador de calidad de intubación cecal)' }
@@ -2290,7 +2510,8 @@ try{(function(){
       });
       if (pm.length) L.push('Premedicación: ' + h.cap(h.list(pm)));
       if (!both && urgOn(v) && SED_A_TXT[v.sed_anest] && !(v.sed_anest === 'anestesiólogo' && pml.indexOf('Propofol') >= 0)) L.push(SED_A_TXT[v.sed_anest]);
-      if (!both) L.push('Consentimiento informado: ' + (v.consent === false ? 'No' : 'Sí'));
+      var ci = String(v.consent) === 'true' ? 'Sí' : String(v.consent) === 'false' ? 'No' : '';
+      if (!both && ci) L.push('Consentimiento informado: ' + ci);
       var vol = volvulo(ctx);
       var eq = has(v.equipo) ? String(v.equipo).trim() : '';
       if (eq || v.co2) L.push('Equipo: ' + h.cap([eq, v.co2 ? 'insuflación con CO2' : ''].filter(Boolean).join('; ')));
@@ -2481,7 +2702,7 @@ try{(function(){
       if (own.some(function (f) { return SELF_DESC[f.fid]; })) return '';
       if (volvulo(ctx)) return '';
       if (d(H, 'ileo', 'Sí') === 'No' || sc.alcance === 'incompleto' || sc.alcance === 'muñón') return '';
-      var cm = d(H, 'ileo_cm', ctx && ctx.header ? '' : 10);
+      var cm = d(H, 'ileo_cm', ''); // dato medido: sin valor no se escribe la longitud
       var atI = sc.anast || d(H, 'anast_tipo', '');
       var neo = sc.alcance === 'anastomosis' && (atI === 'ileocólica' || atI === 'ileorrectal');
       var lead = 'Se intuba ' + (neo ? 'el neoíleon' : 'el íleon terminal') + (has(cm) ? ', explorando ' + n(cm) + ' cm' : '');
@@ -5730,6 +5951,8 @@ try{(function(){
     { v: 'sin', label: 'Sin eventos adversos' }, { v: 'desat', label: 'Desaturación transitoria' },
     { v: 'sangrado', label: 'Sangrado controlado', hint: 'Sangrado intraprocedimiento controlado endoscópicamente' },
     { v: 'perfo', label: 'Perforación' }, { v: 'otro', label: 'Otro' }];
+  var CONSENT = [{ v: 'true', label: 'Sí' }, { v: 'false', label: 'No' }];
+  function consentTxt(x) { x = String(x); return x === 'true' ? 'Sí' : x === 'false' ? 'No' : ''; }
   var EV_TXT = { sin: 'sin eventos adversos inmediatos', desat: 'desaturación transitoria', sangrado: 'sangrado intraprocedimiento controlado', perfo: 'perforación' };
   function hhmm(x) {
     var m = /^\s*(\d{1,2})\s*[:.hH]\s*(\d{2})\s*$/.exec(String(x == null ? '' : x)); if (!m) return null;
@@ -5779,7 +6002,9 @@ try{(function(){
     fields: [
       { id: 'indicacion', label: 'Indicación', type: 'multi', options: INDIC, default: [], wide: true },
       { id: 'indicacion_otra', label: 'Otra indicación / detalle', type: 'text', placeholder: 'ej. hematemesis de 24 h de evolución', wide: true },
-      { id: 'sedacion', quality: true, label: 'Premedicación / sedación', type: 'multi', wide: true,
+      // Datos asumidos: los fármacos habituales vienen marcados (por confirmar), las DOSIS nunca se asumen (vacías;
+      // sin dosis el informe dice solo el fármaco). El médico puede guardar su esquema con dosis como preferencia (pref).
+      { id: 'sedacion', quality: true, pref: 'sed', prefHead: true, label: 'Premedicación / sedación', type: 'multi', wide: true,
         options: [
           { v: 'lidocaina', label: 'Lidocaína tópica', hint: 'Lidocaína en spray faríngeo' },
           { v: 'midazolam', label: 'Midazolam' },
@@ -5789,16 +6014,17 @@ try{(function(){
           { v: 'simeticona', label: 'Simeticona VO', hint: 'Simeticona oral previo al examen' },
           { v: 'sin', label: 'Sin sedación' },
         ], default: ['lidocaina', 'midazolam'] },
-      { id: 'midazolam_mg', quality: true, label: 'Midazolam', type: 'num', unit: 'mg', min: 0, max: 15, step: 0.5, default: 3,
+      { id: 'midazolam_mg', quality: true, qsoft: true, pref: 'sed', label: 'Midazolam', type: 'num', unit: 'mg', min: 0, max: 15, step: 0.5, placeholder: 'dosis',
         show: function (v) { return sedOn(v, 'midazolam'); } },
-      { id: 'fentanilo_ug', quality: true, label: 'Fentanilo', type: 'num', unit: 'µg', min: 0, max: 200, step: 25, default: 50,
+      { id: 'fentanilo_ug', quality: true, qsoft: true, pref: 'sed', label: 'Fentanilo', type: 'num', unit: 'µg', min: 0, max: 200, step: 25, placeholder: 'dosis',
         show: function (v) { return sedOn(v, 'fentanilo'); } },
-      { id: 'propofol_mg', quality: true, label: 'Propofol (dosis total)', type: 'num', unit: 'mg', min: 0, max: 1000, step: 10,
+      { id: 'propofol_mg', quality: true, qsoft: true, pref: 'sed', label: 'Propofol (dosis total)', type: 'num', unit: 'mg', min: 0, max: 1000, step: 10, placeholder: 'dosis',
         show: function (v) { return sedOn(v, 'propofol'); } },
       { id: 'tolerancia', label: 'Tolerancia', type: 'chips', options: [
         { v: 'buena', label: 'Buena' }, { v: 'regular', label: 'Regular', hint: 'Molestias o náuseas que no impiden el examen' },
         { v: 'mala', label: 'Mala', hint: 'Mala tolerancia; examen limitado' }], default: '', hint: 'Opcional: solo se escribe si eliges una opción' },
-      { id: 'consentimiento', quality: true, label: 'Consentimiento informado', type: 'bool', default: true },
+      // dato administrativo: no se asume (vacío = no se escribe y queda pendiente); 'true'/'false' por compatibilidad con borradores antiguos
+      { id: 'consentimiento', quality: true, label: 'Consentimiento informado', type: 'chips', default: '', options: CONSENT, hint: 'Dato administrativo: no se asume. Sin marcar no se escribe en el informe' },
       { id: 'equipo', label: 'Equipo (opcional)', type: 'text', placeholder: 'ej. endoscopio HD' },
       { id: 'tecnica', label: 'Técnica de imagen', type: 'multi', options: [
         { v: 'luz blanca HD', label: 'Luz blanca HD' }, { v: 'NBI', label: 'NBI', hint: 'Narrow Band Imaging' },
@@ -5815,7 +6041,7 @@ try{(function(){
       { id: 'asa', label: 'ASA', type: 'chips', default: '', options: ASA, hint: 'Clasificación del estado físico ASA. En examen combinado se registra una sola vez aquí' },
       { id: 'h_ini', label: 'Hora de inicio', type: 'text', placeholder: 'hh:mm' },
       { id: 'h_fin', label: 'Hora de término', type: 'text', placeholder: 'hh:mm', hint: 'Con inicio y término se calcula la duración' },
-      { id: 'eventos', quality: true, label: 'Eventos adversos', type: 'multi', default: ['sin'], options: EVENTOS, wide: true, hint: 'En examen combinado se registra una sola vez aquí' },
+      { id: 'eventos', quality: true, qsoft: true, label: 'Eventos adversos', type: 'multi', default: [], options: EVENTOS, wide: true, hint: 'No se asume "sin eventos": márcalo al terminar. En examen combinado se registra una sola vez aquí' },
       { id: 'eventos_txt', label: 'Otro evento adverso', type: 'text', placeholder: 'ej. broncoaspiración', show: function (v) { return (v.eventos || []).indexOf('otro') >= 0; } },
       { id: 'fotos', label: 'Fotodocumentación (n.º de imágenes)', type: 'num', min: 0, max: 200, step: 1 },
     ],
@@ -5852,7 +6078,8 @@ try{(function(){
       if (spTxt) lines.push((both ? 'Premedicación y sedación (ambos exámenes): ' : 'Premedicación y sedación: ') + h.cap(spTxt));
       if (urgOn(v) && SED_A_TXT[v.sed_anest] && !(v.sed_anest === 'anestesiólogo' && s.indexOf('anestesista') >= 0)) lines.push(SED_A_TXT[v.sed_anest]);
       if (h.has(v.tolerancia)) lines.push('Tolerancia: ' + h.cap(v.tolerancia));
-      lines.push('Consentimiento informado' + (both ? ' (ambos exámenes)' : '') + ': ' + (v.consentimiento === false ? 'No' : 'Sí'));
+      var ci = consentTxt(v.consentimiento);
+      if (ci) lines.push('Consentimiento informado' + (both ? ' (ambos exámenes)' : '') + ': ' + ci);
       var eq = h.has(v.equipo) ? String(v.equipo).trim() : '';
       var tec = h.list(v.tecnica || []);
       if (eq || tec) lines.push('Equipo y técnica: ' + h.cap([eq, tec].filter(Boolean).join('; ')));
@@ -6010,7 +6237,7 @@ try{(function(){
         { v: 'visión directa', label: 'Bajo visión directa' },
         { v: 'leve dificultad', label: 'Leve dificultad' },
         { v: 'dificultoso', label: 'Dificultoso', hint: 'Requiere varios intentos' }] },
-      { id: 'lineaZ', label: 'Línea Z (cm desde arcada)', type: 'num', unit: 'cm', min: 15, max: 50, step: 1, default: 38, hint: 'cm desde la arcada dentaria' },
+      { id: 'lineaZ', quality: true, qsoft: true, label: 'Línea Z (cm desde arcada)', type: 'num', unit: 'cm', min: 15, max: 50, step: 1, placeholder: 'cm', hint: 'Dato medido: no se asume. Vacío = se describe la línea Z sin distancia' },
       { id: 'zAspecto', label: 'Aspecto línea Z', type: 'chips', default: 'regular', options: [
         { v: 'regular', label: 'Regular' }, { v: 'irregular', label: 'Irregular', hint: 'Lengüetas o festoneada; si ≥1 cm describir como Barrett (Praga)' }] },
       { id: 'relacion', label: 'Relación UEG', type: 'chips', default: 'coincide', options: [
@@ -7072,10 +7299,10 @@ try{(function(){
         { v: 'alim_abund', label: 'Restos alimentarios abundantes', hint: 'Limitan la evaluación' },
         { v: 'hematina', label: 'Hematina', hint: 'Restos hemáticos antiguos en lago gástrico' },
       ] },
-      { id: 'tor_e', quality: true, label: 'Toronto · esófago', type: 'chips', options: TOR_OPTS, default: '3', hint: 'Toronto Upper GI Cleaning Score: 0-3 por región (esófago, estómago proximal, antro, duodeno); total 0-12' },
-      { id: 'tor_ep', quality: true, label: 'Toronto · estómago proximal (fondo/cuerpo)', type: 'chips', options: TOR_OPTS, default: '3' },
-      { id: 'tor_a', quality: true, label: 'Toronto · antro', type: 'chips', options: TOR_OPTS, default: '3' },
-      { id: 'tor_d', quality: true, label: 'Toronto · duodeno', type: 'chips', options: TOR_OPTS, default: '3' },
+      { id: 'tor_e', quality: true, qsoft: true, label: 'Toronto · esófago', type: 'chips', options: TOR_OPTS, default: '', hint: 'Toronto Upper GI Cleaning Score: 0-3 por región (esófago, estómago proximal, antro, duodeno); total 0-12' },
+      { id: 'tor_ep', quality: true, qsoft: true, label: 'Toronto · estómago proximal (fondo/cuerpo)', type: 'chips', options: TOR_OPTS, default: '' },
+      { id: 'tor_a', quality: true, qsoft: true, label: 'Toronto · antro', type: 'chips', options: TOR_OPTS, default: '' },
+      { id: 'tor_d', quality: true, qsoft: true, label: 'Toronto · duodeno', type: 'chips', options: TOR_OPTS, default: '' },
       { id: 'distension', label: 'Distensión', type: 'chips', default: 'adecuada', options: [
         { v: 'adecuada', label: 'Adecuada', hint: 'Pliegues se aplanan con la insuflación' },
         { v: 'parcial', label: 'Parcial', hint: 'Distensión parcial, evaluación algo limitada' },
@@ -11143,6 +11370,9 @@ try{(function(){
     if (ci.unresected) return 'Derivación para resección endoscópica de la lesión no resecada, según lo descrito.';
     if (ci.piecemeal) return 'Control endoscópico del sitio de resección en 6 meses por resección fragmentada (piecemeal) ≥ 20 mm (ESGE 2020: 3 a 6 meses; USMSTF 2020: 6 meses); si no hay recurrencia, nueva colonoscopía al año del control (ESGE 2020 / USMSTF 2020). Intervalo posterior según histología pendiente.';
     if (ci.many) return 'Intervalo provisorio, según histología pendiente: colonoscopía en 1 año y derivación a asesoría genética (más de 10 pólipos o poliposis; USMSTF 2020 / ESGE 2020). Se ajustará con el resultado de la biopsia.';
+    // resultado de anatomía patológica ingresado (features/patologia.js): intervalo definitivo según histología real
+    var px = colHx(ci, (patSum() || {}).col);
+    if (px) return px;
     if (ci.resected && ci.les.length) return colInterval(ci);
     if (ci.scar === 'con') return 'Control endoscópico del sitio de resección en 6 meses (recurrencia tratada en cicatriz), ajustar según histología.';
     if (ci.scar === 'sin' && !ci.resected && !ci.eii) return 'Próxima colonoscopía en 1 año (cicatriz de resección previa sin recurrencia; USMSTF 2020), ajustar según histología de las biopsias de la cicatriz.';
@@ -11154,6 +11384,68 @@ try{(function(){
     if (ci.indic.indexOf('Tamizaje de cáncer colorrectal') >= 0 || ci.indic.indexOf('Test inmunoquímico fecal positivo') >= 0) return 'Próxima colonoscopía de tamizaje en 10 años, salvo aparición de síntomas.';
     return 'Control con médico tratante.';
   }
+
+  // ---- Resultado de anatomía patológica (features/patologia.js; vive solo en memoria con el informe) ----
+  // EndoPAT.summary() → { col: { items: [{ cls: 'adeno'|'ssl'|'hp'|'normal'|'ca', n, size, vill, dag, ssld, desc }] },
+  //   eda: { eos, barrett: 'sin'|'dbg'|'dag', hp: '+'|'-', olgim: 'I'..'IV', mi, marsh } }. Sin resultado (o en el harness) → null.
+  function patSum() { try { return (typeof EndoPAT !== 'undefined' && EndoPAT && typeof EndoPAT.summary === 'function' && EndoPAT.summary()) || null; } catch (e) { return null; } }
+  // Intervalo DEFINITIVO post-polipectomía con la histología real (mismas reglas ESGE 2020 / USMSTF 2020 de colInterval).
+  // El tamaño viene del hallazgo vinculado al frasco o, si falta, de la lesión resecada de mayor tamaño.
+  function colHx(ci, C) {
+    var it = (C && C.items) || []; if (!it.length) return null;
+    var fb = (ci.les || []).reduce(function (a, l) { return Math.max(a, l.size || 0); }, 0);
+    var sz = function (x) { return x.size > 0 ? x.size : fb; };
+    var sum = function (L) { return L.reduce(function (a, x) { return a + Math.max(1, Number(x.n) || 1); }, 0); };
+    var desc = it.filter(function (x) { return x.desc; }).map(function (x) { return x.desc; }).filter(function (x, i, a) { return a.indexOf(x) === i; }).join('; ');
+    var pre = 'Según histología' + (desc ? ' (' + desc + ')' : '') + ': ';
+    if (it.some(function (x) { return x.cls === 'ca'; })) return pre + 'evaluación por equipo de coloproctología con estudio de etapificación.';
+    var A = it.filter(function (x) { return x.cls === 'adeno'; }), S = it.filter(function (x) { return x.cls === 'ssl'; }), Hp = it.filter(function (x) { return x.cls === 'hp'; });
+    var nA = sum(A), nS = sum(S), n = nA + nS;
+    if (!n && !Hp.length) return pre + 'sin lesiones neoplásicas; retorno a tamizaje habitual: próxima colonoscopía en 10 años (USMSTF 2020 / ESGE 2020).';
+    if (n > 10) return pre + 'colonoscopía en 1 año y derivación a asesoría genética (> 10 adenomas; USMSTF 2020 / ESGE 2020).';
+    if (n === 10) return pre + 'colonoscopía en 3 años y derivación a asesoría genética (10 adenomas; ESGE 2020: ≥ 10 adenomas, asesoría genética; USMSTF 2020).';
+    var neo = A.concat(S), why = [];
+    if (n >= 5) why.push(n + ' lesiones');
+    if (S.some(function (x) { return sz(x) >= 10; })) why.push('lesión serrada ≥ 10 mm'); else if (A.some(function (x) { return sz(x) >= 10; })) why.push('adenoma ≥ 10 mm');
+    if (A.some(function (x) { return x.dag; })) why.push('displasia de alto grado');
+    if (A.some(function (x) { return x.vill; })) why.push('componente velloso');
+    if (S.some(function (x) { return x.ssld || x.dag; })) why.push('lesión serrada con displasia');
+    if (why.length) return pre + 'colonoscopía de vigilancia en 3 años (' + why.join(', ') + '; ESGE 2020 / USMSTF 2020).';
+    var noSz = neo.some(function (x) { return !(sz(x) > 0); });
+    var tail = noSz ? ' Si alguna lesión midió ≥ 10 mm, el control es en 3 años.' : '';
+    if (!n) {
+      if (Hp.some(function (x) { return sz(x) >= 10; })) return pre + 'colonoscopía en 3 años por pólipo hiperplásico ≥ 10 mm (ESGE 2020: 3 años; USMSTF 2020: 3 a 5 años).';
+      return pre + 'pólipo' + (sum(Hp) > 1 ? 's hiperplásicos' : ' hiperplásico') + ' < 10 mm; retorno a tamizaje: próxima colonoscopía en 10 años (USMSTF 2020 / ESGE 2020).' + (Hp.some(function (x) { return !(sz(x) > 0); }) ? ' Si midió ≥ 10 mm, el control es en 3 años.' : '');
+    }
+    if (n >= 3) return pre + 'colonoscopía en 3 a 5 años (' + n + ' lesiones < 10 mm; USMSTF 2020); según ESGE 2020, sin vigilancia: retorno a tamizaje (colonoscopía a los 10 años o test inmunoquímico fecal).' + tail;
+    return pre + 'colonoscopía en ' + (nS ? '5 a 10' : '7 a 10') + ' años (' + n + (nS ? (n === 1 ? ' lesión serrada sésil' : ' lesiones') : (n === 1 ? ' adenoma' : ' adenomas')) + ' < 10 mm sin displasia de alto grado; USMSTF 2020); según ESGE 2020, sin vigilancia: retorno a tamizaje (colonoscopía a los 10 años o test inmunoquímico fecal).' + tail;
+  }
+  // Líneas de EDA con la histología real: EoE, H. pylori, celiaquía (Marsh) y Barrett sin hallazgo registrado
+  var MARSH = { '0': 'Marsh 0 (mucosa duodenal normal)', '1': 'Marsh 1 (linfocitosis intraepitelial)', '2': 'Marsh 2 (linfocitosis intraepitelial con hiperplasia de criptas)', '3a': 'Marsh 3a (atrofia vellositaria parcial)', '3b': 'Marsh 3b (atrofia vellositaria subtotal)', '3c': 'Marsh 3c (atrofia vellositaria total)' };
+  function edaPat(E, ei) {
+    var out = []; if (!E) return out;
+    if (E.eos != null && E.eos !== '' && !isNaN(Number(E.eos))) {
+      var eo = Number(E.eos);
+      if (eo >= 15) out.push('Esofagitis eosinofílica confirmada en la histología (' + eo + ' eosinófilos/campo de gran aumento; criterio ≥ 15): iniciar tratamiento (IBP en dosis alta, corticoide tópico deglutido o dieta de eliminación) y EDA con biopsias de control a las 8 a 12 semanas para evaluar respuesta histológica (EUREOS 2017 / AGA-JTF 2020 / BSG 2022).');
+      else out.push('Recuento de ' + eo + ' eosinófilos/campo de gran aumento: no cumple criterio histológico de esofagitis eosinofílica (≥ 15 eos/campo); correlacionar con la clínica y evaluar otras causas.');
+    }
+    if (E.barrett && !(ei && ei.barrett)) out.push(E.barrett === 'sin' ? 'Esófago de Barrett sin displasia en la histología: EDA de vigilancia según extensión (Praga): cada 5 años si ≥ 1 cm y < 3 cm, cada 3 años si ≥ 3 cm y < 10 cm (ESGE 2023).' : 'Esófago de Barrett con displasia de ' + (E.barrett === 'dag' ? 'alto' : 'bajo') + ' grado en la histología: confirmar con segundo patólogo experto y evaluar terapia endoscópica de erradicación en centro con experiencia (ESGE 2023 / BSG).');
+    if (E.hp === '+') out.push('Helicobacter pylori positivo en la histología: tratamiento de erradicación y confirmación con test de urea en aire espirado o antígeno fecal, al menos 4 semanas post-tratamiento y 2 semanas sin IBP (Maastricht VI 2022).');
+    if (E.marsh && MARSH[E.marsh]) {
+      var m3 = /^3/.test(E.marsh);
+      out.push(MARSH[E.marsh] + ' en la histología: ' + (m3 ? 'compatible con enfermedad celíaca con serología positiva (anti-transglutaminasa IgA); dieta libre de gluten estricta y control con gastroenterología; EDA con biopsias de control solo si no hay respuesta clínica o serológica (ESsCD 2019 / ACG 2023).' : E.marsh === '0' ? 'sin hallazgos de enfermedad celíaca.' : 'hallazgo inespecífico; correlacionar con serología (anti-transglutaminasa IgA) y HLA-DQ2/DQ8 antes de diagnosticar enfermedad celíaca (ESsCD 2019 / ACG 2023).'));
+    }
+    return out;
+  }
+  // Para la carta al paciente (features/patologia.js): las mismas líneas de control que van al informe
+  if (typeof window !== 'undefined') window.EndoCtl = {
+    lines: function (ctx) {
+      var ex = examsNow(ctx), o = { col: null, eda: [] };
+      try { if (ex.indexOf('eda') >= 0) o.eda = edaControl(edaInfo(ctx)); } catch (e) { }
+      try { if (ex.indexOf('colono') >= 0) o.col = colControl(colInfo(ctx)); } catch (e) { }
+      return o;
+    }
+  };
 
   // Intervalo provisorio post-polipectomía (ESGE 2020 / USMSTF 2020) asumiendo la histología probable por el aspecto
   // endoscópico (NICE/JNET 1 sin SSL = hiperplásico; resto = adenoma o lesión serrada). Siempre provisorio: la
@@ -11239,7 +11531,9 @@ try{(function(){
   }
   // Líneas de control/vigilancia para EDA (provisorias: la histología no se conoce al informar)
   function edaControl(ei) {
-    var out = [];
+    var out = [], P = (patSum() || {}).eda || null;
+    // histología de Barrett ingresada en "Resultado AP": reemplaza la provisoria del hallazgo
+    if (ei.barrett && P && P.barrett && !ei.barrett.histo) ei = Object.assign({}, ei, { barrett: Object.assign({}, ei.barrett, { histo: P.barrett }) });
     if (ei.neo) out.push('Evaluación por equipo de cirugía digestiva / oncología con resultado de biopsias y estudio de etapificación.');
     if (ei.varErr) out.push('Várices erradicadas: EDA de control en 3 a 6 meses y luego cada 6 a 12 meses, para pesquisa de recurrencia.');
     else if (ei.lig) out.push('Nueva EDA con ligadura en 2 a 4 semanas, hasta la erradicación de las várices.');
@@ -11264,6 +11558,9 @@ try{(function(){
     }
     // Atrofia / metaplasia intestinal gástrica (MAPS II 2019; AGA 2020). gim_riesgo: histología previa y antecedentes.
     var e = ei.est, k = e.kimura || '', eg = eggimTot(e), gr = arr(e.gim_riesgo), g = function (x) { return gr.indexOf(x) >= 0; };
+    // OLGIM informado por anatomía patológica: manda sobre la estimación endoscópica (Kimura/EGGIM) y deja de ser provisorio
+    var pOl = P && P.olgim;
+    if (pOl) { gr = gr.filter(function (x) { return x !== 'olgim12' && x !== 'olgim34'; }).concat(/^(III|IV)$/.test(pOl) ? 'olgim34' : 'olgim12'); k = ''; eg = 0; ei = Object.assign({}, ei, { mifocal: false }); }
     var histoHi = g('olgim34') || g('extensa'), endoHi = k === 'O-2' || k === 'O-3' || eg >= 5;
     var rf = [g('incompleta') ? 'metaplasia intestinal incompleta' : '', g('fam') ? 'antecedente familiar de cáncer gástrico' : ''].filter(has);
     var whyHi = [g('olgim34') ? 'OLGIM III-IV' : '', g('extensa') ? 'metaplasia intestinal extensa (antro y cuerpo)' : '', k === 'O-2' || k === 'O-3' ? 'Kimura-Takemoto ' + k : '', eg >= 5 ? 'EGGIM ' + eg : ''].filter(has);
@@ -11278,6 +11575,7 @@ try{(function(){
     else if (g('olgim12') || g('limitada')) out.push('Metaplasia intestinal limitada' + (g('olgim12') ? ' (OLGIM I-II)' : '') + ' sin factores de riesgo adicionales: no requiere vigilancia endoscópica rutinaria (MAPS II 2019 / AGA 2020).');
     else if (/^C-[12]$/.test(k) || (eg > 0 && eg < 5) || ei.mifocal) out.push('Atrofia/metaplasia leve o limitada: sin indicación de vigilancia endoscópica rutinaria, salvo antecedente familiar de cáncer gástrico, metaplasia intestinal incompleta o extensa en la histología (en ese caso, EDA cada 3 años; MAPS II 2019 / AGA 2020).');
     if (ei.caust) out.push('EDA o esofagograma de control a las 3 a 4 semanas por riesgo de estenosis cáustica (Zargar ' + ei.caust + ').');
+    out = out.concat(edaPat(P, ei));
     return out.concat(ei.recs || []);
   }
   // ---- Terapéutica de alto riesgo hemorrágico para el recordatorio de antitrombóticos (ESGE/BSG 2021, Veitch et al.) ----
@@ -12748,7 +13046,7 @@ if (typeof module !== 'undefined') module.exports = EndoScales;
 (function () {
   'use strict';
   var h = EndoHelpers, R = EndoApp._R;
-  var LS = { draft: 'endoinforme.v1.draft', tpl: 'endoinforme.v1.templates', set: 'endoinforme.v1.settings', use: 'endoinforme.v1.usage', loc: 'endoinforme.v1.lastloc', tplUse: 'endoinforme.v1.tpluse', tplName: 'endoinforme.v1.tplname', masop: 'endoinforme.v1.masop' };
+  var LS = { draft: 'endoinforme.v1.draft', tpl: 'endoinforme.v1.templates', set: 'endoinforme.v1.settings', use: 'endoinforme.v1.usage', loc: 'endoinforme.v1.lastloc', tplUse: 'endoinforme.v1.tpluse', tplName: 'endoinforme.v1.tplname', masop: 'endoinforme.v1.masop', pref: 'endoinforme.v1.prefs' };
   var EXAMS = { eda: 'Endoscopía digestiva alta', colono: 'Colonoscopía' };
   var TITLES = { eda: 'ENDOSCOPÍA DIGESTIVA ALTA', colono: 'COLONOSCOPÍA' };
   var NORMAL = { eda: 'ENDOSCOPÍA DIGESTIVA ALTA DENTRO DE LÍMITES NORMALES', colono: 'COLONOSCOPÍA SIN HALLAZGOS PATOLÓGICOS' };
@@ -12789,6 +13087,12 @@ if (typeof module !== 'undefined') module.exports = EndoScales;
   function optsOf(f) { return (f.options || []).map(function (o) { return typeof o === 'object' ? { v: String(o.v), label: o.label || String(o.v), hint: o.hint } : { v: String(o), label: String(o) }; }); }
   function emptyVal(f) { return (f.type === 'multi' || f.type === 'locs') ? [] : (f.type === 'bool' ? false : ''); }
   function defaults(fields) { var v = {}; (fields || []).forEach(function (f) { v[f.id] = f.default !== undefined ? clone(f.default) : emptyVal(f); }); return v; }
+  // Preferencias propias del médico (campos con f.pref, p. ej. su esquema de sedación con dosis): { secId: { fid: valor } }.
+  // Solo datos del médico (nunca del paciente). Los informes nuevos parten con ellas, marcadas "tu preferencia".
+  function prefAll() { var p = lsGet(LS.pref, {}); return isObj(p) ? p : {}; }
+  function prefOf(secId) { var p = prefAll()[secId]; return isObj(p) ? p : {}; }
+  function secDefaults(s) { var v = defaults(s.fields), p = prefOf(s.id); (s.fields || []).forEach(function (f) { if (f.pref && p[f.id] !== undefined) v[f.id] = coerce(f, clone(p[f.id])); }); return v; }
+  function isPrefVal(secId, f, val) { if (!f.pref) return false; var p = prefOf(secId); return p[f.id] !== undefined && JSON.stringify(coerce(f, p[f.id])) === JSON.stringify(val); }
   var errSeen = {};
   function call(fn, args, where) {
     if (typeof fn !== 'function') return '';
@@ -12895,7 +13199,7 @@ if (typeof module !== 'undefined') module.exports = EndoScales;
     Object.keys(st.sections).forEach(function (k) { if (!SEC[k]) delete st.sections[k]; });
     R.sections.forEach(function (s) {
       var ss = st.sections[s.id] = isObj(st.sections[s.id]) ? st.sections[s.id] : {};
-      ss.v = sanitize(s.fields, ss.v);
+      ss.v = isObj(ss.v) ? sanitize(s.fields, ss.v) : secDefaults(s);
       var mig = FID_MIG[s.id] || {};
       (Array.isArray(ss.findings) ? ss.findings : []).forEach(function (fi) { if (isObj(fi) && mig[fi.fid] && FIND[mig[fi.fid]]) fi.fid = mig[fi.fid]; });
       ss.findings = (Array.isArray(ss.findings) ? ss.findings : []).filter(function (fi) { return isObj(fi) && FIND[fi.fid]; });
@@ -13212,7 +13516,7 @@ if (typeof module !== 'undefined') module.exports = EndoScales;
               b.classList.toggle('on', i < 0); set(arr);
             } else {
               var cur = String(v[f.id]) === o.v;
-              if (cur && (f.nodesel || (f.default !== undefined && f.default !== '' && f.default !== null))) return; // campos con valor por defecto (scores) no quedan vacíos por un clic
+              if (cur && (f.nodesel || (f.default !== undefined && f.default !== '' && f.default !== null))) { if (f.quality) onChange(f); return; } // campos con valor por defecto (scores) no quedan vacíos por un clic; si es dato de calidad, el clic lo confirma
               Array.prototype.forEach.call(wrap.children, function (c) { c.classList.remove('on'); });
               if (!cur) b.classList.add('on');
               set(cur ? '' : o.v);
@@ -13230,6 +13534,7 @@ if (typeof module !== 'undefined') module.exports = EndoScales;
         });
         wrap.title = 'Teclado: flechas para moverse, 1-9 para elegir';
         box.appendChild(wrap); if (!many) { box.appendChild(hintEl); updHint(); }
+        if (f.prefHead && typeof ctxFn === 'function') { var psid = (ctxFn() || {}).section; if (psid && SEC[psid]) box.appendChild(prefBar(SEC[psid], v)); }
       } else if (t === 'select') {
         var sel = el('select', {}, [el('option', { value: '', text: '—' })].concat(optsOf(f).map(function (o) { return el('option', { value: o.v, text: o.label, title: o.hint || '' }); })));
         sel.value = v[f.id] == null ? '' : String(v[f.id]);
@@ -13374,7 +13679,7 @@ if (typeof module !== 'undefined') module.exports = EndoScales;
   function sectionCard(s, ex) {
     var ss = state.sections[s.id], isFoot = s.kind === 'footer';
     // modo "todo normal + excepciones": una sección sin hallazgos parte plegada (una línea verde)
-    if (ss._min === undefined && !isFoot && s.kind !== 'header' && !ss.findings.length && !settings.allOpen) ss._min = true;
+    if (ss._min === undefined && !isFoot && s.kind !== 'header' && !ss.findings.length && !settings.allOpen) { var edt = 0; try { edt = advChanged(s.fields || [], ss.v, fieldCtx(s, ex)); } catch (e) { } ss._min = !edt; } // con datos distintos de lo normal (p. ej. ureasa en curso) parte abierta
     var card = el('div', { class: 'card sec' + (ss._min ? ' collapsed' : ''), id: 'sec-' + s.id });
     var badge = el('span', { class: 'badge' });
     var hd = el('div', { class: 'hd' }, [el('button', { class: 'btn ghost sm', type: 'button', html: SVG.chev, title: 'Contraer', onclick: function () { ss._min = !ss._min; card.classList.toggle('collapsed', ss._min); save(); } }), el('h2', { text: s.title }), badge, el('span', { class: 'sp' })]);
@@ -13384,7 +13689,7 @@ if (typeof module !== 'undefined') module.exports = EndoScales;
       hd.appendChild(tg);
     } else {
       var fsAvail = findingsFor(s.id);
-      if (ss.findings.length || s.kind !== 'header') hd.appendChild(el('button', { class: 'btn sm', type: 'button', html: SVG.reset + 'Normal', title: 'Quitar hallazgos y volver a valores normales', onclick: function () { snapshot(); ss.findings = []; ss.v = defaults(s.fields); ss.note = ''; renderAll(); toast(s.title + ': normal'); } }));
+      if (ss.findings.length || s.kind !== 'header') hd.appendChild(el('button', { class: 'btn sm', type: 'button', html: SVG.reset + 'Normal', title: 'Quitar hallazgos y volver a valores normales', onclick: function () { snapshot(); ss.findings = []; ss.v = secDefaults(s); ss.note = ''; renderAll(); toast(s.title + ': normal'); } }));
       if (fsAvail.length) hd.appendChild(el('button', { class: 'btn primary sm', type: 'button', html: SVG.plus + 'Hallazgo', onclick: function () { openPalette(s.id); } }));
     }
     if (!isFoot && s.kind !== 'header') { var nsum = el('span', { class: 'nsum', text: ss.findings.length ? ss.findings.map(function (fi) { return (FIND[fi.fid] || {}).label || ''; }).join(' · ') : (fieldSummary(s.fields || [], ss.v, s.locations, fieldCtx(s, ex)) || '') }); var h2 = hd.querySelector('h2'); if (h2 && h2.nextSibling) hd.insertBefore(nsum, h2.nextSibling.nextSibling || null); else hd.appendChild(nsum); hd.addEventListener('click', function (e) { if (!ss._min || e.target.closest('button')) return; ss._min = false; card.classList.remove('collapsed'); save(); }); }
@@ -13961,8 +14266,10 @@ if (typeof module !== 'undefined') module.exports = EndoScales;
           if (!f.quality) return;
           if (!showOk(f, ss.v, qcx)) return;
           var val = ss.v[f.id], empty = !h.has(val) || (Array.isArray(val) && !val.length);
-          var ok = !empty && !!(state._qc && state._qc[s.id + '|' + f.id]);
-          out.push({ sec: s.id, fid: f.id, label: String(f.label || f.id).replace(/\s*\(.*?\)\s*/g, ' ').trim(), ok: ok, empty: empty });
+          // qsoft: dato medido que puede quedar vacío (dosis, cm, puntajes): vacío = "por confirmar" (no se escribe), no "falta"
+          var qc = !!(state._qc && state._qc[s.id + '|' + f.id]), pref = !qc && !empty && isPrefVal(s.id, f, val);
+          var ok = pref || (qc && (!empty || !!f.qsoft));
+          out.push({ sec: s.id, fid: f.id, label: String(f.label || f.id).replace(/\s*\(.*?\)\s*/g, ' ').trim(), ok: ok, empty: empty && !f.qsoft, blank: empty && !!f.qsoft, pref: pref });
         });
       });
     });
@@ -13993,17 +14300,61 @@ if (typeof module !== 'undefined') module.exports = EndoScales;
     q.style.display = '';
     var ok = it.filter(function (x) { return x.ok; }).length, pct = ok / it.length, C = 2 * Math.PI * 15;
     var pend = it.filter(function (x) { return !x.ok; }), nDef = pend.filter(function (x) { return !x.empty; }).length, nEmp = pend.length - nDef;
-    q.classList.toggle('done', ok === it.length); q.classList.toggle('hasmiss', nEmp > 0);
+    q.classList.toggle('done', ok === it.length); q.classList.toggle('hasmiss', nEmp > 0); q.classList.toggle('hasdef', nDef > 0);
     // anillo neutro (gris) que se va llenando en verde a medida que confirmas
     q.appendChild(el('div', { class: 'qring', title: 'Calidad: ' + ok + ' de ' + it.length + ' datos confirmados', html: '<svg width="38" height="38" viewBox="0 0 38 38" aria-hidden="true"><circle cx="19" cy="19" r="15" fill="none" stroke="var(--line)" stroke-width="4"/><circle cx="19" cy="19" r="15" fill="none" stroke="var(--ok)" stroke-width="4" stroke-linecap="round" stroke-dasharray="' + (C * pct).toFixed(1) + ' ' + C.toFixed(1) + '" transform="rotate(-90 19 19)"/></svg><b>' + ok + '/' + it.length + '</b>' }));
     var pl = function (n, a, b) { return n + ' ' + (n === 1 ? a : b); };
-    var qt = ok === it.length ? 'Calidad confirmada' : nDef ? 'Revisa ' + pl(nDef, 'dato asumido', 'datos asumidos') + (nEmp ? ' · ' + pl(nEmp, 'falta', 'faltan') : '') : (nEmp === 1 ? 'Falta 1 dato' : 'Faltan ' + nEmp + ' datos');
+    var qt = ok === it.length ? 'Calidad confirmada' : nDef ? 'Revisa ' + pl(nDef, 'dato por confirmar', 'datos por confirmar') + (nEmp ? ' · ' + pl(nEmp, 'falta', 'faltan') : '') : (nEmp === 1 ? 'Falta 1 dato' : 'Faltan ' + nEmp + ' datos');
     var body = el('div', { class: 'qbody' }, [el('div', { class: 'qt', text: qt })]);
     var chips = el('div', { class: 'qchips' });
-    if (nDef && !qualOpen) chips.appendChild(el('button', { class: 'qc more', type: 'button', text: 'Ver cuáles', title: 'Valores por defecto que conviene confirmar', onclick: function () { qualOpen = true; renderQuality(); } }));
-    pend.filter(function (x) { return x.empty || qualOpen; }).forEach(function (x) { chips.appendChild(el('button', { class: 'qc' + (x.empty ? ' empty' : ''), type: 'button', text: x.label + (x.empty ? ' · falta' : ''), title: x.empty ? 'Sin dato: completar' : 'Valor por defecto: revisar y confirmar', onclick: function () { goField(x.sec, x.fid); } })); });
-    if (ok < it.length) chips.appendChild(el('button', { class: 'qc all', type: 'button', text: '✓ Todo correcto', title: 'Confirmar los valores actuales (los vacíos siguen pendientes)', onclick: function () { state._qc = state._qc || {}; it.forEach(function (x) { if (!x.empty) state._qc[x.sec + '|' + x.fid] = 1; }); save(); renderQuality(); } }));
+    if (nDef && !qualOpen) chips.appendChild(el('button', { class: 'qc more', type: 'button', text: 'Ver cuáles', title: 'Valores asumidos o sin dato medido (resaltados en amarillo en el editor)', onclick: function () { qualOpen = true; renderQuality(); } }));
+    pend.filter(function (x) { return x.empty || qualOpen; }).forEach(function (x) { chips.appendChild(el('button', { class: 'qc' + (x.empty ? ' empty' : ' def'), type: 'button', text: x.label + (x.empty ? ' · falta' : x.blank ? ' · vacío' : ''), title: x.empty ? 'Sin dato: completar' : x.blank ? 'Sin dato: no se escribe en el informe. Complétalo o confírmalo vacío' : 'Valor asumido: revisar y confirmar', onclick: function () { goField(x.sec, x.fid); } })); });
+    if (ok < it.length) chips.appendChild(el('button', { class: 'qc all', type: 'button', text: '✓ Todo correcto', title: 'Confirmar los valores actuales (los vacíos opcionales quedan vacíos y no se escriben; los que faltan siguen pendientes)', onclick: function () { state._qc = state._qc || {}; it.forEach(function (x) { if (!x.empty) state._qc[x.sec + '|' + x.fid] = 1; }); save(); renderQuality(); } }));
     body.appendChild(chips); q.appendChild(body);
+    markFields(it);
+  }
+  // Resalta en amarillo, en el editor, cada campo por confirmar (asumido o sin dato) y marca "tu preferencia"
+  function markFields(it) {
+    Array.prototype.forEach.call(document.querySelectorAll('.fld.qpend, .fld.qpref'), function (b) { b.classList.remove('qpend', 'qpref', 'qmiss'); Array.prototype.forEach.call(b.querySelectorAll('.qtag'), function (t) { t.remove(); }); });
+    (it || qualityItems()).forEach(function (x) {
+      if (x.ok && !x.pref) return;
+      var c = document.getElementById('sec-' + x.sec); if (!c) return;
+      var b = c.querySelector('.fld[data-f="' + x.fid + '"]'); if (!b) return;
+      var lab = b.querySelector('label') || b, tag;
+      if (x.ok) { b.classList.add('qpref'); tag = el('span', { class: 'qtag pref', text: 'tu preferencia', title: 'Valor de tu esquema guardado. Puedes cambiarlo para este paciente' }); }
+      else {
+        b.classList.add('qpend'); if (x.empty) b.classList.add('qmiss');
+        if (x.empty) tag = el('span', { class: 'qtag', text: 'falta', title: 'Dato que no se asume: márcalo' });
+        else if (x.blank) tag = el('span', { class: 'qtag', text: 'por confirmar', title: 'Sin dato: no se escribe en el informe. Complétalo, o usa "Todo correcto" para dejarlo vacío' });
+        else tag = el('button', { type: 'button', class: 'qtag', text: 'por confirmar ✓', title: 'Valor asumido: clic para confirmarlo', onclick: function (e) { e.preventDefault(); e.stopPropagation(); state._qc = state._qc || {}; state._qc[x.sec + '|' + x.fid] = 1; save(); renderQuality(); } });
+      }
+      lab.appendChild(tag);
+    });
+    // bloques plegados (Más opciones / parámetros) y encabezado de la tarjeta: cuántos datos por confirmar esconden
+    Array.prototype.forEach.call(document.querySelectorAll('.qcnt'), function (x) { x.remove(); });
+    Array.prototype.forEach.call(document.querySelectorAll('details.params'), function (d) {
+      var n = d.querySelectorAll('.fld.qpend').length, sm = d.querySelector('summary'); d.classList.toggle('qhas', !!n);
+      if (n && sm) sm.appendChild(el('span', { class: 'qcnt', 'data-n': String(n), text: n + ' por confirmar' }));
+    });
+    Array.prototype.forEach.call(document.querySelectorAll('.card[id^="sec-"]'), function (c) {
+      var n = c.querySelectorAll('.fld.qpend').length, h2 = c.querySelector('.hd h2');
+      if (n && h2) h2.parentNode.insertBefore(el('span', { class: 'qcnt', 'data-n': String(n), text: n + ' por confirmar', title: 'Campos resaltados en amarillo: datos asumidos o sin dato medido' }), h2.nextSibling);
+    });
+  }
+  // "Guardar como mi esquema": guarda los campos f.pref de la sección (fármacos y dosis) como preferencia del médico
+  function prefBar(s, v) {
+    var w = el('div', { class: 'prefbar' });
+    var draw = function () {
+      w.innerHTML = '';
+      var has = Object.keys(prefOf(s.id)).length > 0;
+      w.appendChild(el('button', { type: 'button', class: 'prefb', text: has ? 'Actualizar mi esquema' : 'Guardar como mi esquema', title: 'Guarda estos fármacos y dosis como tu preferencia: los informes nuevos parten con ellos, marcados "tu preferencia"', onclick: function () {
+        var P = prefAll(), o = {}; state._qc = state._qc || {};
+        (s.fields || []).forEach(function (f) { if (f.pref) { o[f.id] = clone(v[f.id]); state._qc[s.id + '|' + f.id] = 1; } });
+        P[s.id] = o; lsSet(LS.pref, P); save(); draw(); renderQuality(); toast('Guardado como tu esquema habitual (fármacos y dosis)');
+      } }));
+      if (has) w.appendChild(el('button', { type: 'button', class: 'prefb x', text: 'Olvidar mi esquema', title: 'Borra tu esquema guardado: los informes nuevos vuelven a partir sin dosis', onclick: function () { var P = prefAll(); delete P[s.id]; lsSet(LS.pref, P); draw(); renderQuality(); toast('Esquema olvidado: los informes nuevos parten sin dosis'); } }));
+    };
+    draw(); return w;
   }
   function refresh(rebuildConcl) {
     var m = build();
@@ -14651,7 +15002,7 @@ if (typeof module !== 'undefined') module.exports = EndoScales;
         var src = s.sections[k]; if (!SEC[k] || !isObj(src)) return;
         (Array.isArray(src.findings) ? src.findings : []).forEach(function (fi) { if (!fi || !(FIND[fi.fid] || FIND[(FID_MIG[k] || {})[fi.fid]])) lost++; });
         base.sections[k] = Object.assign(base.sections[k] || {}, src);
-        if (isObj(src.v)) base.sections[k].v = Object.assign(defaults(SEC[k].fields), src.v);
+        if (isObj(src.v)) base.sections[k].v = Object.assign(secDefaults(SEC[k]), src.v);
       });
       ['frascos', 'conclExtra'].forEach(function (k) { if (Array.isArray(s[k])) base[k] = s[k]; });
       if (EXAMS[s.exam]) base.frascos.forEach(function (f) { if (isObj(f) && !f.ex) f.ex = s.exam; });
@@ -15185,8 +15536,8 @@ if (typeof module !== 'undefined') module.exports = EndoScales;
   var NORMAL_LABEL = { eda: 'EDA normal', colono: 'Colonoscopía normal (Boston 9)', ambos: 'EDA + colonoscopía normales' };
   function normalState(ex) {
     var st = { exam: ex, sections: {}, frascos: [] };
-    examList(ex).forEach(function (e) { sectionsOf(e).forEach(function (s) { st.sections[s.id] = { v: defaults(s.fields), findings: [], note: '' }; }); });
-    footerSecs().forEach(function (s) { st.sections[s.id] = { v: defaults(s.fields), findings: [], note: '', on: true }; });
+    examList(ex).forEach(function (e) { sectionsOf(e).forEach(function (s) { st.sections[s.id] = { v: secDefaults(s), findings: [], note: '' }; }); });
+    footerSecs().forEach(function (s) { st.sections[s.id] = { v: secDefaults(s), findings: [], note: '', on: true }; });
     if (examList(ex).indexOf('colono') >= 0 && st.sections.col_datos) {
       var cv = st.sections.col_datos.v, has = function (id) { return (SEC.col_datos.fields || []).some(function (f) { return f.id === id; }); };
       ['bost_d', 'bost_t', 'bost_i'].forEach(function (k) { if (has(k)) cv[k] = '3'; });
@@ -18570,6 +18921,453 @@ UI.mapaFeature = { regions: ALL, openBig: openBig, segments: segments };
 
 })();}catch(e){console.error("Feature mapa.js",e);}
 ;
+/* ===== feature patologia.js ===== */
+try{(function(){
+/* ===== patologia.js — Anatomía Patológica: solicitud, resultado y carta al paciente =====
+   1) "📄 Solicitud AP" (tarjeta Biopsias, solo si hay frascos): hoja de solicitud imprimible (1 hoja) con membrete,
+      datos del paciente, examen, indicación, sospecha clínica editable (prellenada con la conclusión), tabla de
+      frascos con nota por frasco y recordatorio Sydney/OLGIM. Se imprime SOLO la solicitud (@page con nombre).
+   2) "🔬 Resultado AP": resultado por frasco con chips según el sitio (colon, esófago, estómago, duodeno) + texto
+      libre. Con eso modules/terapeutica.js (EndoPAT.summary) deja el intervalo de control DEFINITIVO, y se genera
+      una carta al paciente (lenguaje simple) imprimible y copiable.
+   Privacidad: todo vive solo en memoria, atado al informe actual (state._rid), como los datos del paciente.
+   No se guarda en localStorage ni en el borrador; se borra con "Nuevo". */
+var U = window.EndoUI, H = U && U.hoja; if (!U || !H) return;
+
+function $(s, r) { return (r || document).querySelector(s); }
+function mk(tag, cls, txt) { var e = document.createElement(tag); if (cls) e.className = cls; if (txt != null) e.textContent = txt; return e; }
+function btn(cls, html, title, fn) { var b = mk('button', cls); b.type = 'button'; b.innerHTML = html; if (title) b.title = title; b.onclick = fn; return b; }
+function has(x) { return String(x == null ? '' : x).trim() !== ''; }
+function norm(s) { return String(s || '').toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g, ''); }
+function toast(m) { try { U.rapido.toast(m); } catch (e) { } }
+function st() { try { return U.state(); } catch (e) { return null; } }
+var MES = ['enero', 'febrero', 'marzo', 'abril', 'mayo', 'junio', 'julio', 'agosto', 'septiembre', 'octubre', 'noviembre', 'diciembre'];
+
+// ---------- memoria (atada al informe actual) ----------
+var P = null;
+function cur() {
+  var s = st(), rid = s && s._rid;
+  if (!P || P.rid !== rid) P = { rid: rid, fr: {}, sosp: null, notas: {}, carta: null };
+  return P;
+}
+document.addEventListener('endo:newreport', function () { P = null; closeAll(); });
+function frRes(f) { var p = cur(); return p.fr[f.uid] || (p.fr[f.uid] = { org: '', dx: [], eos: '', les: '', txt: '' }); }
+function resFilled(r) { return !!r && (r.dx.length > 0 || has(r.eos) || has(r.txt)); }
+
+// ---------- frascos ----------
+function frascos() { var s = st(); return s ? (s.frascos || []).filter(function (f) { return has(f.sitio); }) : []; }
+function frIndex(f) { var s = st(); return s ? s.frascos.indexOf(f) + 1 : 0; }
+function srcFinding(f) {
+  var s = st(); if (!s || !f.src) return null; var u = String(f.src).split('#')[0], hit = null;
+  Object.keys(s.sections).forEach(function (k) { (s.sections[k].findings || []).forEach(function (fi) { if (fi.uid === u) hit = fi; }); });
+  return hit;
+}
+// órgano del frasco según lo escrito (y el examen como respaldo)
+function orgAuto(f) {
+  var t = norm(f.sitio);
+  if (/esofag|barrett|eosin|\beoe\b|union escamo|cardias/.test(t)) return 'eso';
+  if (/duoden|bulbo|segunda porcion|\bd2\b|papila|ampoll|yeyun/.test(t)) return 'duo';
+  if (/ileon|ileal|colon|recto|rectal|sigm|ciego|cecal|transverso|ascendente|descendente|angulo hepatico|angulo esplenico|anastomosis ileo|polipo de colon|valvula ileocecal|escalonad/.test(t)) return 'col';
+  if (/antr|cuerpo|incisur|angul|gastr|fondo|sydney|estomago|pilor|curvatura/.test(t)) return 'est';
+  if (f.ex === 'colono') return 'col';
+  if (/polip|lst|lesion/.test(t)) { var s = st(); if (s && s.exam === 'colono') return 'col'; }
+  return 'otro';
+}
+function orgOf(f) { var r = cur().fr[f.uid]; return (r && r.org) || orgAuto(f); }
+var ORG = { col: 'Colon / recto / íleon', eso: 'Esófago', est: 'Estómago', duo: 'Duodeno', otro: 'Otro' };
+
+// nota sugerida para el patólogo, según el sitio y la indicación
+function defNota(f) {
+  var t = norm(f.sitio), o = orgOf(f);
+  if (o === 'eso' && /barrett/.test(t)) return 'Barrett: buscar metaplasia intestinal y grado de displasia.';
+  if (o === 'eso' && (/eosin|\beoe\b/.test(t) || /eosin|disfagia|impact/.test(indicTxt()))) return 'Descartar EoE: contar eosinófilos/campo de gran aumento (pico).';
+  if (o === 'est' && /sydney|antr|cuerpo|incisur/.test(t)) return 'Sistema Sydney actualizado / OLGIM: H. pylori, atrofia y metaplasia intestinal (tipo).';
+  if (o === 'duo') return 'Descartar enfermedad celíaca: linfocitos intraepiteliales/100 enterocitos y clasificación de Marsh-Oberhuber.';
+  if (o === 'col' && /polip|lst|lesion|adenom|resec|mucosect/.test(t)) return 'Tipo histológico, grado de displasia y bordes de resección.';
+  if (o === 'col' && /escalonad|colitis|eii|crohn|ulcer/.test(t + ' ' + indicTxt())) return 'Actividad inflamatoria, signos de cronicidad y displasia.';
+  if (o === 'col' && /diarrea/.test(indicTxt())) return 'Descartar colitis microscópica (linfocítica / colágena).';
+  return '';
+}
+
+// ---------- datos del informe ----------
+function model() { try { return U.build(); } catch (e) { return { blocks: [] }; } }
+function indicLines() {
+  var out = [];
+  model().blocks.forEach(function (b) { (b.header || []).forEach(function (l) { if (/^indicaci/i.test(l)) out.push(l.replace(/^indicaci[oó]n(es)?\s*:\s*/i, '').replace(/\.\s*$/, '')); }); });
+  return out;
+}
+function indicTxt() { return norm(indicLines().join(' ')); }
+function conclTxt() {
+  var L = [];
+  model().blocks.forEach(function (b) { (b.concl || []).forEach(function (c) { if (!c.off && has(c.text) && !/^normal:/.test(c.key || '')) L.push(c.text.replace(/\.\s*$/, '') + '.'); }); });
+  return L.join(' ');
+}
+function examTitle() { return model().blocks.map(function (b) { return b.title; }).filter(has).join(' + ') || 'Endoscopía'; }
+function examPlain() { var s = st(), e = s && s.exam; return e === 'colono' ? 'colonoscopía' : e === 'ambos' ? 'endoscopía digestiva alta y colonoscopía' : 'endoscopía digestiva alta'; }
+function patient() {
+  var m = $('.memb'), o = { nombre: '', rut: '', edad: '', fecha: '', nexam: '' }; if (!m) return o;
+  var map = { 'Paciente': 'nombre', 'RUT / Ficha': 'rut', 'Edad': 'edad', 'Fecha': 'fecha', 'N° examen': 'nexam' };
+  Array.prototype.forEach.call(m.querySelectorAll('input[aria-label]'), function (i) { var k = map[i.getAttribute('aria-label')]; if (k) o[k] = i.value.trim(); });
+  return o;
+}
+function doctor() {
+  var p = null;
+  try { var s = JSON.parse(localStorage.getItem('endoinforme.v1.medicos') || 'null'); if (s && s.list && s.list.length) { p = s.list.filter(function (x) { return x.id === s.active; })[0] || s.list[0]; } } catch (e) { }
+  if (p && has(p.nombre)) return { nombre: p.nombre, esp: p.esp || '', reg: p.reg || '', firma: p.firma || '' };
+  var f = String((H.settings() || {}).firma || '').trim(), parts = f.split(/\s+·\s+/);
+  return { nombre: parts[0] || '', esp: parts.slice(1).join(' · '), reg: '', firma: '' };
+}
+function fechaLarga(s) { var m = /^(\d{1,2})[-\/.](\d{1,2})[-\/.](\d{4})$/.exec(String(s || '').trim()); return m ? (+m[1]) + ' de ' + MES[+m[2] - 1] + ' de ' + m[3] : (s || ''); }
+function hoyLargo() { var d = new Date(); return d.getDate() + ' de ' + MES[d.getMonth()] + ' de ' + d.getFullYear(); }
+function fechaExam() { var f = patient().fecha, m = /^(\d{1,2})[-\/.](\d{1,2})[-\/.](\d{4})$/.exec(f || ''); return m ? new Date(+m[3], +m[2] - 1, +m[1]) : new Date(); }
+
+// ---------- piezas comunes de la hoja ----------
+function membrete(title) {
+  var s = H.settings() || {}, w = mk('div', 'aphd');
+  if (s.logo) { var i = mk('img', 'aplogo'); i.src = s.logo; i.alt = 'Logo'; w.appendChild(i); }
+  var t = mk('div', 'apinst'); t.appendChild(mk('b', null, s.inst || 'Unidad de Endoscopía')); if (s.inst2) t.appendChild(mk('small', null, s.inst2)); w.appendChild(t);
+  if (title) w.appendChild(mk('div', 'apttl', title));
+  return w;
+}
+function firmaBlk() {
+  var d = doctor(), w = mk('div', 'apsig');
+  var im = mk('div', 'apsigimg'); if (d.firma) { var i = mk('img'); i.src = d.firma; i.alt = 'Firma'; im.appendChild(i); } w.appendChild(im);
+  w.appendChild(mk('span', 'apsigline'));
+  w.appendChild(mk('b', null, d.nombre || 'Médico endoscopista'));
+  if (d.esp) w.appendChild(mk('small', null, d.esp));
+  if (d.reg) w.appendChild(mk('small', null, /^(rut|reg|n°|nº|rnpi|sis)/i.test(d.reg) ? d.reg : 'RUT / Reg. ' + d.reg));
+  return w;
+}
+function kv(k, v, cls) { var r = mk('div', 'apkv' + (cls ? ' ' + cls : '')); r.appendChild(mk('span', null, k)); r.appendChild(mk('b', null, v || '—')); return r; }
+function editable(cls, txt, onIn, ph) { var d = mk('div', 'aped ' + (cls || '')); d.contentEditable = 'true'; d.spellcheck = true; d.textContent = txt || ''; if (ph) d.setAttribute('data-ph', ph); d.oninput = function () { onIn(d.innerText.replace(/ /g, ' ').trim()); }; return d; }
+
+// ---------- overlay ----------
+var ov = null;
+function closeAll() { if (ov) { ov.remove(); ov = null; document.removeEventListener('keydown', onKey, true); } }
+function onKey(e) { if (e.key === 'Escape') { e.stopPropagation(); closeAll(); } }
+function openOv(cls, label) {
+  closeAll();
+  ov = mk('div', 'apov ' + cls); ov.setAttribute('role', 'dialog'); ov.setAttribute('aria-label', label);
+  ov.onclick = function (e) { if (e.target === ov) closeAll(); };
+  document.addEventListener('keydown', onKey, true);
+  document.body.appendChild(ov);
+  return ov;
+}
+function bar(title, acts) {
+  var b = mk('div', 'apbar'); b.appendChild(mk('b', null, title)); b.appendChild(mk('span', 'sp'));
+  acts.forEach(function (a) { if (a) b.appendChild(a); });
+  b.appendChild(btn('btn ghost sm', '✕', 'Cerrar (Esc)', closeAll));
+  return b;
+}
+// imprime SOLO la hoja .apsheet del overlay (html.apprint + @page apdoc sin el encabezado del informe)
+function printPrep() { document.documentElement.classList.add('apprint'); }
+function printDone() { document.documentElement.classList.remove('apprint'); }
+function printIt() {
+  printPrep();
+  var done = function () { printDone(); window.removeEventListener('afterprint', done); };
+  window.addEventListener('afterprint', done);
+  setTimeout(function () { try { window.print(); } catch (e) { } setTimeout(done, 1500); }, 30);
+}
+
+// =========================== 1) SOLICITUD ===========================
+function openSolicitud() {
+  var F = frascos(); if (!F.length) { toast('Agrega al menos un frasco con su sitio'); return; }
+  var p = cur(), pt = patient(), d = doctor();
+  var o = openOv('apsol', 'Solicitud de estudio histopatológico');
+  var box = mk('div', 'apbox');
+  box.appendChild(bar('Solicitud de Anatomía Patológica', [btn('btn sm', '🔬 Resultado AP', 'Ingresar el resultado cuando llegue', openResultado), btn('btn primary sm', '🖨 Imprimir', 'Imprime solo la solicitud (1 hoja)', printIt)]));
+  box.appendChild(mk('p', 'aptip', 'Los textos con borde punteado se pueden editar antes de imprimir. Los datos del paciente no se guardan.'));
+  var sh = mk('div', 'apsheet');
+  sh.appendChild(membrete('SOLICITUD DE ESTUDIO HISTOPATOLÓGICO'));
+  var g = mk('div', 'apgrid');
+  g.appendChild(kv('Paciente', pt.nombre, 'w2')); g.appendChild(kv('RUT / Ficha', pt.rut)); g.appendChild(kv('Edad', pt.edad ? pt.edad + ' años' : ''));
+  g.appendChild(kv('Fecha', pt.fecha)); g.appendChild(kv('Examen', examTitle() + (pt.nexam ? ' · N° ' + pt.nexam : ''), 'w2')); g.appendChild(kv('Endoscopista', [d.nombre, d.esp].filter(has).join(' · ')));
+  sh.appendChild(g);
+  var ind = indicLines().join('; ');
+  sh.appendChild(mk('h4', null, 'Indicación'));
+  sh.appendChild(mk('p', 'apind', ind ? ind.charAt(0).toUpperCase() + ind.slice(1) + '.' : '—'));
+  sh.appendChild(mk('h4', null, 'Antecedentes / sospecha clínica'));
+  sh.appendChild(editable('apsosp', p.sosp != null ? p.sosp : conclTxt(), function (v) { p.sosp = v; }, 'Escribe la sospecha clínica'));
+  sh.appendChild(mk('h4', null, 'Muestras enviadas'));
+  var t = mk('table', 'aptab'), th = mk('thead'), tr = mk('tr');
+  ['N°', 'Sitio', 'Muestras', 'Nota para el patólogo'].forEach(function (x) { tr.appendChild(mk('th', null, x)); });
+  th.appendChild(tr); t.appendChild(th);
+  var tb = mk('tbody'), syd = false;
+  F.forEach(function (f) {
+    var r = mk('tr'), i = frIndex(f);
+    if (/sydney/i.test(f.sitio) || (orgOf(f) === 'est' && /antr|cuerpo|incisur/.test(norm(f.sitio)))) syd = true;
+    r.appendChild(mk('td', 'apn', String(i)));
+    r.appendChild(mk('td', null, f.sitio.charAt(0).toUpperCase() + f.sitio.slice(1).replace(/\.$/, '')));
+    r.appendChild(mk('td', 'apnum', has(f.n) ? String(f.n) : '—'));
+    var td = mk('td', 'apnota'); td.appendChild(editable('', p.notas[f.uid] != null ? p.notas[f.uid] : defNota(f), function (v) { p.notas[f.uid] = v; }, 'Nota opcional'));
+    r.appendChild(td); tb.appendChild(r);
+  });
+  t.appendChild(tb); sh.appendChild(t);
+  var tot = F.reduce(function (a, f) { return a + (parseInt(f.n, 10) || 0); }, 0);
+  sh.appendChild(mk('p', 'aptot', F.length + ' frasco' + (F.length > 1 ? 's' : '') + (tot ? ' · ' + tot + ' muestra' + (tot > 1 ? 's' : '') + ' en total' : '') + ' · Fijación: formalina tamponada al 10 %.'));
+  if (syd) sh.appendChild(mk('p', 'apsyd', 'Biopsias gástricas según protocolo Sydney (antro 1-2, incisura/ángulo 3, cuerpo 4-5): favor informar según Sistema Sydney actualizado / OLGIM (H. pylori, atrofia, metaplasia intestinal y su tipo).'));
+  var ft = mk('div', 'apfoot'); ft.appendChild(mk('div', 'apdate', 'Fecha de solicitud: ' + (fechaLarga(pt.fecha) || hoyLargo()))); ft.appendChild(firmaBlk());
+  sh.appendChild(ft);
+  box.appendChild(sh); o.appendChild(box);
+}
+
+// =========================== 2) RESULTADO ===========================
+// chips por órgano: [grupo exclusivo, clave, rótulo]
+var CH = {
+  col: [['t', 'at', 'Adenoma tubular'], ['t', 'atv', 'Túbulo-velloso'], ['t', 'av', 'Velloso'], ['t', 'ssl0', 'Serrada sésil sin displasia'], ['t', 'ssl1', 'Serrada sésil con displasia'], ['t', 'hp', 'Hiperplásico'], ['t', 'ca', 'Carcinoma'], ['t', 'nl', 'Sin neoplasia'], ['d', 'dbg', 'DBG'], ['d', 'dag', 'DAG']],
+  eso: [['b', 'b_sin', 'Barrett sin displasia'], ['b', 'b_dbg', 'Barrett DBG'], ['b', 'b_dag', 'Barrett DAG'], ['b', 'eso_nl', 'Sin alteraciones']],
+  est: [['h', 'hp_pos', 'H. pylori (+)'], ['h', 'hp_neg', 'H. pylori (−)'], ['', 'gastritis', 'Gastritis crónica'], ['', 'atrofia', 'Atrofia'], ['', 'mi', 'Metaplasia intestinal'], ['o', 'ol1', 'OLGIM I'], ['o', 'ol2', 'OLGIM II'], ['o', 'ol3', 'OLGIM III'], ['o', 'ol4', 'OLGIM IV']],
+  duo: [['m', 'm0', 'Marsh 0'], ['m', 'm1', 'Marsh 1'], ['m', 'm2', 'Marsh 2'], ['m', 'm3a', 'Marsh 3a'], ['m', 'm3b', 'Marsh 3b'], ['m', 'm3c', 'Marsh 3c']],
+  otro: []
+};
+function grpOf(org, k) { var x = (CH[org] || []).filter(function (c) { return c[1] === k; })[0]; return x ? x[0] : ''; }
+function toggle(r, org, k) {
+  var i = r.dx.indexOf(k);
+  if (i >= 0) { r.dx.splice(i, 1); return; }
+  var g = grpOf(org, k);
+  if (g) r.dx = r.dx.filter(function (x) { return grpOf(org, x) !== g; });
+  if (k === 'mi' && !r.dx.some(function (x) { return /^ol/.test(x); })) { /* MI sin OLGIM: queda a la espera del estadio */ }
+  if (/^ol[1-4]$/.test(k) && k !== 'ol1' && r.dx.indexOf('mi') < 0) r.dx.push('mi');
+  r.dx.push(k);
+}
+var COLD = {
+  at: ['adenoma tubular', 'adenomas tubulares'], atv: ['adenoma túbulo-velloso', 'adenomas túbulo-vellosos'], av: ['adenoma velloso', 'adenomas vellosos'],
+  ssl0: ['lesión serrada sésil sin displasia', 'lesiones serradas sésiles sin displasia'], ssl1: ['lesión serrada sésil con displasia', 'lesiones serradas sésiles con displasia'],
+  hp: ['pólipo hiperplásico', 'pólipos hiperplásicos'], ca: ['adenocarcinoma', 'adenocarcinoma'], nl: ['sin neoplasia', 'sin neoplasia']
+};
+function lesN(f, r) { if (has(r.les)) return Math.max(1, parseInt(r.les, 10) || 1); var fi = srcFinding(f), v = fi && fi.v || {}; return Math.max(1, Number(v.n) || 1); }
+function lesSize(f) { var fi = srcFinding(f), v = fi && fi.v || {}; return Number(v.size) || Number(v.smax) || 0; }
+function colItem(f, r) {
+  var d = r.dx, t = ['at', 'atv', 'av', 'ssl0', 'ssl1', 'hp', 'ca', 'nl'].filter(function (k) { return d.indexOf(k) >= 0; })[0];
+  var dag = d.indexOf('dag') >= 0, dbg = d.indexOf('dbg') >= 0;
+  if (!t && (dag || dbg)) t = 'at';
+  if (!t) return null;
+  var n = lesN(f, r), cls = /^a/.test(t) ? 'adeno' : /^ssl/.test(t) ? 'ssl' : t === 'hp' ? 'hp' : t === 'ca' ? 'ca' : 'normal';
+  var desc = t === 'nl' ? 'sin neoplasia' : (n > 1 && t !== 'ca' ? n + ' ' + COLD[t][1] : COLD[t][0]) + (cls === 'adeno' && (dag || dbg) ? ' con displasia de ' + (dag ? 'alto' : 'bajo') + ' grado' : '');
+  return { cls: cls, n: n, size: lesSize(f), vill: t === 'atv' || t === 'av', dag: dag, ssld: t === 'ssl1', desc: desc };
+}
+var MORD = ['m0', 'm1', 'm2', 'm3a', 'm3b', 'm3c'];
+// Resumen que lee modules/terapeutica.js (intervalo definitivo) y la carta
+function summary() {
+  var p = P, s = st(); if (!p || !s || p.rid !== s._rid) return null;
+  var col = { items: [] }, eda = { eos: null, barrett: '', hp: '', olgim: '', mi: false, atrofia: false, gastritis: false, marsh: '' }, any = false, anyE = false;
+  frascos().forEach(function (f) {
+    var r = p.fr[f.uid]; if (!resFilled(r)) return;
+    var o = orgOf(f), d = r.dx;
+    if (o === 'col') { var it = colItem(f, r); if (it) { col.items.push(it); any = true; } return; }
+    if (o === 'eso') {
+      if (has(r.eos) && !isNaN(Number(r.eos))) { eda.eos = Math.max(eda.eos == null ? 0 : eda.eos, Number(r.eos)); anyE = true; }
+      var b = d.indexOf('b_dag') >= 0 ? 'dag' : d.indexOf('b_dbg') >= 0 ? 'dbg' : d.indexOf('b_sin') >= 0 ? 'sin' : '';
+      var rank = { '': 0, sin: 1, dbg: 2, dag: 3 }; if (rank[b] > rank[eda.barrett]) { eda.barrett = b; anyE = true; }
+    }
+    if (o === 'est') {
+      if (d.indexOf('hp_pos') >= 0) eda.hp = '+'; else if (d.indexOf('hp_neg') >= 0 && eda.hp !== '+') eda.hp = '-';
+      ['ol4', 'ol3', 'ol2', 'ol1'].some(function (k, i) { if (d.indexOf(k) >= 0) { var v = ['IV', 'III', 'II', 'I'][i], R = { '': 0, I: 1, II: 2, III: 3, IV: 4 }; if (R[v] > R[eda.olgim]) eda.olgim = v; return true; } return false; });
+      if (d.indexOf('mi') >= 0) eda.mi = true; if (d.indexOf('atrofia') >= 0) eda.atrofia = true; if (d.indexOf('gastritis') >= 0) eda.gastritis = true;
+      if (d.length) anyE = true;
+    }
+    if (o === 'duo') { MORD.forEach(function (k) { if (d.indexOf(k) >= 0 && MORD.indexOf(k) > MORD.indexOf('m' + eda.marsh)) eda.marsh = k.slice(1); }); if (d.length) anyE = true; }
+  });
+  if (!any && !anyE) return null;
+  return { col: any ? col : null, eda: anyE ? eda : null };
+}
+function nRes() { var p = cur(); return frascos().filter(function (f) { return resFilled(p.fr[f.uid]); }).length; }
+
+var refT = 0;
+function changed(prev) { clearTimeout(refT); refT = setTimeout(function () { try { H.refresh(); } catch (e) { } if (prev) prev(); place(true); }, 120); }
+
+function ctlLines() {
+  var s = st(); if (!s || !window.EndoCtl) return { col: null, eda: [] };
+  var vals = {}; Object.keys(s.sections).forEach(function (k) { vals[k] = s.sections[k].v; });
+  return window.EndoCtl.lines({ sections: s.sections, values: vals, exam: s.exam });
+}
+
+function openResultado() {
+  var F = frascos(); if (!F.length) { toast('No hay frascos en este informe'); return; }
+  var p = cur();
+  var o = openOv('apres', 'Resultado de anatomía patológica');
+  var box = mk('div', 'apbox');
+  box.appendChild(bar('Resultado de Anatomía Patológica', [btn('btn sm', '📄 Solicitud', 'Ver la solicitud', openSolicitud), btn('btn primary sm', '✉ Carta al paciente', 'Carta en lenguaje simple con el resultado y el próximo control', openCarta)]));
+  box.appendChild(mk('p', 'aptip', 'Marca el resultado de cada frasco. El intervalo de control del informe se ajusta solo con la histología real. Queda solo en memoria con este informe.'));
+  var list = mk('div', 'aplist');
+  var prev = mk('div', 'apprev');
+  function drawPrev() {
+    prev.innerHTML = ''; var L = ctlLines(), lines = [].concat(L.eda || [], L.col ? [L.col] : []);
+    prev.appendChild(mk('div', 'apprevh', summary() ? '✓ Control según histología' : 'Control (sin resultado aún)'));
+    if (!lines.length) prev.appendChild(mk('p', 'muted', 'Sin indicación de control automática para este examen.'));
+    lines.forEach(function (l) { var x = mk('p', /provisorio|pendiente/i.test(l) ? 'prov' : 'ok', l); prev.appendChild(x); });
+  }
+  F.forEach(function (f) {
+    var r = frRes(f), card = mk('div', 'apfr');
+    var hd = mk('div', 'apfrh'); hd.appendChild(mk('span', 'apfrn', 'Frasco ' + frIndex(f)));
+    hd.appendChild(mk('span', 'apfrs', f.sitio + (has(f.n) ? ' · ' + f.n + ' muestra' + (f.n > 1 ? 's' : '') : '')));
+    var sel = mk('select', 'aporg'); sel.setAttribute('aria-label', 'Órgano del frasco ' + frIndex(f));
+    Object.keys(ORG).forEach(function (k) { var op = mk('option', null, ORG[k]); op.value = k; sel.appendChild(op); });
+    sel.value = orgOf(f); hd.appendChild(sel); card.appendChild(hd);
+    var body = mk('div', 'apfrb'); card.appendChild(body);
+    function drawBody() {
+      body.innerHTML = ''; var org = orgOf(f);
+      var chips = mk('div', 'apchips');
+      (CH[org] || []).forEach(function (c, i) {
+        if (i && c[0] !== CH[org][i - 1][0]) chips.appendChild(mk('span', 'apsep'));
+        var b = btn('apchip' + (r.dx.indexOf(c[1]) >= 0 ? ' on' : ''), '', null, function () { toggle(r, org, c[1]); drawBody(); changed(drawPrev); });
+        b.textContent = c[2]; b.setAttribute('aria-pressed', r.dx.indexOf(c[1]) >= 0 ? 'true' : 'false'); chips.appendChild(b);
+      });
+      if (org === 'eso') {
+        var lb = mk('label', 'apeos'); lb.appendChild(mk('span', null, 'Eosinófilos/campo (pico)'));
+        var ni = mk('input'); ni.type = 'number'; ni.min = '0'; ni.max = '500'; ni.inputMode = 'numeric'; ni.value = r.eos; ni.placeholder = '—';
+        var tag = mk('b', 'apeost'); var upd = function () { var v = Number(r.eos); tag.textContent = has(r.eos) ? (v >= 15 ? '≥ 15: EoE' : '< 15') : ''; tag.className = 'apeost' + (has(r.eos) && v >= 15 ? ' hi' : ''); };
+        ni.oninput = function () { r.eos = ni.value; upd(); card.classList.toggle('done', resFilled(r)); changed(drawPrev); }; upd();
+        lb.appendChild(ni); lb.appendChild(tag); chips.insertBefore(lb, chips.firstChild);
+      }
+      if (org === 'col') {
+        var ll = mk('label', 'apeos'); ll.appendChild(mk('span', null, 'N° de lesiones'));
+        var li = mk('input'); li.type = 'number'; li.min = '1'; li.max = '50'; li.inputMode = 'numeric'; li.value = r.les; li.placeholder = String(lesN(f, { les: '' }));
+        li.oninput = function () { r.les = li.value; changed(drawPrev); };
+        ll.appendChild(li); chips.appendChild(mk('span', 'apsep')); chips.appendChild(ll);
+      }
+      body.appendChild(chips);
+      var tx = mk('textarea', 'aptxt'); tx.rows = 2; tx.placeholder = 'Texto libre del informe de patología (opcional)'; tx.value = r.txt;
+      tx.oninput = function () { r.txt = tx.value; card.classList.toggle('done', resFilled(r)); changed(drawPrev); };
+      body.appendChild(tx);
+      card.classList.toggle('done', resFilled(r));
+    }
+    sel.onchange = function () { r.org = sel.value; r.dx = []; drawBody(); changed(drawPrev); };
+    drawBody(); list.appendChild(card);
+  });
+  box.appendChild(list); box.appendChild(prev); drawPrev();
+  o.appendChild(box);
+}
+
+// =========================== 3) CARTA ===========================
+function plainResults() {
+  var S = summary() || {}, out = [], c = S.col, e = S.eda;
+  if (c) {
+    var cls = function (k) { return c.items.filter(function (x) { return x.cls === k; }); };
+    if (cls('ca').length) out.push('La biopsia del colon mostró un cáncer (adenocarcinoma). Sabemos que es una noticia difícil. Lo importante es que ya está diagnosticado y que hay un equipo especialista que lo evaluará pronto para indicarle el mejor tratamiento.');
+    var A = cls('adeno'), Sx = cls('ssl'), Hp = cls('hp');
+    var nA = A.reduce(function (a, x) { return a + x.n; }, 0), nS = Sx.reduce(function (a, x) { return a + x.n; }, 0);
+    if (nA) out.push((nA > 1 ? 'Los ' + nA + ' pólipos que le sacamos eran adenomas' : 'El pólipo que le sacamos era un adenoma') + ': un tipo de pólipo benigno (no es cáncer), pero que con los años podría transformarse en uno. Por eso fue muy bueno retirarlo' + (nA > 1 ? 's' : '') + '.' + (A.some(function (x) { return x.dag || x.vill; }) ? ' Tenía' + (nA > 1 ? 'n' : '') + ' algunas características de mayor riesgo, por lo que es importante no faltar a su próximo control.' : ''));
+    if (nS) out.push((nS > 1 ? 'Además, ' + nS + ' pólipos eran' : (nA ? 'Además, un pólipo era' : 'El pólipo era')) + ' de tipo "serrado": también benigno, pero conviene vigilarlo con controles.');
+    if (Hp.length && !nA && !nS) out.push('El pólipo era hiperplásico: un pólipo benigno, sin riesgo relevante de transformarse en cáncer.');
+    if (cls('normal').length && !nA && !nS && !Hp.length && !cls('ca').length) out.push('Las muestras del colon no mostraron lesiones preocupantes.');
+  }
+  if (e) {
+    if (e.eos != null) out.push(e.eos >= 15 ? 'Las biopsias del esófago confirmaron una esofagitis eosinofílica: una inflamación crónica del esófago, de tipo alérgico, que puede causar dificultad para tragar o la sensación de que la comida se atasca. No es cáncer y tiene tratamiento eficaz.' : 'Las biopsias del esófago no confirmaron una esofagitis eosinofílica.');
+    if (e.barrett === 'sin') out.push('Se confirmó un esófago de Barrett sin displasia: un cambio en la mucosa del esófago producido por el reflujo. Tiene bajo riesgo, pero requiere endoscopías de control periódicas.');
+    if (e.barrett === 'dbg' || e.barrett === 'dag') out.push('Se encontró un esófago de Barrett con cambios celulares (displasia de ' + (e.barrett === 'dag' ? 'alto' : 'bajo') + ' grado). Es una lesión que se puede tratar por endoscopía y que conviene evaluar en un centro especializado.');
+    if (e.hp === '+') out.push('Se encontró la bacteria Helicobacter pylori en el estómago. Es una infección frecuente que se trata con antibióticos; después del tratamiento hay que confirmar que se eliminó.');
+    if (e.hp === '-') out.push('No se encontró la bacteria Helicobacter pylori.');
+    if (e.olgim === 'III' || e.olgim === 'IV') out.push('El estómago presenta metaplasia intestinal extensa: un cambio en su mucosa que aumenta el riesgo de lesiones a futuro. Por eso se recomiendan endoscopías de control periódicas.');
+    else if (e.olgim || e.mi) out.push('El estómago presenta metaplasia intestinal leve o limitada: un cambio en su mucosa que, en general, no requiere controles especiales.');
+    else if (e.atrofia) out.push('El estómago presenta gastritis atrófica (adelgazamiento de su mucosa).');
+    else if (e.gastritis) out.push('El estómago presenta una gastritis crónica (inflamación de su mucosa).');
+    if (e.marsh) out.push(/^3/.test(e.marsh) ? 'Las biopsias del duodeno muestran daño de las vellosidades del intestino, compatible con enfermedad celíaca (intolerancia al gluten), lo que se confirma junto con su examen de sangre.' : e.marsh === '0' ? 'Las biopsias del duodeno fueron normales.' : 'Las biopsias del duodeno muestran cambios leves e inespecíficos, que debemos interpretar junto con sus exámenes de sangre.');
+  }
+  var p = cur(); frascos().forEach(function (f) { var r = p.fr[f.uid]; if (r && has(r.txt) && (!r.dx.length && !has(r.eos))) out.push('Frasco ' + frIndex(f) + ' (' + f.sitio + '): ' + r.txt.trim().replace(/\.?$/, '.')); });
+  return out;
+}
+function nextSteps() {
+  var S = summary() || {}, e = S.eda, out = [];
+  if (e && e.eos != null && e.eos >= 15) out.push('Iniciaremos tratamiento y repetiremos la endoscopía con biopsias en 8 a 12 semanas para ver cómo responde.');
+  if (e && e.hp === '+') out.push('Le indicaremos el tratamiento para eliminar la bacteria. Al menos 4 semanas después de terminarlo, debe hacerse un examen de aliento o de deposiciones para confirmar que se eliminó (sin tomar omeprazol u otro similar las 2 semanas previas).');
+  if (e && /^3/.test(e.marsh || '')) out.push('Le recomendaremos una dieta sin gluten y control con gastroenterología.');
+  return out;
+}
+var UNIT = { 'año': 12, 'años': 12, 'meses': 1, 'mes': 1, 'semanas': 0.25 };
+function whenOf(line) {
+  var m = /\ben (\d+)(?: a (\d+))? (años?|meses|mes|semanas)\b/.exec(line) || /\ba las (\d+)(?: a (\d+))? (semanas)\b/.exec(line);
+  if (!m) return null;
+  var lo = +m[1], u = m[3], txt = m[1] + (m[2] ? ' a ' + m[2] : '') + ' ' + (lo === 1 && !m[2] && u === 'años' ? 'año' : u);
+  var d = fechaExam(), months = lo * UNIT[u];
+  if (months >= 1) { d = new Date(d.getFullYear(), d.getMonth() + Math.round(months), 1); return { txt: txt, fecha: MES[d.getMonth()] + ' de ' + d.getFullYear() }; }
+  d = new Date(d.getTime() + lo * 7 * 864e5); return { txt: txt, fecha: d.getDate() + ' de ' + MES[d.getMonth()] + ' de ' + d.getFullYear() };
+}
+function controls() {
+  var L = ctlLines(), out = [];
+  var push = function (ex, l) { var w = whenOf(l); if (!w) return; var k = ex + w.txt; if (out.some(function (x) { return x.k === k; })) return; out.push({ k: k, t: ex + ' de control en ' + w.txt + ' (aproximadamente ' + w.fecha + ')' }); };
+  (L.eda || []).forEach(function (l) { if (/^(EDA|Esofagitis eosin|Esófago de Barrett|Barrett|Vigilancia|Intervalo)/.test(l) || /\bEDA\b/.test(l)) push('Endoscopía digestiva alta', l); });
+  if (L.col) { if (/coloproctolog/i.test(L.col)) out.push({ t: 'Evaluación pronta por el equipo de coloproctología (cirugía de colon).' }); else push('Colonoscopía', L.col); }
+  return out.map(function (x) { return x.t; });
+}
+function cartaText() {
+  var pt = patient(), d = doctor(), R = plainResults(), N = nextSteps(), C = controls();
+  var L = [];
+  L.push((pt.fecha ? '' : '') + hoyLargo());
+  L.push('');
+  L.push('Estimado(a) ' + (pt.nombre || 'paciente') + ':');
+  L.push('');
+  L.push('Junto con saludarle, le escribo para contarle el resultado de las biopsias que se tomaron en su ' + examPlain() + (pt.fecha ? ' del ' + fechaLarga(pt.fecha) : '') + '.');
+  L.push('');
+  L.push('Resultado:');
+  (R.length ? R : ['El resultado ya fue revisado por su médico.']).forEach(function (x) { L.push('• ' + x); });
+  if (N.length) { L.push(''); L.push('Qué haremos ahora:'); N.forEach(function (x) { L.push('• ' + x); }); }
+  L.push('');
+  L.push('Próximo control:');
+  (C.length ? C : ['Su médico tratante le indicará cuándo debe controlarse.']).forEach(function (x) { L.push('• ' + x.replace(/\.?$/, '.')); });
+  L.push('');
+  L.push('Si presenta síntomas nuevos antes de esa fecha, consulte antes, sin esperar el control. Ante cualquier duda, con gusto la conversamos.');
+  L.push('');
+  L.push('Un saludo cordial,');
+  L.push('');
+  L.push([d.nombre || 'Médico endoscopista', d.esp].filter(has).join('\n'));
+  return L.join('\n');
+}
+function openCarta() {
+  if (!summary()) { toast('Primero ingresa el resultado de al menos un frasco'); openResultado(); return; }
+  var p = cur(), o = openOv('apcarta', 'Carta al paciente');
+  var box = mk('div', 'apbox');
+  var body;
+  var regen = btn('btn sm ghost', '↺ Regenerar', 'Volver al texto sugerido (pierde tus cambios)', function () { p.carta = null; draw(); });
+  var cp = btn('btn sm', '⧉ Copiar', 'Copiar la carta como texto', function () { copyTxt(bodyTxt()); });
+  box.appendChild(bar('Carta al paciente', [btn('btn sm', '🔬 Resultado', 'Volver al resultado', openResultado), regen, cp, btn('btn primary sm', '🖨 Imprimir', 'Imprime solo la carta', printIt)]));
+  box.appendChild(mk('p', 'aptip', 'Lenguaje simple para el paciente. Puedes editar el texto directamente antes de copiar o imprimir.'));
+  var sh = mk('div', 'apsheet apletter'); box.appendChild(sh); o.appendChild(box);
+  function bodyTxt() { var x = sh.querySelector('.apctx'); var t = x ? x.innerText.replace(/ /g, ' ').replace(/\n{3,}/g, '\n\n').trim() : ''; var d = doctor(); return t + '\n\n' + [d.nombre, d.esp, d.reg ? (/^(rut|reg|n°|nº|rnpi|sis)/i.test(d.reg) ? d.reg : 'RUT / Reg. ' + d.reg) : ''].filter(has).join('\n'); }
+  function draw() {
+    sh.innerHTML = ''; sh.appendChild(membrete(''));
+    var txt = p.carta != null ? p.carta : cartaText();
+    // la firma va como bloque gráfico: se separa del cuerpo editable
+    var parts = txt.split(/\n\nUn saludo cordial,\n\n/), main = parts[0], tail = parts.length > 1 ? 'Un saludo cordial,' : '';
+    var ed = editable('apctx', main + (tail ? '\n\n' + tail : ''), function (v) { p.carta = v + '\n\nUn saludo cordial,\n\n' + doctor().nombre; });
+    sh.appendChild(ed);
+    sh.appendChild(firmaBlk());
+  }
+  draw();
+}
+function copyTxt(t) {
+  var ok = function () { toast('✓ Carta copiada'); };
+  try { if (navigator.clipboard && navigator.clipboard.writeText) { navigator.clipboard.writeText(t).then(ok, fb); return; } } catch (e) { }
+  fb();
+  function fb() { var ta = mk('textarea'); ta.value = t; ta.style.cssText = 'position:fixed;opacity:0'; document.body.appendChild(ta); ta.select(); try { document.execCommand('copy'); ok(); } catch (e) { toast('No se pudo copiar'); } ta.remove(); }
+}
+
+// ---------- botones en la tarjeta Biopsias ----------
+function place(force) {
+  var card = document.getElementById('sec-frascos'); if (!card) return;
+  var hd = card.querySelector(':scope > .hd'); if (!hd) return;
+  var on = !card.classList.contains('bxoff') && frascos().length > 0;
+  var w = hd.querySelector('.apbtns');
+  if (!on) { if (w) w.remove(); return; }
+  var n = nRes(), key = n + '|' + frascos().length;
+  if (w && w.getAttribute('data-k') === key && !force) return;
+  if (w) w.remove();
+  w = mk('span', 'apbtns noprint'); w.setAttribute('data-k', key);
+  w.appendChild(btn('btn sm apb', '📄 <span>Solicitud AP</span>', 'Hoja de solicitud para Anatomía Patológica con estos frascos', openSolicitud));
+  w.appendChild(btn('btn sm apb' + (n ? ' apdone' : ''), '🔬 <span>Resultado AP</span>' + (n ? '<i>' + n + '</i>' : ''), n ? 'Resultado ingresado en ' + n + ' frasco' + (n > 1 ? 's' : '') + ' (intervalo definitivo)' : 'Ingresar el resultado de la biopsia: ajusta el intervalo y genera la carta al paciente', openResultado));
+  var plus = hd.querySelector('.btn.primary');
+  if (plus) hd.insertBefore(w, plus); else hd.appendChild(w);
+}
+
+window.EndoPAT = { summary: summary, solicitud: openSolicitud, resultado: openResultado, carta: openCarta, close: closeAll, _printPrep: printPrep, _printDone: printDone, _mem: function () { return cur(); } };
+
+var tmr = 0;
+new MutationObserver(function () { if (tmr) return; tmr = setTimeout(function () { tmr = 0; place(); }, 60); })
+  .observe(document.body, { childList: true, subtree: true });
+place();
+
+})();}catch(e){console.error("Feature patologia.js",e);}
+;
 /* ===== feature perfil.js ===== */
 try{(function(){
 /* ===== perfil.js — "Perfil del médico" con firma guardada =====
@@ -19156,7 +19954,495 @@ new MutationObserver(scanHome).observe(document.body, { childList: true });
 scanHome();
 
 })();}catch(e){console.error("Feature rapido.js",e);}
-window.ENDO_VERSION="202611271638";window.ENDO_WEB_URL="https://saluvel.github.io/EndoInforme/";</script>
+;
+/* ===== feature reportar.js ===== */
+try{(function(){
+// Reportar problema (piloto con colegas): formulario breve + datos técnicos automáticos SIN datos de pacientes.
+// Salidas: copiar, descargar .txt, correo (mailto sin destinatario) y, opcional, issue en GitHub.
+// Nunca incluye nombre, RUT, edad, N° de examen, texto del informe ni de los frascos: solo conteos e identificadores
+// técnicos. Además, todo el texto final pasa por limpiar(), que borra los datos del paciente en pantalla y RUTs.
+// API: window.EndoReporte = { open(), texto(campos) }
+var REPO = 'https://github.com/Saluvel/EndoInforme/issues/new';
+var ASUNTO = 'EndoInforme – reporte de problema';
+var MAIL_MAX = 1800, GH_MAX = 6000;
+
+// ---------- captura de errores desde que carga esta función ----------
+var errs = [];
+function pushErr(s) { s = String(s == null ? '' : s).replace(/\s+/g, ' ').trim().slice(0, 300); if (!s) return; errs.push(new Date().toTimeString().slice(0, 8) + ' ' + s); if (errs.length > 10) errs.shift(); }
+function fmtArg(a) { if (a && a.message) return (a.name ? a.name + ': ' : '') + a.message; if (typeof a === 'object') { try { return JSON.stringify(a).slice(0, 200); } catch (e) { return String(a); } } return String(a); }
+try {
+  var oErr = console.error;
+  console.error = function () { try { pushErr(Array.prototype.map.call(arguments, fmtArg).join(' ')); } catch (e) { } return oErr.apply(console, arguments); };
+} catch (e) { }
+window.addEventListener('error', function (e) { pushErr((e.message || 'Error') + (e.filename ? ' @' + String(e.filename).split('/').pop() + ':' + e.lineno : '')); });
+window.addEventListener('unhandledrejection', function (e) { pushErr('Promesa rechazada: ' + fmtArg(e.reason)); });
+
+function h(tag, cls, html) { var x = document.createElement(tag); if (cls) x.className = cls; if (html != null) x.innerHTML = html; return x; }
+function toast(m, ms) { try { window.EndoUI.rapido.toast(m, ms); } catch (e) { } }
+function pad(n) { return ('0' + n).slice(-2); }
+function stamp(d) { return d.getFullYear() + '-' + pad(d.getMonth() + 1) + '-' + pad(d.getDate()) + ' ' + pad(d.getHours()) + ':' + pad(d.getMinutes()); }
+
+// ---------- privacidad ----------
+function reEsc(s) { return s.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'); }
+function sensibles() {
+  var out = [];
+  try { Array.prototype.forEach.call(document.querySelectorAll('#memb input, #memb textarea, .memb input'), function (i) { var v = String(i.value || '').trim(); if (v.length >= 3 && !/^\d{1,2}-\d{1,2}-\d{4}$/.test(v)) out.push({ v: v, w: 1 }); }); } catch (e) { }
+  // texto de los frascos: solo coincidencia completa (no palabra a palabra, para no borrar "esófago" de la descripción)
+  try { var st = window.EndoUI.state(); (st.frascos || []).forEach(function (f) { var v = String(f.sitio || '').trim(); if (v.length >= 12) out.push({ v: v, w: 0 }); }); } catch (e) { }
+  return out;
+}
+function limpiar(txt) {
+  var t = String(txt || '');
+  sensibles().sort(function (a, b) { return b.v.length - a.v.length; }).forEach(function (o) {
+    var v = o.v;
+    t = t.replace(new RegExp(reEsc(v), 'gi'), '[dato de paciente omitido]');
+    // también cada palabra larga de un nombre (p. ej. solo el apellido)
+    if (o.w && !/\d/.test(v)) v.split(/\s+/).forEach(function (w) { if (w.length >= 4 && /^[A-Za-zÁÉÍÓÚÜÑáéíóúüñ'-]+$/.test(w)) t = t.replace(new RegExp('(^|[^A-Za-zÁÉÍÓÚÜÑáéíóúüñ])' + reEsc(w) + '(?=$|[^A-Za-zÁÉÍÓÚÜÑáéíóúüñ])', 'gi'), '$1[omitido]'); });
+  });
+  t = t.replace(/\b\d{1,2}\.?\d{3}\.?\d{3}\s*-\s*[\dkK]\b/g, '[RUT omitido]')
+    .replace(/\b\d{7,8}[\dkK]\b/g, '[número omitido]')
+    .replace(/[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}/g, '[correo omitido]');
+  return t;
+}
+
+// ---------- datos técnicos ----------
+var appInfo = null;
+function loadInfo() {
+  var T = window.__TAURI_INTERNALS__;
+  if (!T || typeof T.invoke !== 'function') return Promise.resolve(null);
+  if (appInfo) return Promise.resolve(appInfo);
+  return new Promise(function (res) {
+    var done = false, fin = function (x) { if (!done) { done = true; res(x); } };
+    try { Promise.resolve(T.invoke('info_app')).then(function (x) { appInfo = x; fin(x); }, function () { fin(null); }); } catch (e) { fin(null); }
+    setTimeout(function () { fin(null); }, 900);
+  });
+}
+function modo() {
+  if (window.__TAURI_INTERNALS__) return 'App de escritorio';
+  if (window.ENDO_ARTIFACT) return 'Artifact (claude.ai)';
+  try { if (window.matchMedia('(display-mode: standalone)').matches || navigator.standalone) return 'PWA instalada'; } catch (e) { }
+  return location.protocol === 'file:' ? 'Archivo local' : 'Navegador web';
+}
+function nav() {
+  var ua = navigator.userAgent || '', b = 'Otro', os = 'Otro', m;
+  if ((m = ua.match(/Edg\/([\d.]+)/))) b = 'Edge ' + m[1]; else if ((m = ua.match(/(?:Chrome|CriOS)\/([\d.]+)/))) b = 'Chrome ' + m[1]; else if ((m = ua.match(/(?:Firefox|FxiOS)\/([\d.]+)/))) b = 'Firefox ' + m[1]; else if ((m = ua.match(/Version\/([\d.]+).*Safari/))) b = 'Safari ' + m[1];
+  if (/iPhone|iPad|iPod/.test(ua)) os = 'iOS ' + ((ua.match(/OS (\d+[_\d]*)/) || [])[1] || '').replace(/_/g, '.'); else if (/Android/.test(ua)) os = 'Android ' + ((ua.match(/Android ([\d.]+)/) || [])[1] || ''); else if (/Windows/.test(ua)) os = 'Windows'; else if (/Mac OS X/.test(ua)) os = 'macOS ' + ((ua.match(/Mac OS X (\d+[_\d]*)/) || [])[1] || '').replace(/_/g, '.'); else if (/Linux/.test(ua)) os = 'Linux';
+  return { b: b, os: os, ua: ua };
+}
+function tecnico(info) {
+  var L = [], st = null; try { st = window.EndoUI.state(); } catch (e) { }
+  var n = nav(), now = new Date();
+  L.push('Fecha: ' + stamp(now) + ' (' + (Intl.DateTimeFormat().resolvedOptions().timeZone || '') + ')');
+  L.push('Versión: ' + (info && info.version ? 'app ' + info.version + ' · ' : '') + 'build ' + (window.ENDO_VERSION || '¿?'));
+  L.push('Modo: ' + modo() + (info && info.os ? ' (' + info.os + (info.arch ? ' ' + info.arch : '') + ')' : ''));
+  L.push('Navegador / SO: ' + n.b + ' · ' + n.os);
+  L.push('Pantalla: ventana ' + innerWidth + '×' + innerHeight + ' · pantalla ' + screen.width + '×' + screen.height + ' @' + (window.devicePixelRatio || 1) + 'x' + (('ontouchstart' in window) ? ' · táctil' : ''));
+  L.push('Tema: ' + (document.documentElement.getAttribute('data-theme') === 'dark' ? 'oscuro' : 'claro') + ' · idioma ' + (navigator.language || ''));
+  var home = document.getElementById('home'), enInicio = !!(home && home.offsetParent !== null && getComputedStyle(home).display !== 'none');
+  if (st) {
+    var secs = st.sections || {}, nF = 0, act = [];
+    Object.keys(secs).forEach(function (k) { var s = secs[k] || {}, f = Array.isArray(s.findings) ? s.findings.length : 0; nF += f; if (f) act.push(k + '(' + f + ')'); else if (s.on === true) act.push(k); });
+    L.push('Pantalla actual: ' + (enInicio ? 'inicio' : 'informe'));
+    L.push('Examen activo: ' + ({ eda: 'EDA', colono: 'Colonoscopía', ambos: 'EDA + Colonoscopía' }[st.exam] || String(st.exam || '')));
+    L.push('Secciones activas (hallazgos): ' + (act.length ? act.join(', ') : 'ninguna (todo normal)'));
+    L.push('N° de hallazgos: ' + nF + ' · N° de frascos: ' + (Array.isArray(st.frascos) ? st.frascos.length : 0) + ' · biopsias ' + (st.bxOn === false ? 'apagadas' : st.bxOn ? 'encendidas' : 'automáticas'));
+  }
+  try {
+    var ft = ['EndoCalidad', 'EndoPerfil', 'EndoRespaldo', 'EndoDisco', 'EndoAtlas'].filter(function (k) { return !!window[k]; });
+    L.push('Módulos: ' + ft.join(', '));
+  } catch (e) { }
+  L.push('');
+  L.push('Últimos errores de consola (' + errs.length + '):');
+  if (errs.length) errs.forEach(function (e) { L.push('  ' + e); }); else L.push('  ninguno');
+  return L.join('\n');
+}
+function texto(c, info) {
+  c = c || {};
+  var b = function (t, v) { return t + ':\n' + (String(v || '').trim() || '(sin completar)') + '\n'; };
+  var t = ASUNTO.toUpperCase() + '\n\n' + b('QUÉ PASÓ', c.que) + '\n' + b('QUÉ ESPERABAS', c.esperaba) + '\n' + b('PASOS PARA REPRODUCIRLO', c.pasos) +
+    '\nDATOS TÉCNICOS (automáticos, sin datos de pacientes):\n' + tecnico(info) + '\n';
+  return limpiar(t);
+}
+
+// ---------- salidas ----------
+function copiar(t) {
+  var ok = function () { toast('Reporte copiado: pégalo en un correo o mensaje', 2600); };
+  try { if (navigator.clipboard && navigator.clipboard.writeText) return navigator.clipboard.writeText(t).then(ok, function () { legacy(t) ? ok() : toast('No se pudo copiar'); }); } catch (e) { }
+  legacy(t) ? ok() : toast('No se pudo copiar');
+}
+function legacy(t) { var ta = document.createElement('textarea'); ta.value = t; ta.style.cssText = 'position:fixed;opacity:0;top:0;left:0'; document.body.appendChild(ta); ta.select(); var r = false; try { r = document.execCommand('copy'); } catch (e) { } ta.remove(); return r; }
+function nombreTxt() { var d = new Date(); return 'EndoInforme-reporte-' + d.getFullYear() + '-' + pad(d.getMonth() + 1) + '-' + pad(d.getDate()) + '-' + pad(d.getHours()) + pad(d.getMinutes()) + '.txt'; }
+function descargar(t) {
+  if (window.ENDO_ARTIFACT) return copiar(t);
+  var name = nombreTxt(), a = document.createElement('a');
+  a.href = URL.createObjectURL(new Blob(['﻿' + t.replace(/\n/g, '\r\n')], { type: 'text/plain;charset=utf-8' })); a.download = name;
+  document.body.appendChild(a); a.click(); a.remove(); setTimeout(function () { URL.revokeObjectURL(a.href); }, 4000);
+  toast('Descargado: ' + name, 2600);
+}
+function recortar(t, max, nota) {
+  if (encodeURIComponent(t).length <= max) return t;
+  var lo = 0, hi = t.length, tail = '\n\n[…] ' + nota;
+  while (lo < hi) { var mid = (lo + hi + 1) >> 1; if (encodeURIComponent(t.slice(0, mid) + tail).length <= max) lo = mid; else hi = mid - 1; }
+  return t.slice(0, lo) + tail;
+}
+function mailtoUrl(t) { return 'mailto:?subject=' + encodeURIComponent(ASUNTO) + '&body=' + encodeURIComponent(recortar(t, MAIL_MAX, 'Texto recortado: adjunta el .txt descargado con "Descargar .txt".')); }
+function issueUrl(t, c) {
+  var tit = 'Reporte: ' + (String(c.que || '').trim().split('\n')[0].slice(0, 70) || 'problema en EndoInforme');
+  return REPO + '?title=' + encodeURIComponent(limpiar(tit)) + '&body=' + encodeURIComponent(recortar(t, GH_MAX, 'Texto recortado: adjunta el .txt.'));
+}
+function abrir(url, nueva) {
+  url = url.replace(/'/g, '%27');
+  var T = window.__TAURI_INTERNALS__;
+  if (T && T.invoke) { T.invoke('abrir_url', { url: url }).catch(function () { toast('No se pudo abrir; usa "Copiar reporte"'); }); return; }
+  var a = document.createElement('a'); a.href = url; if (nueva) { a.target = '_blank'; a.rel = 'noopener noreferrer'; }
+  document.body.appendChild(a); a.click(); a.remove();
+}
+
+// ---------- formulario ----------
+var ICO = '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 22V4a1 1 0 0 1 1-1h11l-2 4 2 4H5"/></svg>';
+var cur = null, borrador = { que: '', esperaba: '', pasos: '' };
+function open() {
+  if (cur) return;
+  var info = null;
+  var ov = h('div', 'repov'), box = h('div', 'repbox'); box.setAttribute('role', 'dialog'); box.setAttribute('aria-modal', 'true'); box.setAttribute('aria-labelledby', 'repttl');
+  var close = function () { ov.remove(); document.removeEventListener('keydown', key, true); cur = null; };
+  var key = function (e) { if (e.key === 'Escape') { e.stopPropagation(); e.preventDefault(); close(); } };
+  ov.onclick = function (e) { if (e.target === ov) close(); };
+  document.addEventListener('keydown', key, true);
+  cur = { close: close };
+  box.appendChild(h('div', 'rephd', '<span class="repic">' + ICO + '</span><span class="repht"><h3 id="repttl">Reportar un problema</h3><small>Gracias por probar EndoInforme. Cuéntanos qué pasó: lo revisamos para la próxima versión.</small></span>'));
+  var x = h('button', 'btn ghost repx', '✕'); x.type = 'button'; x.setAttribute('aria-label', 'Cerrar'); x.onclick = close; box.firstChild.appendChild(x);
+  box.appendChild(h('p', 'repwarn', '<b>No escribas datos de pacientes</b> (nombre, RUT, ficha). El reporte solo lleva conteos y datos técnicos; igual se borran si aparecen.'));
+  var fld = function (id, lab, ph, rows) {
+    var w = h('label', 'repfld'), ta = h('textarea'); ta.rows = rows; ta.placeholder = ph; ta.value = borrador[id]; ta.setAttribute('data-k', id); ta.spellcheck = true;
+    ta.oninput = function () { borrador[id] = ta.value; upd(); };
+    w.appendChild(h('span', '', lab)); w.appendChild(ta); box.appendChild(w); return ta;
+  };
+  var t1 = fld('que', 'Qué pasó', 'Ej: al poner biopsias de esófago por esofagitis eosinofílica aparecieron frascos de Sydney y no pude quitarlos.', 3);
+  fld('esperaba', 'Qué esperabas', 'Ej: que solo quedaran los frascos de esófago.', 2);
+  fld('pasos', 'Pasos para reproducirlo', '1. Abrí EDA\n2. …', 3);
+  var det = h('details', 'repdet'), pre = h('pre', 'reppre');
+  det.appendChild(h('summary', '', 'Datos técnicos que se adjuntan')); det.appendChild(pre); box.appendChild(det);
+  var row = h('div', 'repbtns');
+  var mkb = function (cls, html, fn, title) { var b = h('button', 'btn sm ' + cls, html); b.type = 'button'; if (title) b.title = title; b.onclick = function () { fn(texto(borrador, info)); }; row.appendChild(b); return b; };
+  mkb('primary repcopy', 'Copiar reporte', copiar);
+  mkb('reptxt', window.ENDO_ARTIFACT ? 'Copiar como .txt' : 'Descargar .txt', descargar);
+  mkb('repmail', 'Enviar por correo', function (t) { abrir(mailtoUrl(t), false); if (encodeURIComponent(t).length > MAIL_MAX) toast('El texto es largo: se recortó en el correo. Adjunta el .txt', 4000); }, 'Abre tu correo con el reporte (elige tú el destinatario)');
+  mkb('ghost repgh', 'Abrir issue en GitHub', function (t) { abrir(issueUrl(t, borrador), true); }, 'Requiere cuenta de GitHub');
+  box.appendChild(row);
+  var upd = function () { pre.textContent = texto(borrador, info).split('DATOS TÉCNICOS (automáticos, sin datos de pacientes):\n')[1] || ''; };
+  upd();
+  loadInfo().then(function (i) { info = i; if (cur) upd(); });
+  ov.appendChild(box); document.body.appendChild(ov);
+  setTimeout(function () { try { t1.focus(); } catch (e) { } }, 30);
+}
+
+// ---------- puntos de entrada ----------
+function settingsSec(m) {
+  if (!m || m.querySelector('.repset')) return;
+  var s = h('div', 'repset', '<span class="repsi">' + ICO + '</span><span class="repst"><b>Reportar un problema</b><small>¿Algo no funcionó como esperabas? Envíanos un reporte con datos técnicos (sin datos de pacientes).</small></span>');
+  var b = h('button', 'btn sm', 'Reportar'); b.type = 'button';
+  b.onclick = function () { var o = m.closest('.ov'); if (o) o.remove(); open(); };
+  s.appendChild(b);
+  var rows = m.querySelectorAll(':scope > .row'), last = rows[rows.length - 1];
+  if (last) m.insertBefore(s, last); else m.appendChild(s);
+}
+document.addEventListener('endo:settings', function (e) { try { settingsSec(e.detail && e.detail.box); } catch (x) { } });
+function link(cls) { var a = h('button', 'replink ' + cls, '<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M4 22V4a1 1 0 0 1 1-1h11l-2 4 2 4H5"/></svg>Reportar un problema'); a.type = 'button'; a.onclick = open; return a; }
+function inject() {
+  var home = document.getElementById('home');
+  if (home && !home.querySelector('.replink')) {
+    var cr = home.querySelector('.credh'), foot = home.querySelector('.hfoot'), ref = cr || foot;
+    if (ref) ref.parentNode.insertBefore(link('rephome'), ref.nextSibling);
+  }
+  var st = document.getElementById('stat');
+  if (st && st.parentNode && !st.parentNode.querySelector('.repstat')) st.parentNode.insertBefore(link('repstat'), st.nextSibling);
+}
+var pend = 0;
+try { new MutationObserver(function () { if (pend) return; pend = 1; setTimeout(function () { pend = 0; inject(); }, 60); }).observe(document.body, { childList: true, subtree: true }); } catch (e) { }
+inject(); setTimeout(inject, 600);
+
+window.EndoReporte = { open: open, close: function () { if (cur) cur.close(); }, texto: function (c) { return texto(c || borrador, appInfo); }, limpiar: limpiar };
+
+})();}catch(e){console.error("Feature reportar.js",e);}
+;
+/* ===== feature respaldo.js ===== */
+try{(function(){
+// Respaldo y traspaso: exporta/importa TODO lo que EndoInforme guarda en este equipo (claves "endoinforme.v1.*":
+// usuarios, plantillas, combos, preferencias, registro anónimo de indicadores, ajustes, firma, logo…) a un .json.
+// Nunca incluye datos de pacientes ni el borrador del informe en curso, ni el estado de desbloqueo.
+// Las claves de acceso (hash con sal) solo se incluyen si el usuario lo pide.
+// API: window.EndoRespaldo = { exportar(opts), importar(datos, opts), deshacer(), resumen(obj) }
+var PFX = 'endoinforme.v1.', FMT = 1, APP = 'EndoInforme';
+var KEYRE = /^endoinforme\.v1\.[A-Za-z0-9_-]+$/;
+// nunca se exportan ni se importan: borrador/paciente, desbloqueo, estados de sesión y de este equipo
+var EXCL = { draft: 1, desbloqueo: 1, clavePend: 1, updcheck: 1, respaldoPrevio: 1, respaldoAviso: 1 };
+var EXCLRE = /draft|borrador|paciente|patient|desbloq/i;
+var SECRET = { claves: 1, acceso: 1 };
+var KPREV = PFX + 'respaldoPrevio', KAVISO = PFX + 'respaldoAviso';
+var prev = null; // respaldo automático en memoria (además en sessionStorage para sobrevivir la recarga)
+
+function h(tag, cls, html) { var x = document.createElement(tag); if (cls) x.className = cls; if (html != null) x.innerHTML = html; return x; }
+function esc(s) { return String(s == null ? '' : s).replace(/[&<>"']/g, function (c) { return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]; }); }
+function toast(m, ms, act) { try { window.EndoUI.rapido.toast(m, ms, act); } catch (e) { } }
+function short(k) { return k.slice(PFX.length); }
+function allowed(k) { if (!KEYRE.test(k)) return false; var s = short(k); return !EXCL[s] && !EXCLRE.test(s); }
+function pad(n) { return ('0' + n).slice(-2); }
+function today() { var d = new Date(); return d.getFullYear() + '-' + pad(d.getMonth() + 1) + '-' + pad(d.getDate()); }
+function parse(v, d) { try { var x = JSON.parse(v); return x == null ? d : x; } catch (e) { return d; } }
+function isObj(x) { return !!x && typeof x === 'object' && !Array.isArray(x); }
+// suma de control simple (FNV-1a 32 bits) para detectar archivos dañados o editados a mano
+function suma(str) { var x = 0x811c9dc5; for (var i = 0; i < str.length; i++) { x ^= str.charCodeAt(i); x = (x + ((x << 1) + (x << 4) + (x << 7) + (x << 8) + (x << 24))) >>> 0; } return ('0000000' + x.toString(16)).slice(-8); }
+function canon(datos) { return JSON.stringify(Object.keys(datos).sort().map(function (k) { return [k, datos[k]]; })); }
+
+function current(conClaves) {
+  var o = {};
+  try { for (var i = 0; i < localStorage.length; i++) { var k = localStorage.key(i); if (!k || k.indexOf(PFX) !== 0 || !allowed(k)) continue; if (!conClaves && SECRET[short(k)]) continue; o[k] = localStorage.getItem(k); } } catch (e) { }
+  return o;
+}
+function resumen(datos) {
+  datos = datos || {};
+  var med = parse(datos[PFX + 'medicos'], {}), tpl = parse(datos[PFX + 'templates'], []), reg = parse(datos[PFX + 'registro'], []), cmb = parse(datos[PFX + 'combos'], {});
+  var set = parse(datos[PFX + 'settings'], {});
+  return {
+    usuarios: isObj(med) && Array.isArray(med.list) ? med.list.length : 0,
+    plantillas: Array.isArray(tpl) ? tpl.length : 0,
+    registros: Array.isArray(reg) ? reg.length : 0,
+    combos: isObj(cmb) ? Object.keys(cmb).length : 0,
+    logo: !!(isObj(set) && set.logo), claves: !!(datos[PFX + 'claves'] || datos[PFX + 'acceso']),
+    total: Object.keys(datos).length
+  };
+}
+function pl(n, a, b) { return n + ' ' + (n === 1 ? a : b); }
+function resTxt(r) { return [pl(r.usuarios, 'usuario', 'usuarios'), pl(r.plantillas, 'plantilla', 'plantillas'), pl(r.registros, 'registro', 'registros'), r.combos ? pl(r.combos, 'combo', 'combos') : ''].filter(Boolean).join(' · '); }
+
+// ---------- exportar ----------
+function paquete(conClaves) {
+  var datos = current(!!conClaves);
+  return { app: APP, tipo: 'respaldo', formato: FMT, creado: new Date().toISOString(), version: window.ENDO_VERSION || '', incluyeClaves: !!conClaves, resumen: resumen(datos), suma: suma(canon(datos)), datos: datos };
+}
+function descargar(name, text, mime) {
+  if (window.ENDO_ARTIFACT) {
+    try { navigator.clipboard.writeText(text).then(function () { toast('Respaldo copiado al portapapeles: pégalo en un archivo .json', 4000); }, function () { toast('No se pudo copiar'); }); } catch (e) { toast('No se pudo copiar'); }
+    return 'clipboard';
+  }
+  // web/PWA y app de escritorio (WebView2 y WKWebView ≥ 14.1 respetan a[download])
+  var a = document.createElement('a'); a.href = URL.createObjectURL(new Blob([text], { type: mime })); a.download = name;
+  document.body.appendChild(a); a.click(); a.remove(); setTimeout(function () { URL.revokeObjectURL(a.href); }, 4000);
+  return 'download';
+}
+function exportar(opts) {
+  opts = opts || {};
+  var p = paquete(opts.claves), txt = JSON.stringify(p, null, 1);
+  if (opts.descargar === false) return txt;
+  var name = 'EndoInforme-respaldo-' + today() + '.json';
+  if (descargar(name, txt, 'application/json') === 'download') toast('Respaldo exportado: ' + name + (p.incluyeClaves ? ' (con claves)' : ''), 3200);
+  return txt;
+}
+
+// ---------- validar ----------
+function validar(x) {
+  if (typeof x === 'string') { try { x = JSON.parse(x.replace(/^﻿/, '')); } catch (e) { return { error: 'El archivo no es un respaldo válido (no es JSON).' }; } }
+  if (!isObj(x) || x.app !== APP || x.tipo !== 'respaldo') return { error: 'Este archivo no es un respaldo de EndoInforme.' };
+  if (typeof x.formato !== 'number' || x.formato < 1) return { error: 'Formato de respaldo desconocido.' };
+  if (x.formato > FMT) return { error: 'El respaldo es de una versión más nueva de EndoInforme. Actualiza la app e inténtalo de nuevo.' };
+  if (!isObj(x.datos)) return { error: 'El respaldo no contiene datos.' };
+  var ks = Object.keys(x.datos), malas = ks.filter(function (k) { return k.indexOf(PFX) !== 0 || !KEYRE.test(k) || typeof x.datos[k] !== 'string'; });
+  if (malas.length) return { error: 'El respaldo tiene ' + pl(malas.length, 'dato', 'datos') + ' ajenos a EndoInforme y fue rechazado.' };
+  if (x.suma && x.suma !== suma(canon(x.datos))) return { error: 'El respaldo está dañado o fue modificado (no coincide la firma).' };
+  var datos = {}; ks.forEach(function (k) { if (allowed(k)) datos[k] = x.datos[k]; });
+  return { ok: true, pkg: x, datos: datos, res: resumen(datos) };
+}
+
+// ---------- combinar ----------
+function idOf(o) { return isObj(o) ? (o.id != null ? 'id:' + o.id : (o.name != null && o.state ? 'n:' + o.name + '|' + JSON.stringify(o.state) : 'j:' + JSON.stringify(o))) : 'j:' + JSON.stringify(o); }
+function union(a, b) { var seen = {}, out = a.slice(); a.forEach(function (x) { seen[idOf(x)] = 1; }); b.forEach(function (x) { var k = idOf(x); if (!seen[k]) { seen[k] = 1; out.push(x); } }); return out; }
+function mergeVal(cur, inc) {
+  // lo actual manda; del respaldo se agrega lo que falta
+  if (cur == null) return inc;
+  var A = parse(cur, undefined), B = parse(inc, undefined);
+  if (Array.isArray(A) && Array.isArray(B)) return JSON.stringify(union(A, B));
+  if (isObj(A) && isObj(B)) {
+    var o = {}; Object.keys(B).forEach(function (k) { o[k] = B[k]; }); Object.keys(A).forEach(function (k) { o[k] = A[k]; });
+    if (Array.isArray(A.list) && Array.isArray(B.list)) o.list = union(A.list, B.list);
+    return JSON.stringify(o);
+  }
+  return cur;
+}
+
+// ---------- aplicar ----------
+function snapshotAll() { var o = {}; try { for (var i = 0; i < localStorage.length; i++) { var k = localStorage.key(i); if (k && k.indexOf(PFX) === 0 && allowed(k)) o[k] = localStorage.getItem(k); } } catch (e) { } return o; }
+function guardarPrevio() {
+  prev = { fecha: new Date().toISOString(), datos: snapshotAll() };
+  try { sessionStorage.setItem(KPREV, JSON.stringify(prev)); } catch (e) { }
+}
+function restaurar(datos) {
+  var k, i, borrar = [];
+  for (i = 0; i < localStorage.length; i++) { k = localStorage.key(i); if (k && k.indexOf(PFX) === 0 && allowed(k)) borrar.push(k); }
+  borrar.forEach(function (x) { if (!(x in datos)) localStorage.removeItem(x); });
+  Object.keys(datos).forEach(function (x) { if (allowed(x)) localStorage.setItem(x, datos[x]); });
+}
+function aplicar(v, modo) {
+  guardarPrevio();
+  var d = v.datos, conClaves = !!v.pkg.incluyeClaves;
+  try {
+    if (modo === 'reemplazar') {
+      var borrar = [];
+      for (var i = 0; i < localStorage.length; i++) { var k = localStorage.key(i); if (k && k.indexOf(PFX) === 0 && allowed(k) && !(SECRET[short(k)] && !conClaves)) borrar.push(k); }
+      borrar.forEach(function (x) { localStorage.removeItem(x); });
+      Object.keys(d).forEach(function (x) { localStorage.setItem(x, d[x]); });
+    } else {
+      Object.keys(d).forEach(function (x) { localStorage.setItem(x, mergeVal(localStorage.getItem(x), d[x])); });
+    }
+  } catch (e) {
+    restaurar(prev.datos);
+    return { error: 'No se pudo guardar el respaldo (¿espacio insuficiente?). No se cambió nada.' };
+  }
+  return { ok: true };
+}
+function deshacer() {
+  var p = prev; if (!p) try { p = JSON.parse(sessionStorage.getItem(KPREV) || 'null'); } catch (e) { }
+  if (!p || !isObj(p.datos)) { toast('No hay importación para deshacer'); return false; }
+  restaurar(p.datos); prev = null;
+  try { sessionStorage.removeItem(KPREV); sessionStorage.setItem(KAVISO, 'deshecho'); } catch (e) { }
+  recargar(); return true;
+}
+function recargar() { if (window.ENDO_RESPALDO_NORELOAD) return; setTimeout(function () { try { location.reload(); } catch (e) { } }, 700); }
+
+// ---------- diálogo de importación ----------
+var ICO = '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><path d="M7 10l5 5 5-5"/><path d="M12 15V3"/></svg>';
+var ICOUP = '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><path d="M17 8l-5-5-5 5"/><path d="M12 3v12"/></svg>';
+var ICODN = '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><path d="M7 10l5 5 5-5"/><path d="M12 15V3"/></svg>';
+function dialog(build) {
+  var ov = h('div', 'rspov'), box = h('div', 'rspbox'); box.setAttribute('role', 'dialog'); box.setAttribute('aria-modal', 'true');
+  var close = function () { ov.remove(); document.removeEventListener('keydown', key, true); };
+  var key = function (e) { if (e.key === 'Escape') { e.stopPropagation(); close(); } };
+  ov.onclick = function (e) { if (e.target === ov) close(); };
+  document.addEventListener('keydown', key, true);
+  build(box, close); ov.appendChild(box); document.body.appendChild(ov);
+  var f = box.querySelector('.btn.primary'); if (f) try { f.focus(); } catch (e) { }
+  return close;
+}
+function mostrarError(msg) {
+  dialog(function (box, close) {
+    box.appendChild(h('h3', '', 'No se pudo importar'));
+    box.appendChild(h('p', 'rsperr', esc(msg)));
+    var r = h('div', 'rsprow'), b = h('button', 'btn primary', 'Entendido'); b.type = 'button'; b.onclick = close; r.appendChild(b); box.appendChild(r);
+  });
+}
+function confirmar(v) {
+  var cur = resumen(snapshotAll()), r = v.res, modo = 'combinar';
+  dialog(function (box, close) {
+    var f = v.pkg.creado ? new Date(v.pkg.creado) : null;
+    box.appendChild(h('h3', '', ICO + '<span>Importar respaldo</span>'));
+    box.appendChild(h('p', 'rspsub', 'Creado ' + (f && !isNaN(f) ? f.toLocaleDateString('es-CL') + ' ' + f.toLocaleTimeString('es-CL', { hour: '2-digit', minute: '2-digit' }) : 'en fecha desconocida') + (v.pkg.version ? ' · versión ' + esc(v.pkg.version) : '')));
+    var g = h('div', 'rspgrid');
+    [['Usuarios', r.usuarios, cur.usuarios], ['Plantillas', r.plantillas, cur.plantillas], ['Registros', r.registros, cur.registros], ['Combos', r.combos, cur.combos]].forEach(function (x) {
+      g.appendChild(h('div', 'rspst', '<b>' + x[1] + '</b><span>' + x[0] + '</span><small>hoy aquí: ' + x[2] + '</small>'));
+    });
+    box.appendChild(g);
+    box.appendChild(h('p', 'rspnote' + (r.claves ? ' warn' : ''), r.claves ? 'Incluye <b>claves de acceso</b> (cifradas): en este equipo se usarán las mismas claves del respaldo.' : 'No incluye claves de acceso: se mantienen las de este equipo.'));
+    var opts = h('div', 'rspopts');
+    var opt = function (val, tit, txt) {
+      var o = h('button', 'rspopt' + (val === modo ? ' on' : ''), '<i></i><span><b>' + tit + '</b><small>' + txt + '</small></span>'); o.type = 'button'; o.setAttribute('role', 'radio'); o.setAttribute('aria-checked', val === modo ? 'true' : 'false');
+      o.onclick = function () { modo = val; Array.prototype.forEach.call(opts.children, function (c) { c.classList.toggle('on', c === o); c.setAttribute('aria-checked', c === o ? 'true' : 'false'); }); go.textContent = val === 'reemplazar' ? 'Reemplazar todo' : 'Combinar'; go.classList.toggle('danger', val === 'reemplazar'); delete go.dataset.sure; };
+      return o;
+    };
+    opts.setAttribute('role', 'radiogroup');
+    opts.appendChild(opt('combinar', 'Combinar (recomendado)', 'Agrega usuarios, plantillas y registros que falten. Lo de este equipo no se toca.'));
+    opts.appendChild(opt('reemplazar', 'Reemplazar', 'Deja este equipo exactamente como el respaldo. Lo que no esté en el archivo se borra.'));
+    box.appendChild(opts);
+    box.appendChild(h('p', 'rspfine', 'Antes de importar se guarda una copia automática de lo actual: podrás deshacer. Nunca se importan datos de pacientes.'));
+    var row = h('div', 'rsprow'), cancel = h('button', 'btn ghost', 'Cancelar'), go = h('button', 'btn primary', 'Combinar');
+    cancel.type = go.type = 'button'; cancel.onclick = close;
+    go.onclick = function () {
+      if (modo === 'reemplazar' && !go.dataset.sure) { go.dataset.sure = '1'; go.textContent = '¿Seguro? Toca de nuevo'; return; }
+      var res = aplicar(v, modo); close();
+      if (res.error) return mostrarError(res.error);
+      try { sessionStorage.setItem(KAVISO, modo); } catch (e) { }
+      toast((modo === 'reemplazar' ? 'Respaldo restaurado' : 'Respaldo combinado') + ': ' + resTxt(r) + ' · recargando…', 2500);
+      recargar();
+    };
+    row.appendChild(cancel); row.appendChild(go); box.appendChild(row);
+  });
+}
+function leerArchivo(file) {
+  if (!file) return;
+  if (file.size > 20 * 1024 * 1024) return mostrarError('El archivo es demasiado grande para ser un respaldo.');
+  var rd = new FileReader();
+  rd.onload = function () { importar(String(rd.result || '')); };
+  rd.onerror = function () { mostrarError('No se pudo leer el archivo.'); };
+  rd.readAsText(file);
+}
+function elegirArchivo() {
+  if (window.ENDO_ARTIFACT) return pegar();
+  var inp = document.createElement('input'); inp.type = 'file'; inp.accept = '.json,application/json'; inp.style.display = 'none';
+  inp.onchange = function () { leerArchivo(inp.files && inp.files[0]); inp.remove(); };
+  document.body.appendChild(inp); inp.click();
+}
+function pegar() {
+  dialog(function (box, close) {
+    box.appendChild(h('h3', '', ICO + '<span>Importar respaldo</span>'));
+    box.appendChild(h('p', 'rspsub', 'Pega aquí el contenido del respaldo (.json).'));
+    var ta = h('textarea', 'rspta'); ta.rows = 6; ta.setAttribute('aria-label', 'Contenido del respaldo'); box.appendChild(ta);
+    var row = h('div', 'rsprow'), c = h('button', 'btn ghost', 'Cancelar'), ok = h('button', 'btn primary', 'Continuar'); c.type = ok.type = 'button';
+    c.onclick = close; ok.onclick = function () { var t = ta.value; close(); importar(t); };
+    row.appendChild(c); row.appendChild(ok); box.appendChild(row);
+  });
+}
+// importar(): abre el selector · importar(texto|objeto): valida y pide confirmación
+// importar(datos, { modo: 'combinar'|'reemplazar', confirmar: false }): aplica directo (pruebas/automatización)
+function importar(data, opts) {
+  if (data == null) return elegirArchivo();
+  var v = validar(data);
+  if (v.error) { if (!opts || opts.confirmar !== false) mostrarError(v.error); return { error: v.error }; }
+  if (opts && opts.confirmar === false) { var r = aplicar(v, opts.modo === 'reemplazar' ? 'reemplazar' : 'combinar'); r.resumen = v.res; return r; }
+  confirmar(v); return { pendiente: true, resumen: v.res };
+}
+
+// ---------- sección en Ajustes ----------
+var withKeys = false;
+function section(m) {
+  if (!m || m.querySelector('.rspset')) return;
+  var r = resumen(snapshotAll());
+  var s = h('div', 'rspset');
+  s.appendChild(h('div', 'rsphd', '<span class="rspic">' + ICO + '</span><span class="rspht"><b>Respaldo y traspaso</b><small>Lleva tus usuarios, plantillas, combos, preferencias e indicadores a otro equipo. Nunca incluye datos de pacientes.</small></span>'));
+  s.appendChild(h('div', 'rspnow', 'En este equipo: ' + resTxt(r)));
+  var tg = h('span', 'tgl rsptg' + (withKeys ? ' on' : ''), '<i></i><span>Incluir claves de acceso (cifradas)</span>');
+  tg.setAttribute('role', 'switch'); tg.setAttribute('tabindex', '0'); tg.setAttribute('aria-checked', withKeys ? 'true' : 'false');
+  var warn = h('p', 'rspnote warn', 'En el equipo nuevo se usarán <b>las mismas claves</b> (clave maestra y claves personales). Se guardan solo como hash con sal.');
+  var sync = function () { tg.classList.toggle('on', withKeys); tg.setAttribute('aria-checked', withKeys ? 'true' : 'false'); warn.style.display = withKeys ? '' : 'none'; };
+  tg.onclick = function () { withKeys = !withKeys; sync(); };
+  tg.onkeydown = function (e) { if (e.key === ' ' || e.key === 'Enter') { e.preventDefault(); tg.onclick(); } };
+  s.appendChild(tg); s.appendChild(warn); sync();
+  var row = h('div', 'rspbtns');
+  var ex = h('button', 'btn sm primary', ICODN + (window.ENDO_ARTIFACT ? 'Copiar respaldo' : 'Exportar respaldo')); ex.type = 'button'; ex.className += ' rspexp';
+  ex.onclick = function () { exportar({ claves: withKeys }); };
+  var im = h('button', 'btn sm', ICOUP + 'Importar respaldo'); im.type = 'button'; im.className += ' rspimp';
+  im.onclick = function () { importar(); };
+  row.appendChild(ex); row.appendChild(im);
+  var hasPrev = false; try { hasPrev = !!sessionStorage.getItem(KPREV); } catch (e) { }
+  if (hasPrev || prev) { var un = h('button', 'btn sm ghost rspundo', 'Deshacer última importación'); un.type = 'button'; un.onclick = function () { deshacer(); }; row.appendChild(un); }
+  s.appendChild(row);
+  var rep = m.querySelector('.repset'), rows = m.querySelectorAll(':scope > .row'), last = rows[rows.length - 1];
+  if (rep) m.insertBefore(s, rep); else if (last) m.insertBefore(s, last); else m.appendChild(s);
+}
+document.addEventListener('endo:settings', function (e) { try { section(e.detail && e.detail.box); } catch (x) { console.error('respaldo', x); } });
+
+// aviso tras recargar por una importación: ofrecer deshacer
+(function () {
+  var a = null; try { a = sessionStorage.getItem(KAVISO); sessionStorage.removeItem(KAVISO); } catch (e) { }
+  if (!a) return;
+  setTimeout(function () {
+    if (a === 'deshecho') toast('Importación deshecha: volviste al estado anterior', 3500);
+    else toast(a === 'reemplazar' ? 'Respaldo restaurado en este equipo' : 'Respaldo combinado en este equipo', 9000, { label: 'Deshacer', fn: deshacer });
+  }, 900);
+})();
+
+window.EndoRespaldo = { exportar: exportar, importar: importar, deshacer: deshacer, resumen: function () { return resumen(snapshotAll()); }, validar: function (x) { var v = validar(x); return v.error ? { error: v.error } : { ok: true, resumen: v.res }; } };
+
+})();}catch(e){console.error("Feature respaldo.js",e);}
+window.ENDO_VERSION="202611271838";window.ENDO_WEB_URL="https://saluvel.github.io/EndoInforme/";</script>
 <script>
 if ('serviceWorker' in navigator && location.protocol.indexOf('http') === 0) { navigator.serviceWorker.register('sw.js').catch(function(){}); }
 </script>
