@@ -15878,6 +15878,7 @@ if (typeof module !== 'undefined') module.exports = EndoScales;
     var keyH = function (e) {
       if (!$('#home')) return document.removeEventListener('keydown', keyH, true);
       if (e.ctrlKey || e.metaKey || e.altKey) return;
+      if (document.querySelector('.acclock, .usrov, .ov')) return; // teclas de la clave o de un diálogo: no elegir examen
       var m = { '1': 'eda', '2': 'colono', '3': 'ambos' }[e.key];
       if (m) { e.preventDefault(); e.stopPropagation(); go(m); }
       else if ((e.key === 'c' || e.key === 'C') && di) { e.preventDefault(); e.stopPropagation(); go(di.exam, true); }
@@ -16044,6 +16045,8 @@ if (typeof module !== 'undefined') module.exports = EndoScales;
     if (R.errors.length) console.warn('Registro:', R.errors);
     renderAll();
     if (!window.ENDO_NOHOME) showHome();
+    // Al abrir la app con clave: tras el primer desbloqueo siempre se parte en Inicio (el borrador queda en "Continuar informe en curso")
+    if (!window.ENDO_NOHOME) document.addEventListener('endo:desbloqueo', function () { setTimeout(function () { if (!$('#home:not(.out)') && !$('.ov')) showHome(); }, 60); }, { once: true });
     // Pestañas Editar | Informe (pantallas angostas)
     if (!$('#mtabs')) {
       var mt = el('div', { id: 'mtabs', class: 'mtabs', role: 'tablist' }, [
@@ -16146,7 +16149,7 @@ function toast(m) { try { window.EndoUI.rapido.toast(m); } catch (e) { } }
 
 // ---------- pantalla completa reutilizable (bloqueo, crear clave, verificar) ----------
 var curKey = null;
-window.addEventListener('keydown', function (e) { if (curKey && document.querySelector('.acclock')) curKey(e); }, true);
+window.addEventListener('keydown', function (e) { if (curKey && document.querySelector('.acclock')) { curKey(e); e.stopPropagation(); } }, true);
 function screen(opts) {
   // opts: { cls, lockApp } → { ov, box, close(ok) }
   var ov = h('div', 'acclock' + (opts.cls ? ' ' + opts.cls : '')), box = h('div', 'accbox');
@@ -20870,7 +20873,7 @@ document.addEventListener('endo:settings', function (e) { try { section(e.detail
 window.EndoRespaldo = { exportar: exportar, importar: importar, deshacer: deshacer, resumen: function () { return resumen(snapshotAll()); }, validar: function (x) { var v = validar(x); return v.error ? { error: v.error } : { ok: true, resumen: v.res }; } };
 
 })();}catch(e){console.error("Feature respaldo.js",e);}
-window.ENDO_VERSION="202611272331";window.ENDO_WEB_URL="";</script>
+window.ENDO_VERSION="202611280003";window.ENDO_WEB_URL="";</script>
 <script>
 if ('serviceWorker' in navigator && location.protocol.indexOf('http') === 0) { navigator.serviceWorker.register('sw.js').catch(function(){}); }
 </script>
