@@ -28,8 +28,8 @@
   --ring:rgba(13,116,128,.32);
   /* estados */
   --ok:#237a4e; --okSoft:#e6f4ec; --warn:#9a5413; --warnSoft:#fcf0e2; --bad:#b4303f; --badSoft:#fdecef;
-  /* datos por confirmar (asumidos o sin dato medido): amarillo */
-  --qy:#fff7d1; --qyLine:#e0b52f; --qyInk:#6e5200;
+  /* datos por confirmar (asumidos o sin dato medido): azul grisáceo suave (v1.2.5, Lucho no quiere amarillo) */
+  --qy:#f2f6fb; --qyLine:#b8cbe1; --qyInk:#2d5482;
   /* hoja del informe */
   --paper:#ffffff; --paperInk:#1a2632; --paperTint:#f5f8fa; --paperRule:#dfe5eb;
   --shadow:0 1px 2px rgba(19,32,44,.05),0 4px 14px rgba(19,32,44,.05);
@@ -50,7 +50,7 @@
   --accent:#4fb8c1; --accent2:#6fcad2; --accentSoft:#12303a; --accentSoft2:#174049; --accentInk:#a3e0e5; --onAccent:#04252a;
   --ring:rgba(79,184,193,.38);
   --ok:#62cf98; --okSoft:#13301f; --warn:#e9ae62; --warnSoft:#33261a; --bad:#f08593; --badSoft:#3a1820;
-  --qy:#352d10; --qyLine:#a88a2c; --qyInk:#f3d67c;
+  --qy:#17212d; --qyLine:#3b5574; --qyInk:#a9c6ea;
   --paper:#151d25; --paperInk:#dde5ec; --paperTint:#1a242d; --paperRule:#2a3542;
   --shadow:0 1px 2px rgba(0,0,0,.35),0 6px 18px rgba(0,0,0,.22);
   --shadowHi:0 1px 2px rgba(0,0,0,.4),0 12px 30px rgba(0,0,0,.35);
@@ -20873,7 +20873,7 @@ document.addEventListener('endo:settings', function (e) { try { section(e.detail
 window.EndoRespaldo = { exportar: exportar, importar: importar, deshacer: deshacer, resumen: function () { return resumen(snapshotAll()); }, validar: function (x) { var v = validar(x); return v.error ? { error: v.error } : { ok: true, resumen: v.res }; } };
 
 })();}catch(e){console.error("Feature respaldo.js",e);}
-window.ENDO_VERSION="202611280003";window.ENDO_WEB_URL="https://saluvel.github.io/EndoInforme/";</script>
+window.ENDO_VERSION="202611280010";window.ENDO_WEB_URL="https://saluvel.github.io/EndoInforme/";</script>
 <script>
 if ('serviceWorker' in navigator && location.protocol.indexOf('http') === 0) { navigator.serviceWorker.register('sw.js').catch(function(){}); }
 </script>
