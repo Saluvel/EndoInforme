@@ -10949,9 +10949,9 @@ try{(function(){
 (function () {
   'use strict';
 
+  // Sydney en 1 frasco por defecto (preferencia de Lucho, v1.2.8); 2, 3 o 5 frascos se eligen en Biopsias
   var SYDNEY = [
-    { sitio: 'antro e incisura angularis/ángulo (Sydney 1-3)', n: 3 },
-    { sitio: 'cuerpo (Sydney 4-5)', n: 2 }
+    { sitio: 'protocolo Sydney: antro (Sydney 1-2), incisura angularis/ángulo (Sydney 3) y cuerpo (Sydney 4-5)', n: 5 }
   ];
   var EGGIM0 = { eggim_on: true, eg_ame: '0', eg_ama: '0', eg_inc: '0', eg_cme: '0', eg_cma: '0' };
   // Indicaciones al alta de colonoscopía: las de fábrica + intervalo de control redactado según hallazgos
@@ -14041,7 +14041,7 @@ if (typeof module !== 'undefined') module.exports = EndoScales;
         var sy = el('div', { class: 'sydney' }, [el('a', { class: 'lbl scl', href: '#', title: 'Ver los 5 sitios del protocolo Sydney (los frascos se agregan con los botones de al lado)', text: 'Protocolo Sydney ⓘ', onclick: function (e) { e.preventDefault(); var sc = SCALES.filter(function (x) { return x.k === 'Sydney'; })[0]; if (sc) showScale(e.currentTarget, sc.t, sc.d, sc.rows); } })]);
         Object.keys(SYDNEY).forEach(function (k) {
           var o = SYDNEY[k];
-          sy.appendChild(el('button', { class: 'chip' + (String(settings.sydney || '2') === k ? ' pref' : ''), type: 'button', text: o.label, title: o.hint, onclick: function () { addSydney(k); } }));
+          sy.appendChild(el('button', { class: 'chip' + (String(settings.sydney || '1') === k ? ' pref' : ''), type: 'button', text: o.label, title: o.hint, onclick: function () { addSydney(k); } }));
         });
         sy.appendChild(el('span', { class: 'muted', style: 'font-size:11px', text: 'Se recuerda tu preferencia (marcada)' }));
         blk.appendChild(sy);
@@ -14084,7 +14084,7 @@ if (typeof module !== 'undefined') module.exports = EndoScales;
   function frSiteSug() {
     var out = [];
     var add = function (x) { if (x && out.indexOf(x) < 0 && findFrasco(x) < 0) out.push(x); };
-    frSugList().forEach(function (x) { if (x.done) return; var fr = x.g.k === 'sydney' ? (SYDNEY[String(settings.sydney || '2')] || SYDNEY['2']).fr : x.g.fr; fr.forEach(function (y) { add(y[0]); }); });
+    frSugList().forEach(function (x) { if (x.done) return; var fr = x.g.k === 'sydney' ? (SYDNEY[String(settings.sydney || '1')] || SYDNEY['1']).fr : x.g.fr; fr.forEach(function (y) { add(y[0]); }); });
     activeSecs().forEach(function (sid) { var S = SEC[sid]; if (!S) return; var ex = S.exam === 'both' ? examList(state.exam)[0] : S.exam; ((state.sections[sid] || {}).findings || []).forEach(function (fi) { var d = FIND[fi.fid]; if (!d || (typeof d.biopsy !== 'function' && !BX_FID.test(fi.fid || ''))) return; try { var lb = frascoLabel(S, fi, ex); if (lb) add(splitLabel(lb, 2).map(function (p) { return p[0]; })[0] || lb); } catch (e) { } }); });
     return out.slice(0, 8);
   }
@@ -14151,7 +14151,7 @@ if (typeof module !== 'undefined') module.exports = EndoScales;
     return out;
   }
   function addSug(g) {
-    if (g.k === 'sydney') { var k = String(settings.sydney || '2'); addSydney(SYDNEY[k] ? k : '2'); return; }
+    if (g.k === 'sydney') { var k = String(settings.sydney || '1'); addSydney(SYDNEY[k] ? k : '1'); return; }
     snapshot(); var n = 0;
     g.fr.forEach(function (x) { if (findFrasco(x[0]) < 0) { addFrasco(x[0], x[1], true, false, g.ex); n++; } });
     renderAll(); toast(n ? 'Agregado: ' + g.label + ' · Ctrl+Z para deshacer' : 'Ya estaban agregados');
@@ -15002,8 +15002,8 @@ if (typeof module !== 'undefined') module.exports = EndoScales;
           var ss = state.sections.eda_proc; if (ss && ss.v.ureasa === 'no') { snapshot(); ss.v.ureasa = ''; renderAll(); toast('Test de ureasa: marca Positivo o Negativo'); }
           goField('eda_proc', 'ureasa');
         }, 'Acción · EDA', ['ureasa', 'pylori', 'helicobacter', 'hp', 'clo']);
-        var syk = String(settings.sydney || '2'), sy = SYDNEY[syk] || SYDNEY['2'];
-        A('Biopsias protocolo Sydney (' + sy.label + ')', 'sydney biopsias pylori helicobacter hp gastritis atrofia metaplasia', function () { addSydney(SYDNEY[syk] ? syk : '2'); goSection($('#sec-frascos')); }, 'Acción · EDA', ['sydney', 'pylori', 'helicobacter', 'hp']);
+        var syk = String(settings.sydney || '1'), sy = SYDNEY[syk] || SYDNEY['1'];
+        A('Biopsias protocolo Sydney (' + sy.label + ')', 'sydney biopsias pylori helicobacter hp gastritis atrofia metaplasia', function () { addSydney(SYDNEY[syk] ? syk : '1'); goSection($('#sec-frascos')); }, 'Acción · EDA', ['sydney', 'pylori', 'helicobacter', 'hp']);
       }
       A('Copiar informe', 'copiar portapapeles ficha', function () { copy(); });
       A('Copiar conclusión', 'copiar conclusion', function () { copy('concl'); });
@@ -20869,7 +20869,7 @@ document.addEventListener('endo:settings', function (e) { try { section(e.detail
 window.EndoRespaldo = { exportar: exportar, importar: importar, deshacer: deshacer, resumen: function () { return resumen(snapshotAll()); }, validar: function (x) { var v = validar(x); return v.error ? { error: v.error } : { ok: true, resumen: v.res }; } };
 
 })();}catch(e){console.error("Feature respaldo.js",e);}
-window.ENDO_VERSION="202611280021";window.ENDO_WEB_URL="https://saluvel.github.io/EndoInforme/";</script>
+window.ENDO_VERSION="202611280025";window.ENDO_WEB_URL="https://saluvel.github.io/EndoInforme/";</script>
 <script>
 if ('serviceWorker' in navigator && location.protocol.indexOf('http') === 0) { navigator.serviceWorker.register('sw.js').catch(function(){}); }
 </script>
