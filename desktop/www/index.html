@@ -10973,7 +10973,7 @@ try{(function(){
       sections: {
         eda_datos: { v: { indicacion: ['screening'], tecnica: ['luz blanca HD', 'NBI'] } },
         estomago: { v: merge(EGGIM0, { kimura: 'C-0', rac: 'presente' }) },
-        eda_proc: { v: { ureasa: 'curso', ureasa_sitio: ['antro', 'cuerpo'] } }
+        eda_proc: { v: { ureasa: '', ureasa_sitio: ['antro', 'cuerpo'] } }
       },
       frascos: SYDNEY
     }
@@ -10985,7 +10985,7 @@ try{(function(){
     state: {
       sections: {
         eda_datos: { v: { indicacion: ['dispepsia'] } },
-        eda_proc: { v: { ureasa: 'curso', ureasa_sitio: ['antro', 'cuerpo'] } }
+        eda_proc: { v: { ureasa: '', ureasa_sitio: ['antro', 'cuerpo'] } }
       },
       frascos: SYDNEY
     }
@@ -11346,7 +11346,6 @@ try{(function(){
   // =====================================================================
   var UREASA = [
     { v: 'no', label: 'No realizado' },
-    { v: 'curso', label: 'En curso', hint: 'Lectura pendiente al cierre del informe (lectura final a las 24 h)' },
     { v: 'pos', label: 'Positivo', hint: 'Viraje de color (amarillo → rosado/fucsia): actividad ureasa, sugiere H. pylori' },
     { v: 'neg', label: 'Negativo', hint: 'Sin viraje de color a la lectura; considerar falso negativo si uso reciente de IBP/antibióticos' },
   ];
@@ -11364,7 +11363,7 @@ try{(function(){
     fields: [
       { id: 'ureasa', label: 'Test de ureasa', type: 'chips', options: UREASA, default: 'no', pin: true },
       { id: 'ureasa_sitio', label: 'Toma (ureasa)', type: 'multi', options: ['antro', 'cuerpo'], default: ['antro', 'cuerpo'], pin: true,
-        show: function (v) { return v.ureasa && v.ureasa !== 'no'; } },
+        show: function (v) { return v.ureasa === 'pos' || v.ureasa === 'neg'; } },
       { id: 'lactasa', label: 'Test de lactasa', type: 'chips', options: LACTASA, default: 'no', pin: true,
         hint: 'Test rápido Quick-Lactasa en biopsia de segunda porción duodenal (lectura a los 20 min)' },
       { id: 'tiempo', label: 'Tiempo de examen', type: 'num', unit: 'min', min: 1, max: 240, step: 1 },
@@ -11372,12 +11371,11 @@ try{(function(){
     text: function (v, h) {
       var out = [];
       var u = v.ureasa;
-      if (u && u !== 'no') {
+      if (u === 'pos' || u === 'neg') { // sin opción "en curso" (v1.2.7, Lucho)
         var sitio = h.list(arr(v.ureasa_sitio));
         var base = 'Se toman muestras' + (sitio ? ' de ' + sitio : '') + ' para test rápido de ureasa';
         if (u === 'pos') out.push(h.sent(base + ', con resultado positivo'));
-        else if (u === 'neg') out.push(h.sent(base + ', con resultado negativo'));
-        else out.push(h.sent(base + ', con resultado pendiente'));
+        else out.push(h.sent(base + ', con resultado negativo'));
       }
       var l = v.lactasa;
       if (l && l !== 'no') {
@@ -15001,7 +14999,7 @@ if (typeof module !== 'undefined') module.exports = EndoScales;
       var A = function (label, kw, fn, w, kwb) { acts.push({ act: fn, label: label, w: w || 'Acción', hay: norm(label + ' ' + kw), lab: norm(label), kwb: kwb || null }); };
       if (exams.indexOf('eda') >= 0 && SEC.eda_proc && (SEC.eda_proc.fields || []).some(function (f) { return f.id === 'ureasa'; })) {
         A('Test rápido de ureasa (H. pylori): tomar muestra', 'ureasa test rapido pylori helicobacter hp clo', function () {
-          var ss = state.sections.eda_proc; if (ss && (!h.has(ss.v.ureasa) || ss.v.ureasa === 'no')) { snapshot(); ss.v.ureasa = 'curso'; state._qc = state._qc || {}; state._qc['eda_proc|ureasa'] = 1; renderAll(); toast('Test de ureasa: en curso'); }
+          var ss = state.sections.eda_proc; if (ss && ss.v.ureasa === 'no') { snapshot(); ss.v.ureasa = ''; renderAll(); toast('Test de ureasa: marca Positivo o Negativo'); }
           goField('eda_proc', 'ureasa');
         }, 'Acción · EDA', ['ureasa', 'pylori', 'helicobacter', 'hp', 'clo']);
         var syk = String(settings.sydney || '2'), sy = SYDNEY[syk] || SYDNEY['2'];
@@ -20871,7 +20869,7 @@ document.addEventListener('endo:settings', function (e) { try { section(e.detail
 window.EndoRespaldo = { exportar: exportar, importar: importar, deshacer: deshacer, resumen: function () { return resumen(snapshotAll()); }, validar: function (x) { var v = validar(x); return v.error ? { error: v.error } : { ok: true, resumen: v.res }; } };
 
 })();}catch(e){console.error("Feature respaldo.js",e);}
-window.ENDO_VERSION="202611280020";window.ENDO_WEB_URL="";</script>
+window.ENDO_VERSION="202611280021";window.ENDO_WEB_URL="";</script>
 <script>
 if ('serviceWorker' in navigator && location.protocol.indexOf('http') === 0) { navigator.serviceWorker.register('sw.js').catch(function(){}); }
 </script>
