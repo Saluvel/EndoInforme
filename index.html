@@ -2439,8 +2439,8 @@ try{(function(){
     return L;
   }
   function fotosLine(h, v) {
-    var nf = Number(v.fotos), s = arr(v.fotos_sitios);
-    var base = has(v.fotos) && nf > 0 ? 'Fotodocumentación: ' + n(v.fotos) + (nf === 1 ? ' imagen' : ' imágenes') : '';
+    var s = arr(v.fotos_sitios);
+    var base = ''; // n.º de imágenes eliminado (v1.2.6, Lucho: no es útil)
     if (s.length) return base ? base + ' (incluye ' + h.list(s) + ')' : 'Fotodocumentación de ' + h.list(s);
     return base;
   }
@@ -2485,7 +2485,7 @@ try{(function(){
       { id: 'midaz', quality: true, qsoft: true, pref: 'sed', label: 'Midazolam', type: 'num', unit: 'mg', min: 0, max: 15, step: 0.5, placeholder: 'dosis', show: function (v) { return sedOn(v, 'Midazolam'); } },
       { id: 'fenta', quality: true, qsoft: true, pref: 'sed', label: 'Fentanilo', type: 'num', unit: 'µg', min: 0, max: 300, step: 25, placeholder: 'dosis', show: function (v) { return sedOn(v, 'Fentanilo'); } },
       { id: 'propo', quality: true, qsoft: true, pref: 'sed', placeholder: 'dosis', label: 'Propofol', type: 'num', unit: 'mg', min: 0, max: 1000, step: 10, show: function (v) { return sedOn(v, 'Propofol'); } },
-      { id: 'consent', quality: true, label: 'Consentimiento informado', type: 'chips', default: '', options: [{ v: 'true', label: 'Sí' }, { v: 'false', label: 'No' }], show: function (v, ctx) { return !comboExam(ctx); }, hint: 'Dato administrativo: no se asume (sin marcar no se escribe). En examen combinado se registra una sola vez en Datos del examen de la EDA' },
+      { id: 'consent', label: 'Consentimiento informado', type: 'chips', default: 'true', options: [{ v: 'true', label: 'Sí' }, { v: 'false', label: 'No' }], show: function (v, ctx) { return !comboExam(ctx); }, hint: 'Viene marcado Sí: en la clínica no se realiza el examen sin consentimiento. Cámbialo a No si corresponde' },
       { id: 'equipo', label: 'Equipo (opcional)', type: 'text', placeholder: 'ej. colonoscopio HD' },
       { id: 'co2', label: 'Insuflación con CO2', type: 'bool', default: false },
       { id: 'prep', label: 'Producto de preparación', type: 'chips', default: '', options: [
@@ -2555,9 +2555,8 @@ try{(function(){
       { id: 'asa', label: 'ASA', type: 'chips', default: '', options: ASA, hint: 'Clasificación del estado físico ASA', show: function (v, ctx) { return !comboExam(ctx); } },
       { id: 'h_ini', label: 'Hora de inicio', type: 'text', placeholder: 'hh:mm', show: function (v, ctx) { return !comboExam(ctx); } },
       { id: 'h_fin', label: 'Hora de término', type: 'text', placeholder: 'hh:mm', hint: 'Con inicio y término se calcula la duración', show: function (v, ctx) { return !comboExam(ctx); } },
-      { id: 'eventos', quality: true, qsoft: true, label: 'Eventos adversos', type: 'multi', default: [], hint: 'No se asume "sin eventos": márcalo al terminar', options: EVENTOS, wide: true, show: function (v, ctx) { return !comboExam(ctx); } },
+      { id: 'eventos', label: 'Eventos adversos (opcional)', type: 'multi', default: [], hint: 'Opcional: si no marcas nada, no se escribe en el informe', options: EVENTOS, wide: true, show: function (v, ctx) { return !comboExam(ctx); } },
       { id: 'eventos_txt', label: 'Otro evento adverso', type: 'text', placeholder: 'ej. reacción vagal', show: function (v, ctx) { return arr(v.eventos).indexOf('otro') >= 0 && !comboExam(ctx); } },
-      { id: 'fotos', label: 'Fotodocumentación (n.º de imágenes)', type: 'num', min: 0, max: 200, step: 1 },
       { id: 'fotos_sitios', label: 'Fotos de reparos', type: 'multi', default: [], options: FOTO_SITIOS, hint: 'Reparos anatómicos fotodocumentados (indicador de calidad de intubación cecal)' }
     ],
     text: function (v, h, ctx) {
@@ -6067,8 +6066,8 @@ try{(function(){
     return L.filter(h.has);
   }
   function fotosLine(h, v, sitios) {
-    var nf = Number(v.fotos), s = (sitios || []).filter(h.has);
-    var base = h.has(v.fotos) && nf > 0 ? 'Fotodocumentación: ' + h.num(v.fotos) + (nf === 1 ? ' imagen' : ' imágenes') : '';
+    var s = (sitios || []).filter(h.has);
+    var base = ''; // n.º de imágenes eliminado (v1.2.6, Lucho: no es útil)
     if (s.length) return base ? base + ' (incluye ' + h.list(s) + ')' : 'Fotodocumentación de ' + h.list(s);
     return base;
   }
@@ -6107,7 +6106,7 @@ try{(function(){
         { v: 'buena', label: 'Buena' }, { v: 'regular', label: 'Regular', hint: 'Molestias o náuseas que no impiden el examen' },
         { v: 'mala', label: 'Mala', hint: 'Mala tolerancia; examen limitado' }], default: '', hint: 'Opcional: solo se escribe si eliges una opción' },
       // dato administrativo: no se asume (vacío = no se escribe y queda pendiente); 'true'/'false' por compatibilidad con borradores antiguos
-      { id: 'consentimiento', quality: true, label: 'Consentimiento informado', type: 'chips', default: '', options: CONSENT, hint: 'Dato administrativo: no se asume. Sin marcar no se escribe en el informe' },
+      { id: 'consentimiento', label: 'Consentimiento informado', type: 'chips', default: 'true', options: CONSENT, hint: 'Viene marcado Sí: en la clínica no se realiza el examen sin consentimiento. Cámbialo a No si corresponde' },
       { id: 'equipo', label: 'Equipo (opcional)', type: 'text', placeholder: 'ej. endoscopio HD' },
       { id: 'tecnica', label: 'Técnica de imagen', type: 'multi', options: [
         { v: 'luz blanca HD', label: 'Luz blanca HD' }, { v: 'NBI', label: 'NBI', hint: 'Narrow Band Imaging' },
@@ -6124,9 +6123,8 @@ try{(function(){
       { id: 'asa', label: 'ASA', type: 'chips', default: '', options: ASA, hint: 'Clasificación del estado físico ASA. En examen combinado se registra una sola vez aquí' },
       { id: 'h_ini', label: 'Hora de inicio', type: 'text', placeholder: 'hh:mm' },
       { id: 'h_fin', label: 'Hora de término', type: 'text', placeholder: 'hh:mm', hint: 'Con inicio y término se calcula la duración' },
-      { id: 'eventos', quality: true, qsoft: true, label: 'Eventos adversos', type: 'multi', default: [], options: EVENTOS, wide: true, hint: 'No se asume "sin eventos": márcalo al terminar. En examen combinado se registra una sola vez aquí' },
+      { id: 'eventos', label: 'Eventos adversos (opcional)', type: 'multi', default: [], options: EVENTOS, wide: true, hint: 'Opcional: si no marcas nada, no se escribe en el informe. En examen combinado se registra una sola vez aquí' },
       { id: 'eventos_txt', label: 'Otro evento adverso', type: 'text', placeholder: 'ej. broncoaspiración', show: function (v) { return (v.eventos || []).indexOf('otro') >= 0; } },
-      { id: 'fotos', label: 'Fotodocumentación (n.º de imágenes)', type: 'num', min: 0, max: 200, step: 1 },
     ],
     text: function (v, h, ctx) {
       var lines = [];
@@ -20873,7 +20871,7 @@ document.addEventListener('endo:settings', function (e) { try { section(e.detail
 window.EndoRespaldo = { exportar: exportar, importar: importar, deshacer: deshacer, resumen: function () { return resumen(snapshotAll()); }, validar: function (x) { var v = validar(x); return v.error ? { error: v.error } : { ok: true, resumen: v.res }; } };
 
 })();}catch(e){console.error("Feature respaldo.js",e);}
-window.ENDO_VERSION="202611280010";window.ENDO_WEB_URL="https://saluvel.github.io/EndoInforme/";</script>
+window.ENDO_VERSION="202611280020";window.ENDO_WEB_URL="https://saluvel.github.io/EndoInforme/";</script>
 <script>
 if ('serviceWorker' in navigator && location.protocol.indexOf('http') === 0) { navigator.serviceWorker.register('sw.js').catch(function(){}); }
 </script>
