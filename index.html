@@ -918,6 +918,9 @@ details.params.qhas:not([open]){border-color:var(--qyLine)}
 .ovn-h b{color:var(--accentInk)}
 .ovn-t{width:100%;box-sizing:border-box;font:inherit;font-size:13.5px;line-height:1.45;border:1px solid var(--line);border-radius:8px;padding:7px 9px;background:var(--panel);color:var(--ink);resize:vertical}
 
+/* v1.2.10: contenido del plegable entre paréntesis */
+details.params>summary .phint{font-weight:500;text-transform:none;letter-spacing:0;font-size:12px;color:var(--ink3,var(--ink2));margin-left:6px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;min-width:0}
+
 /* Pantalla de bloqueo con clave numérica */
 .acclock{position:fixed;inset:0;z-index:20000;display:flex;align-items:center;justify-content:center;padding:16px;
   background:radial-gradient(ellipse at 50% 30%,color-mix(in srgb,var(--accent) 22%,var(--bg,#f4f7f9)),var(--bg,#f4f7f9) 70%);animation:accin .35s var(--ease,ease)}
@@ -13232,6 +13235,17 @@ if (typeof module !== 'undefined') module.exports = EndoScales;
     return String(x);
   }
   // Campos avanzados/poco usados que se pliegan en "Más opciones ▸" (siguen en el informe si tienen valor)
+  // Qué hay dentro de cada bloque plegable de parámetros (se muestra entre paréntesis en su título; v1.2.10, Lucho)
+  var PARAM_HINT = {
+    eda_datos: 'tolerancia, consentimiento, equipo, tipo de luz, ASA, horario, eventos',
+    col_datos: 'preparación, tacto rectal, alcance, ileoscopía, retiro, ASA, horario, eventos',
+    esofago: 'EES, línea Z, unión esofagogástrica, várices',
+    estomago: 'Toronto, Hill, tipo de luz, contenido, pliegues',
+    piloro: 'forma, permeabilidad, paso del equipo',
+    duodeno: 'alcance, papila, vellosidades',
+    eda_proc: 'tiempo de examen'
+  };
+  var MAS_HINT = { estomago: 'Yagi, Kyoto', eda_datos: 'contexto clínico, intubado, anestesia', col_datos: 'contexto clínico, intubado, anestesia', alta: 'tipo de paciente, texto propio' };
   var ADV_FIELDS = {
     eda_datos: ['contexto', 'intubado', 'sed_anest', 'eritro'],
     col_datos: ['contexto', 'intubado', 'sed_anest'],
@@ -13865,7 +13879,7 @@ if (typeof module !== 'undefined') module.exports = EndoScales;
       var isHdr = s.kind === 'header';
       if ((s.fields.length > 2 && !isHdr && s.kind !== 'footer' && s.kind !== 'proc') || (isHdr && s.fields.length > 8 && !settings.allOpen)) {
         sumEl = el('span', { class: 'sum' });
-        host = el('details', { class: 'params' }, [el('summary', {}, [el('span', { class: 'chev', html: '&#9656;' }), el('span', { class: 'lbl', text: isHdr ? (s.exam === 'colono' ? 'Preparación, alcance y calidad' : 'Consentimiento, equipo y tolerancia') : s.fields.length > 6 ? 'Técnica y parámetros' : 'Descripción normal' }), sumEl])]);
+        host = el('details', { class: 'params' }, [el('summary', {}, [el('span', { class: 'chev', html: '&#9656;' }), el('span', { class: 'lbl', text: isHdr ? (s.exam === 'colono' ? 'Preparación, alcance y calidad' : 'Consentimiento, equipo y tolerancia') : s.fields.length > 6 ? 'Técnica y parámetros' : 'Descripción normal' }), PARAM_HINT[s.id] ? el('span', { class: 'phint', text: '(' + PARAM_HINT[s.id] + ')' }) : null, sumEl])]);
         if (ss._open || (ss._open === undefined && advChanged(s.fields, ss.v, fieldCtx(s, ex)))) host.open = true; // con datos distintos de lo normal: se ve abierto
         host.addEventListener('toggle', function () { ss._open = host.open; save(); });
         bd.appendChild(host);
@@ -13892,7 +13906,7 @@ if (typeof module !== 'undefined') module.exports = EndoScales;
       if (pinned.length) { var pbox = el('div', { class: 'pinned' }); bd.insertBefore(pbox, host); visP = renderFields(pbox, pinned, ss.v, s.locations, onCh, sCtx); }
       if (adv.length) {
         advCnt = el('span', { class: 'mocnt' });
-        advD = el('details', { class: 'params masop' }, [el('summary', { title: adv.map(function (f) { return f.label; }).filter(Boolean).join(' · ') }, [el('span', { class: 'chev', html: '&#9656;' }), el('span', { class: 'lbl', text: 'Más opciones' }), advCnt])]);
+        advD = el('details', { class: 'params masop' }, [el('summary', { title: adv.map(function (f) { return f.label; }).filter(Boolean).join(' · ') }, [el('span', { class: 'chev', html: '&#9656;' }), el('span', { class: 'lbl', text: 'Más opciones' }), MAS_HINT[s.id] ? el('span', { class: 'phint', text: '(' + MAS_HINT[s.id] + ')' }) : null, advCnt])]);
         var mo = lsGet(LS.masop, {}); if (!isObj(mo)) mo = {};
         if (mo[s.id] || advChanged(adv, ss.v, sCtx())) advD.open = true;
         advD.addEventListener('toggle', function () { var M = lsGet(LS.masop, {}); if (!isObj(M)) M = {}; if (advD.open) M[s.id] = 1; else delete M[s.id]; lsSet(LS.masop, M); });
@@ -20864,7 +20878,7 @@ document.addEventListener('endo:settings', function (e) { try { section(e.detail
 window.EndoRespaldo = { exportar: exportar, importar: importar, deshacer: deshacer, resumen: function () { return resumen(snapshotAll()); }, validar: function (x) { var v = validar(x); return v.error ? { error: v.error } : { ok: true, resumen: v.res }; } };
 
 })();}catch(e){console.error("Feature respaldo.js",e);}
-window.ENDO_VERSION="202611280028";window.ENDO_WEB_URL="https://saluvel.github.io/EndoInforme/";</script>
+window.ENDO_VERSION="202611280030";window.ENDO_WEB_URL="https://saluvel.github.io/EndoInforme/";</script>
 <script>
 if ('serviceWorker' in navigator && location.protocol.indexOf('http') === 0) { navigator.serviceWorker.register('sw.js').catch(function(){}); }
 </script>
