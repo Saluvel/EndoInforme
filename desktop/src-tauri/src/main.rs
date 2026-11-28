@@ -108,7 +108,7 @@ async fn actualizar(app: AppHandle, url: String, sha256: String) -> Result<(), S
     let curl = "curl.exe";
     #[cfg(not(target_os = "windows"))]
     let curl = "curl";
-    sh(curl, &["-fsSL", "--retry", "2", "--proto", "=https", "-o", &arch_s, &url]).map_err(|e| format!("No se pudo descargar: {}", e))?;
+    sh(curl, &["-fsSL", "--retry", "2", "--proto", "=https", "--connect-timeout", "20", "--max-time", "600", "--speed-limit", "1000", "--speed-time", "45", "-o", &arch_s, &url]).map_err(|e| format!("No se pudo descargar: {}", e))?;
     if sha256_de(&archivo)? != sha {
         let _ = fs::remove_file(&archivo);
         return Err("La descarga no coincide con la firma del archivo publicado (SHA-256). No se instaló nada.".into());
@@ -125,7 +125,7 @@ async fn actualizar(app: AppHandle, url: String, sha256: String) -> Result<(), S
             let nombre_app = bundle.file_name().map(|n| n.to_os_string()).unwrap_or_else(|| "EndoInforme.app".into());
             let mut cands = vec![PathBuf::from("/Applications").join(&nombre_app)];
             if let Some(home) = std::env::var_os("HOME") { cands.push(PathBuf::from(home).join("Applications").join(&nombre_app)); }
-            bundle = cands.into_iter().find(|p| p.join("Contents").exists()).ok_or("EndoInforme se está abriendo desde el .dmg. Arrástralo a la carpeta Aplicaciones, ábrelo desde ahí y vuelve a intentarlo.")?;
+            bundle = cands.into_iter().find(|p| p.join("Contents").exists()).ok_or("No se encontró EndoInforme en la carpeta Aplicaciones. Arrastra EndoInforme a Aplicaciones, ábrelo desde ahí y vuelve a intentarlo.")?;
         }
         let bs = bundle.to_string_lossy().to_string();
         let mnt = tmp.join("mnt");
@@ -140,7 +140,10 @@ async fn actualizar(app: AppHandle, url: String, sha256: String) -> Result<(), S
             let _ = fs::remove_dir_all(&staging);
             let _ = fs::remove_dir_all(&vieja);
             let (n_s, st_s) = (nueva.to_string_lossy().to_string(), staging.to_string_lossy().to_string());
-            sh("ditto", &[&n_s, &st_s]).map_err(|e| format!("No se pudo copiar (¿permisos en Aplicaciones?): {}", e))?;
+            if let Err(e) = sh("ditto", &[&n_s, &st_s]) {
+                let _ = fs::remove_dir_all(&staging); // no dejar una copia a medias en Aplicaciones
+                return Err(format!("No se pudo copiar (¿permisos o espacio en Aplicaciones?): {}", e));
+            }
             let _ = sh("xattr", &["-dr", "com.apple.quarantine", &st_s]);
             fs::rename(&bundle, &vieja).map_err(|e| format!("No se pudo reemplazar la app: {}", e))?;
             if let Err(e) = fs::rename(&staging, &bundle) {
@@ -151,6 +154,7 @@ async fn actualizar(app: AppHandle, url: String, sha256: String) -> Result<(), S
             Ok(())
         })();
         let _ = sh("hdiutil", &["detach", "-quiet", "-force", &mnt_s]);
+        if res.is_err() { let _ = fs::remove_dir_all(&tmp); }
         res?;
         let _ = fs::remove_dir_all(&tmp);
         std::process::Command::new("/bin/sh").args(["-c", "sleep 1; open -n \"$0\"", &bs]).spawn().map_err(|e| e.to_string())?;
