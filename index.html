@@ -16519,7 +16519,23 @@ function check(box, quiet) {
       var a = pickAsset(rel, inf.os);
       st.className = 'updst new';
       st.innerHTML = '<b>Nueva versión ' + esc(nueva) + ' disponible</b> (tienes ' + esc(act) + ').';
-      var go = h('button', 'btn sm primary', a ? 'Descargar e instalar' : 'Ver descarga'); go.type = 'button';
+      var auto = a && /^sha256:[0-9a-f]{64}$/i.test(a.digest || '') && (inf.os === 'macos' || inf.os === 'windows') && inf.auto;
+      if (auto) {
+        var up = h('button', 'btn sm primary', 'Actualizar y reiniciar'); up.type = 'button';
+        up.onclick = function () {
+          up.disabled = true; go.disabled = true;
+          st.innerHTML = '<b>Descargando e instalando ' + esc(nueva) + '…</b><br>EndoInforme se cerrará y volverá a abrirse solo en unos segundos. Tus usuarios, ajustes, plantillas y clave se mantienen.';
+          try { window.EndoDisco && window.EndoDisco.save(); } catch (e) { }
+          Promise.resolve(T.invoke('actualizar', { url: a.browser_download_url, sha256: a.digest })).catch(function (e) {
+            up.disabled = false; go.disabled = false;
+            st.className = 'updst err';
+            st.innerHTML = 'No se pudo actualizar automáticamente: ' + esc(e && e.message || e) + '<br>Puedes descargarla e instalarla a mano: ';
+            st.appendChild(go);
+          });
+        };
+        st.appendChild(document.createTextNode(' ')); st.appendChild(up);
+      }
+      var go = h('button', 'btn sm' + (auto ? ' ghost' : ' primary'), auto ? 'Descargar a mano' : a ? 'Descargar e instalar' : 'Ver descarga'); go.type = 'button';
       go.onclick = function () {
         abrir(a ? a.browser_download_url : REL).then(function () {
           st.innerHTML = '<b>Descargando ' + esc(a ? a.name : 'la nueva versión') + '…</b><br>' + (inf.os === 'macos' ? 'Abre el .dmg descargado, arrastra EndoInforme a Aplicaciones y elige “Reemplazar”.' : 'Abre el instalador descargado y sigue los pasos (cierra EndoInforme cuando lo pida).') + ' Tus usuarios, ajustes, plantillas y clave se mantienen.';
@@ -16551,7 +16567,7 @@ try {
     localStorage.setItem(K, String(Date.now()));
     getInfo().then(function (inf) {
       return fetch(API, { cache: 'no-store' }).then(function (r) { return r.ok ? r.json() : null; }).then(function (rel) {
-        if (rel && cmp(rel.tag_name, inf.version) > 0) { try { window.EndoUI.rapido.toast('Hay una nueva versión de EndoInforme (' + String(rel.tag_name).replace(/^v/, '') + '): Ajustes → Buscar actualizaciones'); } catch (e) { } }
+        if (rel && cmp(rel.tag_name, inf.version) > 0) { try { window.EndoUI.rapido.toast('Hay una nueva versión de EndoInforme (' + String(rel.tag_name).replace(/^v/, '') + '): Ajustes → Buscar actualizaciones (se instala sola con un clic)'); } catch (e) { } }
       });
     }).catch(function () { });
   }, 6000);
@@ -20931,7 +20947,7 @@ document.addEventListener('endo:settings', function (e) { try { section(e.detail
 window.EndoRespaldo = { exportar: exportar, importar: importar, deshacer: deshacer, resumen: function () { return resumen(snapshotAll()); }, validar: function (x) { var v = validar(x); return v.error ? { error: v.error } : { ok: true, resumen: v.res }; } };
 
 })();}catch(e){console.error("Feature respaldo.js",e);}
-window.ENDO_VERSION="202611280039";window.ENDO_WEB_URL="https://saluvel.github.io/EndoInforme/";</script>
+window.ENDO_VERSION="202611280058";window.ENDO_WEB_URL="https://saluvel.github.io/EndoInforme/";</script>
 <script>
 if ('serviceWorker' in navigator && location.protocol.indexOf('http') === 0) { navigator.serviceWorker.register('sw.js').catch(function(){}); }
 </script>

@@ -1,6 +1,6 @@
 [package]
 name = "endoinforme"
-version = "1.2.11"
+version = "1.2.12"
 description = "EndoInforme: informes endoscópicos en clics"
 authors = ["Luis Vélez Vizcaíno - SALUVEL SpA"]
 edition = "2021"
@@ -11,6 +11,7 @@ tauri-build = { version = "2", features = [] }
 [dependencies]
 tauri = { version = "2", features = [] }
 serde_json = "1"
+sha2 = "0.10"
 
 [profile.release]
 strip = true

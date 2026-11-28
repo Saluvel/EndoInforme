@@ -32,7 +32,7 @@ fn guardar_datos(app: AppHandle, datos: String) -> Result<(), String> {
 #[tauri::command]
 fn info_app() -> serde_json::Value {
     let os = match std::env::consts::OS { "macos" => "macos", "windows" => "windows", o => o };
-    serde_json::json!({ "version": env!("CARGO_PKG_VERSION"), "os": os, "arch": std::env::consts::ARCH })
+    serde_json::json!({ "version": env!("CARGO_PKG_VERSION"), "os": os, "arch": std::env::consts::ARCH, "auto": true })
 }
 
 // Abre en el navegador del sistema SOLO descargas del repositorio oficial (actualizaciones)
@@ -57,6 +57,123 @@ fn abrir_url(url: String) -> Result<(), String> {
     r.map(|_| ()).map_err(|e| e.to_string())
 }
 
+// ---------- Actualizar en el lugar ("Actualizar y reiniciar") ----------
+// Descarga el instalador del release oficial (solo github.com/Saluvel/EndoInforme), verifica su SHA-256
+// (el que publica GitHub para ese archivo), lo instala sobre la versión actual y reinicia la app.
+// Los datos (usuarios, plantillas, ajustes, clave) viven en la carpeta de datos y no se tocan.
+fn sh(cmd: &str, args: &[&str]) -> Result<(), String> {
+    let mut c = std::process::Command::new(cmd);
+    c.args(args);
+    #[cfg(target_os = "windows")]
+    {
+        use std::os::windows::process::CommandExt;
+        c.creation_flags(0x0800_0000); // sin ventana de consola
+    }
+    let st = c.status().map_err(|e| format!("{}: {}", cmd, e))?;
+    if st.success() { Ok(()) } else { Err(format!("{} terminó con error ({})", cmd, st)) }
+}
+
+fn sha256_de(p: &PathBuf) -> Result<String, String> {
+    use sha2::{Digest, Sha256};
+    use std::io::Read;
+    let mut f = fs::File::open(p).map_err(|e| e.to_string())?;
+    let mut h = Sha256::new();
+    let mut buf = vec![0u8; 1 << 16];
+    loop {
+        let n = f.read(&mut buf).map_err(|e| e.to_string())?;
+        if n == 0 { break; }
+        h.update(&buf[..n]);
+    }
+    Ok(h.finalize().iter().map(|b| format!("{:02x}", b)).collect())
+}
+
+#[tauri::command]
+async fn actualizar(app: AppHandle, url: String, sha256: String) -> Result<(), String> {
+    let pre = "https://github.com/Saluvel/EndoInforme/releases/download/";
+    let nombre = url.rsplit('/').next().unwrap_or("").to_string();
+    let url_ok = url.starts_with(pre)
+        && url[pre.len()..].chars().all(|c| c.is_ascii_alphanumeric() || "._-/".contains(c))
+        && !url.contains("..")
+        && (nombre.ends_with(".dmg") || nombre.ends_with(".exe"));
+    let sha = sha256.trim().trim_start_matches("sha256:").to_ascii_lowercase();
+    if !url_ok || sha.len() != 64 || !sha.chars().all(|c| c.is_ascii_hexdigit()) {
+        return Err("Descarga no permitida".into());
+    }
+    let tmp = std::env::temp_dir().join("endoinforme-actualizacion");
+    let _ = fs::remove_dir_all(&tmp);
+    fs::create_dir_all(&tmp).map_err(|e| e.to_string())?;
+    let archivo = tmp.join(&nombre);
+    let arch_s = archivo.to_string_lossy().to_string();
+    #[cfg(target_os = "windows")]
+    let curl = "curl.exe";
+    #[cfg(not(target_os = "windows"))]
+    let curl = "curl";
+    sh(curl, &["-fsSL", "--retry", "2", "--proto", "=https", "-o", &arch_s, &url]).map_err(|e| format!("No se pudo descargar: {}", e))?;
+    if sha256_de(&archivo)? != sha {
+        let _ = fs::remove_file(&archivo);
+        return Err("La descarga no coincide con la firma del archivo publicado (SHA-256). No se instaló nada.".into());
+    }
+    let exe = std::env::current_exe().map_err(|e| e.to_string())?;
+
+    #[cfg(target_os = "macos")]
+    {
+        let bundle = exe.ancestors().find(|p| p.extension().map(|e| e == "app").unwrap_or(false)).map(|p| p.to_path_buf()).ok_or("No se encontró EndoInforme.app")?;
+        let bs = bundle.to_string_lossy().to_string();
+        if bs.contains("AppTranslocation") || bs.starts_with("/Volumes/") {
+            return Err("EndoInforme se está abriendo desde el .dmg o una ubicación temporal. Arrástralo a Aplicaciones y vuelve a intentarlo.".into());
+        }
+        let mnt = tmp.join("mnt");
+        fs::create_dir_all(&mnt).map_err(|e| e.to_string())?;
+        let mnt_s = mnt.to_string_lossy().to_string();
+        sh("hdiutil", &["attach", "-nobrowse", "-noautoopen", "-quiet", "-mountpoint", &mnt_s, &arch_s])?;
+        let nueva = fs::read_dir(&mnt).ok().and_then(|it| it.filter_map(|e| e.ok()).map(|e| e.path()).find(|p| p.extension().map(|e| e == "app").unwrap_or(false)));
+        let res = (|| -> Result<(), String> {
+            let nueva = nueva.ok_or("El .dmg no trae la app")?;
+            let staging = bundle.with_extension("app-nueva");
+            let vieja = bundle.with_extension("app-anterior");
+            let _ = fs::remove_dir_all(&staging);
+            let _ = fs::remove_dir_all(&vieja);
+            let (n_s, st_s) = (nueva.to_string_lossy().to_string(), staging.to_string_lossy().to_string());
+            sh("ditto", &[&n_s, &st_s]).map_err(|e| format!("No se pudo copiar (¿permisos en Aplicaciones?): {}", e))?;
+            let _ = sh("xattr", &["-dr", "com.apple.quarantine", &st_s]);
+            fs::rename(&bundle, &vieja).map_err(|e| format!("No se pudo reemplazar la app: {}", e))?;
+            if let Err(e) = fs::rename(&staging, &bundle) {
+                let _ = fs::rename(&vieja, &bundle); // vuelve atrás: la versión actual queda intacta
+                return Err(format!("No se pudo reemplazar la app: {}", e));
+            }
+            let _ = fs::remove_dir_all(&vieja);
+            Ok(())
+        })();
+        let _ = sh("hdiutil", &["detach", "-quiet", "-force", &mnt_s]);
+        res?;
+        let _ = fs::remove_dir_all(&tmp);
+        std::process::Command::new("/bin/sh").args(["-c", "sleep 1; open -n \"$0\"", &bs]).spawn().map_err(|e| e.to_string())?;
+        app.exit(0);
+        return Ok(());
+    }
+
+    #[cfg(target_os = "windows")]
+    {
+        use std::os::windows::process::CommandExt;
+        let ok_ruta = |s: &str| !s.contains('"') && !s.contains('%') && !s.contains('^') && !s.contains('&') && !s.contains('|');
+        let exe_s = exe.to_string_lossy().to_string();
+        if !ok_ruta(&arch_s) || !ok_ruta(&exe_s) {
+            return Err("Ruta con caracteres no soportados".into());
+        }
+        // espera a que la app se cierre, instala en silencio sobre la actual y la vuelve a abrir
+        let linea = format!("/C ping -n 3 127.0.0.1 >nul & \"{}\" /S & start \"\" \"{}\"", arch_s, exe_s);
+        std::process::Command::new("cmd").raw_arg(linea).creation_flags(0x0800_0000).spawn().map_err(|e| e.to_string())?;
+        app.exit(0);
+        return Ok(());
+    }
+
+    #[allow(unreachable_code)]
+    {
+        let _ = (app, exe);
+        Err("Actualización automática no disponible en este sistema".into())
+    }
+}
+
 fn leer_datos(app: &AppHandle) -> String {
     let leer = |p: PathBuf| {
         fs::read_to_string(p)
@@ -70,7 +187,7 @@ fn leer_datos(app: &AppHandle) -> String {
 
 fn main() {
     tauri::Builder::default()
-        .invoke_handler(tauri::generate_handler![guardar_datos, info_app, abrir_url])
+        .invoke_handler(tauri::generate_handler![guardar_datos, info_app, abrir_url, actualizar])
         .setup(|app| {
             let datos = leer_datos(app.handle());
             let js = format!(
