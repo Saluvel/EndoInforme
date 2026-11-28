@@ -7178,7 +7178,7 @@ try{(function(){
       return v.lavado === 'limitada' || (v.cant === 'abundante' && v.lavado !== 'adecuada');
     });
   }
-  function dis0(v) { return { adecuada: 'Distensión adecuada', parcial: 'Distensión parcial', insuficiente: 'Distensión insuficiente, que limita la evaluación' }[v.distension] || ''; }
+  function dis0() { return ''; } // distensión eliminada (v1.2.9, Lucho: no la usan)
   // ---------- campos de sección ----------
   var CONTENIDO = {
     vacio: 'Lumen gástrico sin contenido, con paredes limpias',
@@ -7385,11 +7385,6 @@ try{(function(){
       { id: 'tor_ep', quality: true, qsoft: true, label: 'Toronto · estómago proximal (fondo/cuerpo)', type: 'chips', options: TOR_OPTS, default: '' },
       { id: 'tor_a', quality: true, qsoft: true, label: 'Toronto · antro', type: 'chips', options: TOR_OPTS, default: '', show: function (v, ctx) { return !excluido(ctx); } },
       { id: 'tor_d', quality: true, qsoft: true, label: 'Toronto · duodeno', type: 'chips', options: TOR_OPTS, default: '', show: function (v, ctx) { return !excluido(ctx); } },
-      { id: 'distension', label: 'Distensión', type: 'chips', default: 'adecuada', options: [
-        { v: 'adecuada', label: 'Adecuada', hint: 'Pliegues se aplanan con la insuflación' },
-        { v: 'parcial', label: 'Parcial', hint: 'Distensión parcial, evaluación algo limitada' },
-        { v: 'insuficiente', label: 'Insuficiente', hint: 'No se logra distensión adecuada' },
-      ] },
       { id: 'pliegues', label: 'Pliegues', type: 'chips', default: 'normales', options: [
         { v: 'normales', label: 'Normales' },
         { v: 'engrosados', label: 'Engrosados', hint: 'Pliegues gruesos que no se aplanan con la insuflación' },
@@ -7459,7 +7454,7 @@ try{(function(){
         { v: '0', label: '0', hint: 'Ausente' }, { v: '1', label: '1', hint: 'Patrón nodular fino presente' }] },
       { id: 'ky_eri', label: 'Kyoto · enrojecimiento difuso', type: 'chips', default: '0', pin: true, show: function (v) { return !!v.kyoto_on; }, options: [
         { v: '0', label: '0', hint: 'Ausente' }, { v: '1', label: '1', hint: 'Leve, o con RAC presente' }, { v: '2', label: '2', hint: 'Intenso' }] },
-      { id: 'emura', label: 'Emura: fotodocumentación de 28 áreas completa', type: 'bool', default: false, wide: true, pin: true },
+      { id: 'emura', label: 'EMURA: fotodocumentación sistemática de 28 áreas completa', type: 'bool', default: false, wide: true, pin: true, hint: 'Marca si completaste el protocolo de 28 fotos de Emura (o Kenshi Yao 22 fotos)' },
     ],
     text: function (v, h, ctx) {
       var out = [];
@@ -7497,7 +7492,7 @@ try{(function(){
       if (cont) out.push(h.sent(cont, tor ? '(' + tor + ')' : ''));
       else if (tor) out.push(h.sent('Limpieza de la mucosa:', tor));
       // distensión + pliegues
-      var dis = { adecuada: 'distensión adecuada', parcial: 'distensión parcial', insuficiente: 'distensión insuficiente, que limita la evaluación' }[v.distension] || '';
+      var dis = ''; // distensión eliminada (v1.2.9, Lucho: no la usan)
       var pl = { normales: 'pliegues de aspecto normal', engrosados: 'pliegues engrosados que no se aplanan completamente con la insuflación', atenuados: 'pliegues del cuerpo atenuados' }[v.pliegues] || '';
       if (dis || pl) out.push(h.sent(h.list([dis, pl])));
       // técnica y retrovisión (antes de describir la mucosa, que queda junto a los hallazgos)
@@ -13240,7 +13235,7 @@ if (typeof module !== 'undefined') module.exports = EndoScales;
   var ADV_FIELDS = {
     eda_datos: ['contexto', 'intubado', 'sed_anest', 'eritro'],
     col_datos: ['contexto', 'intubado', 'sed_anest'],
-    estomago: ['yagi', 'kyoto_on', 'ky_atr', 'ky_mi', 'ky_pl', 'ky_nod', 'ky_eri', 'emura'],
+    estomago: ['yagi', 'kyoto_on', 'ky_atr', 'ky_mi', 'ky_pl', 'ky_nod', 'ky_eri'], // EMURA a la vista (v1.2.9, Lucho no lo encontraba)
     alta: ['paciente', 'auto_tx', 'otra']
   };
   // n.º de campos con valor distinto del default (y visibles según sus condiciones)
@@ -20869,7 +20864,7 @@ document.addEventListener('endo:settings', function (e) { try { section(e.detail
 window.EndoRespaldo = { exportar: exportar, importar: importar, deshacer: deshacer, resumen: function () { return resumen(snapshotAll()); }, validar: function (x) { var v = validar(x); return v.error ? { error: v.error } : { ok: true, resumen: v.res }; } };
 
 })();}catch(e){console.error("Feature respaldo.js",e);}
-window.ENDO_VERSION="202611280025";window.ENDO_WEB_URL="";</script>
+window.ENDO_VERSION="202611280028";window.ENDO_WEB_URL="";</script>
 <script>
 if ('serviceWorker' in navigator && location.protocol.indexOf('http') === 0) { navigator.serviceWorker.register('sw.js').catch(function(){}); }
 </script>
