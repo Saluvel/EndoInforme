@@ -117,11 +117,17 @@ async fn actualizar(app: AppHandle, url: String, sha256: String) -> Result<(), S
 
     #[cfg(target_os = "macos")]
     {
-        let bundle = exe.ancestors().find(|p| p.extension().map(|e| e == "app").unwrap_or(false)).map(|p| p.to_path_buf()).ok_or("No se encontró EndoInforme.app")?;
-        let bs = bundle.to_string_lossy().to_string();
-        if bs.contains("AppTranslocation") || bs.starts_with("/Volumes/") {
-            return Err("EndoInforme se está abriendo desde el .dmg o una ubicación temporal. Arrástralo a Aplicaciones y vuelve a intentarlo.".into());
+        let mut bundle = exe.ancestors().find(|p| p.extension().map(|e| e == "app").unwrap_or(false)).map(|p| p.to_path_buf()).ok_or("No se encontró EndoInforme.app")?;
+        let bs0 = bundle.to_string_lossy().to_string();
+        // macOS abre las apps descargadas (en cuarentena) desde una copia temporal ("App Translocation").
+        // En ese caso se actualiza la app real en Aplicaciones; la nueva queda sin cuarentena y ya no se traslada.
+        if bs0.contains("/AppTranslocation/") || bs0.starts_with("/Volumes/") {
+            let nombre_app = bundle.file_name().map(|n| n.to_os_string()).unwrap_or_else(|| "EndoInforme.app".into());
+            let mut cands = vec![PathBuf::from("/Applications").join(&nombre_app)];
+            if let Some(home) = std::env::var_os("HOME") { cands.push(PathBuf::from(home).join("Applications").join(&nombre_app)); }
+            bundle = cands.into_iter().find(|p| p.join("Contents").exists()).ok_or("EndoInforme se está abriendo desde el .dmg. Arrástralo a la carpeta Aplicaciones, ábrelo desde ahí y vuelve a intentarlo.")?;
         }
+        let bs = bundle.to_string_lossy().to_string();
         let mnt = tmp.join("mnt");
         fs::create_dir_all(&mnt).map_err(|e| e.to_string())?;
         let mnt_s = mnt.to_string_lossy().to_string();
