@@ -920,6 +920,12 @@ details.params.qhas:not([open]){border-color:var(--qyLine)}
 
 /* v1.2.10: contenido del plegable entre paréntesis */
 details.params>summary .phint{font-weight:500;text-transform:none;letter-spacing:0;font-size:12px;color:var(--ink3,var(--ink2));margin-left:6px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;min-width:0}
+/* v1.2.10: agregar otro pólipo / lesión y resumen de tarjeta plegada */
+.find .fb>.btn.addmore{margin:10px 0 2px;border:1px dashed var(--accent);color:var(--accentInk);background:var(--accentSoft);font-weight:700}
+.find .fb>.btn.addmore:hover{background:var(--accentSoft2,var(--accentSoft))}
+.find .fh .fsum{font-size:12.5px;color:var(--ink2);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;min-width:0;flex:1 1 auto}
+.find .fh>b{flex:none}
+.fr .btn.frjoin{font-size:11.5px;font-weight:700;color:var(--accentInk);padding:3px 8px;white-space:nowrap}
 
 /* Pantalla de bloqueo con clave numérica */
 .acclock{position:fixed;inset:0;z-index:20000;display:flex;align-items:center;justify-content:center;padding:16px;
@@ -3786,8 +3792,7 @@ try{(function(){
     fields: [
       { id: 'loc', label: 'Ubicación', type: 'loc' },
       { id: 'paris', label: 'París', type: 'chips', options: PARIS, default: '0-Is' },
-      { id: 'size', label: 'Tamaño (el mayor)', type: 'size', default: '' },
-      { id: 'n', label: 'Número', type: 'num', min: 1, max: 50, step: 1, default: 1, hint: 'Si > 1: "N pólipos, el mayor de X mm"' },
+      { id: 'size', label: 'Tamaño', type: 'size', default: '' },
       { id: 'pediculo', label: 'Pedículo', type: 'chips', options: ['corto', 'largo', 'grueso', 'fino'], default: '', show: function (v) { return v.paris === '0-Ip' || v.paris === '0-Isp'; } },
       { id: 'nice', key: true, label: 'NICE', type: 'chips', options: NICE, default: '' },
       { id: 'jnet', key: true, label: 'JNET', type: 'chips', options: JNET, default: '' },
@@ -3831,7 +3836,7 @@ try{(function(){
     text: function (v, h, ctx) {
       var paris = v.paris || '';
       var mf = MORF[paris] || { sg: 'pólipo', pl: 'pólipos' };
-      var n = num(v.n); var multi = n !== null && n > 1;
+      var n = null; var multi = n !== null && n > 1;
       var size = num(v.size);
       var desc;
       if (multi) {
@@ -3901,7 +3906,7 @@ try{(function(){
     concl: function (v, h, ctx) {
       var paris = v.paris || '';
       var mf = MORF[paris] || { sg: 'pólipo', pl: 'pólipos' };
-      var n = num(v.n); var multi = n !== null && n > 1;
+      var n = null; var multi = n !== null && n > 1;
       var size = num(v.size);
       var fem = femen(paris);
       var head = multi
@@ -3925,9 +3930,9 @@ try{(function(){
       return out;
     },
     biopsy: function (v, h, ctx) {
-      var nn = num(v.n), pl = nn !== null && nn > 1;
+      var nn = null, pl = nn !== null && nn > 1;
       var base = femen(v.paris) ? (pl ? 'lesiones' : 'lesión') : (pl ? 'pólipos' : 'pólipo');
-      return base + ' ' + (h.tag(v) ? h.tag(v) + ' ' : '') + deLoc(v, ctx);
+      return base + ' ' + deLoc(v, ctx) + (h.tag(v) ? ' ' + h.tag(v) : '');
     },
   });
 
@@ -3992,7 +3997,7 @@ try{(function(){
       return out;
     },
     biopsy: function (v, h, ctx) {
-      return (femen(v.paris) ? 'lesiones ' : 'pólipos ') + (h.tag(v) ? h.tag(v) + ' ' : '') + (has(v.locs) ? 'de ' + locsList(v.locs, h) : 'de ' + secLoc(ctx));
+      return (femen(v.paris) ? 'lesiones ' : 'pólipos ') + (has(v.locs) ? 'de ' + locsList(v.locs, h) : 'de ' + secLoc(ctx)) + (h.tag(v) ? ' ' + h.tag(v) : '');
     },
   });
 
@@ -4140,7 +4145,7 @@ try{(function(){
       if (m === 'no' && has(v.derivar)) out += '; se sugiere ' + (v.derivar === 'evaluación quirúrgica' ? 'evaluación quirúrgica' : 'derivación para resección endoscópica (' + v.derivar + ')');
       return out;
     },
-    biopsy: function (v, h, ctx) { return 'lesión de extensión lateral ' + (h.tag(v) ? h.tag(v) + ' ' : '') + deLoc(v, ctx); },
+    biopsy: function (v, h, ctx) { return 'lesión de extensión lateral ' + deLoc(v, ctx) + (h.tag(v) ? ' ' + h.tag(v) : ''); },
   });
 
   // ======================================================================
@@ -13943,10 +13948,12 @@ if (typeof module !== 'undefined') module.exports = EndoScales;
     var acts = el('span', { class: 'row', style: 'gap:2px' }, [
       eiiTab ? el('button', { class: 'btn ghost sm calcbtn', type: 'button', html: SVG_CALC + '<span>Calculadora</span>', title: 'Abrir calculadoras EII (Mayo, UCEIS, SES-CD, Rutgeerts)', onclick: function (e) { e.stopPropagation(); openEII(eiiTab); } }) : null,
       el('button', { class: 'btn ghost sm', type: 'button', html: SVG.jar, title: 'Enviar a frasco de biopsia', onclick: function (e) { e.stopPropagation(); toFrasco(s, fi, ex); } }),
-      el('button', { class: 'btn ghost sm', type: 'button', html: SVG.dup, title: 'Otro igual (copia todo menos la ubicación)', onclick: function (e) { e.stopPropagation(); snapshot(); var c = clone(fi); c.uid = uid(); c._min = false; fi._min = true; (def.fields || []).forEach(function (f) { if (f.type === 'loc') c.v[f.id] = ''; else if (f.type === 'locs') c.v[f.id] = []; }); var arr = state.sections[s.id].findings; arr.splice(arr.indexOf(fi) + 1, 0, c); renderAll(); flashFind(c.uid); toast('Copia agregada: elige la ubicación'); } }),
+      el('button', { class: 'btn ghost sm', type: 'button', html: SVG.dup, title: 'Otro igual (copia todo menos la ubicación)', onclick: function (e) { e.stopPropagation(); dupFind(s, fi, def, false); } }),
       el('button', { class: 'btn ghost sm danger', type: 'button', html: SVG.x, title: 'Eliminar', onclick: function (e) { e.stopPropagation(); snapshot(); var arr = state.sections[s.id].findings; arr.splice(arr.indexOf(fi), 1); renderAll(); toast('Hallazgo eliminado · Ctrl+Z para deshacer'); } })
     ]);
-    var fh = el('div', { class: 'fh' }, [el('b', { text: def.label }), tag, el('span', { class: 'grp', text: def.group || '' }), el('span', { class: 'sp' }), acts]);
+    // plegada: resumen de una línea (lo que dice su conclusión), para reabrir con un clic
+    var fsumTxt = ''; if (fi._min && typeof def.concl === 'function') { try { var cc = def.concl(fi.v, h, fieldCtx(s, ex, fi)); fsumTxt = Array.isArray(cc) ? cc.filter(h.has).join('; ') : String(cc || ''); } catch (e2) { } }
+    var fh = el('div', { class: 'fh' }, [el('b', { text: def.label }), tag, fsumTxt ? el('span', { class: 'fsum', text: fsumTxt.charAt(0).toUpperCase() + fsumTxt.slice(1) }) : el('span', { class: 'grp', text: def.group || '' }), el('span', { class: 'sp' }), acts]);
     fh.onclick = function () { fi._min = !fi._min; card.classList.toggle('min', fi._min); save(); };
     card.appendChild(fh);
     var fb = el('div', { class: 'fb' }); card.appendChild(fb);
@@ -13974,10 +13981,20 @@ if (typeof module !== 'undefined') module.exports = EndoScales;
       var visM0 = visM; visM = function () { var r = visM0 && visM0.apply(this, arguments); updMd(); return r; }; updMd();
     }
     var live = el('div', { class: 'live' }); fb.appendChild(live);
+    if (def.numbered) fb.appendChild(el('button', { class: 'btn addmore', type: 'button', html: SVG.plus + (fi.fid === 'col_polipo' ? 'Agregar pólipo' : 'Agregar otra lesión igual'), title: 'Pliega esta tarjeta y abre la siguiente (copia la técnica; ubicación y tamaño quedan en blanco)', onclick: function () { dupFind(s, fi, def, true); } }));
     liveEls[fi.uid] = { live: live, tag: tag, def: def, fi: fi, s: s, ex: ex, fh: fh, card: card };
     card.addEventListener('mouseenter', function () { hlPaper(s.id, fi.uid, true); });
     card.addEventListener('mouseleave', function () { hlPaper(s.id, fi.uid, false); });
     return card;
+  }
+  // Otro hallazgo igual a continuación: pliega el actual y abre el nuevo (sin ubicación; con fresh=true también sin tamaño)
+  function dupFind(s, fi, def, fresh) {
+    snapshot(); var c = clone(fi); c.uid = uid(); c._min = false; c._more = false; fi._min = true;
+    (def.fields || []).forEach(function (f) { if (f.type === 'loc') c.v[f.id] = ''; else if (f.type === 'locs') c.v[f.id] = []; else if (fresh && f.type === 'size') c.v[f.id] = ''; });
+    var arr = state.sections[s.id].findings; arr.splice(arr.indexOf(fi) + 1, 0, c); renderAll(); flashFind(c.uid);
+    var n = arr.filter(function (x) { return x.fid === fi.fid; }).indexOf(c) + 1;
+    toast(fresh ? (fi.fid === 'col_polipo' ? 'Pólipo ' + n : def.label + ' ' + n) + ': elige ubicación' + (fresh ? ' y tamaño' : '') : 'Copia agregada: elige la ubicación');
+    setTimeout(function () { var el2 = document.getElementById('f-' + c.uid); if (el2) el2.scrollIntoView({ behavior: 'smooth', block: 'start' }); }, 60);
   }
   function hlPaper(sid, u, on) {
     var pp = $('#paper'); if (!pp) return;
@@ -14027,6 +14044,12 @@ if (typeof module !== 'undefined') module.exports = EndoScales;
         el('button', { class: 'step', type: 'button', text: '+', title: 'Una muestra más', onclick: function () { bump(1); } }),
         el('span', { class: 'muted', style: 'font-size:11px', text: 'muestras' })]),
         el('span', { class: 'row', style: 'gap:0' }, [
+          (function () {
+            var prev = state.frascos[i - 1];
+            if (f.join) return el('button', { class: 'btn ghost sm frjoin', type: 'button', text: 'Separar', title: 'Volver a un frasco por lesión', onclick: function () { snapshot(); var J = state._frJoin || {}; Object.keys(J).forEach(function (k) { if (J[k] === f.src) delete J[k]; }); renderAll(); toast('Frascos separados: uno por lesión'); } });
+            if (f.src && !f.manual && prev && prev.src && !prev.manual && frEx(prev) === frEx(f)) return el('button', { class: 'btn ghost sm frjoin', type: 'button', text: '⤒ Juntar', title: 'Juntar con el frasco ' + i + ' (mismo frasco)', onclick: function () { snapshot(); state._frJoin = isObj(state._frJoin) ? state._frJoin : {}; state._frJoin[f.src] = prev.src; renderAll(); toast('Juntado con el frasco ' + i + ' · Ctrl+Z para deshacer'); } });
+            return null;
+          })(),
           el('button', { class: 'btn ghost sm', type: 'button', text: '↑', title: 'Subir', onclick: function () { if (!i) return; snapshot(); var a = state.frascos; a.splice(i - 1, 0, a.splice(i, 1)[0]); renderAll(); } }),
           el('button', { class: 'btn ghost sm danger', type: 'button', html: SVG.x, title: 'Quitar frasco', onclick: function () { snapshot(); if (f.src) { state._frOff = isObj(state._frOff) ? state._frOff : {}; state._frOff[f.src] = 1; } state.frascos.splice(i, 1); renderAll(); } })])]));
       var hn = el('div', { class: 'frhint', 'data-fr': f.uid }); bd.appendChild(hn);
@@ -14419,6 +14442,20 @@ if (typeof module !== 'undefined') module.exports = EndoScales;
     if (changed) state.frascos = keyed.map(function (x) { return x[2]; });
     return changed;
   }
+  // "pólipo de colon ascendente (#1)" + "pólipo del recto (#3)" → "pólipos de colon ascendente (#1) y del recto (#3)"
+  function joinLabs(labs) {
+    var PL = { 'pólipo': 'pólipos', 'lesión': 'lesiones', 'pólipos': 'pólipos', 'lesiones': 'lesiones' };
+    var ws = labs.map(function (l) { var m = String(l).match(/^(\S+)\s+(.*)$/); return m && PL[m[1].toLowerCase()] ? [PL[m[1].toLowerCase()], m[2]] : null; });
+    var same = ws.every(function (w) { return w && w[0] === ws[0][0]; });
+    var parts = same ? ws.map(function (w) { return w[1]; }) : labs.map(function (l) { return String(l).charAt(0).toLowerCase() + String(l).slice(1); });
+    var yj = function (a) { return a.length > 1 ? a.slice(0, -1).join(', ') + ' y ' + a[a.length - 1] : a[0]; };
+    // misma ubicación → "de colon sigmoides (#2 y #3)"
+    var G = [], gi = {};
+    parts.forEach(function (x) { var m = String(x).match(/^(.*?)\s*\((#\d+)\)$/), k = m ? m[1] : x; if (m && gi[k] !== undefined) G[gi[k]].t.push(m[2]); else { gi[k] = G.length; G.push({ k: k, t: m ? [m[2]] : [] }); } });
+    parts = G.map(function (g) { return g.t.length ? g.k + ' (' + yj(g.t) + ')' : g.k; });
+    var txt = yj(parts);
+    return same ? ws[0][0] + ' ' + txt : txt;
+  }
   function syncAutoFrascos() {
     var live = {}, changed = false, off = state._frOff = isObj(state._frOff) ? state._frOff : {};
     Object.keys(state.sections).forEach(function (sid) {
@@ -14435,14 +14472,30 @@ if (typeof module !== 'undefined') module.exports = EndoScales;
         } else splitLabel(lab, w.n).forEach(function (p, j) { var key = fi.uid + (j ? '#' + j : ''); if (!coveredBy(p[0], key, w.seattle)) live[key] = { lab: p[0], n: p[1], ex: ex }; });
       });
     });
+    // Juntar frascos (p. ej. varios pólipos en un mismo frasco): state._frJoin[src] = src del frasco destino
+    var ord = {}; Object.keys(live).forEach(function (k, j) { ord[k] = j; });
+    var J = state._frJoin = isObj(state._frJoin) ? state._frJoin : {};
+    var rootOf = function (k) { var seen = {}; while (J[k] && !seen[k]) { seen[k] = 1; k = J[k]; } return k; };
+    Object.keys(J).forEach(function (k) { if (!live[k] || !live[rootOf(k)] || rootOf(k) === k) delete J[k]; });
+    var grp = {}; Object.keys(live).forEach(function (k) { var r = rootOf(k); if (r !== k) (grp[r] = grp[r] || [r]).push(k); });
+    Object.keys(grp).forEach(function (r) {
+      var ks = grp[r]; live[r] = { lab: joinLabs(ks.map(function (k) { return live[k].lab; })), n: ks.reduce(function (t, k) { return t + (Number(live[k].n) || 0); }, 0) || '', ex: live[r].ex, join: ks.length };
+      ks.slice(1).forEach(function (k) { delete live[k]; });
+    });
     var before = state.frascos.length;
     state.frascos = state.frascos.filter(function (f) { return !f.src || live[f.src] || f.manual; });
     if (state.frascos.length !== before) changed = true;
     Object.keys(live).forEach(function (k) {
       var L = live[k];
       var fr = state.frascos.filter(function (f) { return f.src === k; })[0];
-      if (!fr) { if (off[k]) return; state.frascos.push({ uid: uid(), src: k, sitio: L.lab, n: L.n, ex: L.ex }); if (state.bxOn === false) state.bxOn = true; changed = true; }
+      if (!fr) {
+        if (off[k]) return;
+        // se inserta en el orden de los hallazgos (al separar frascos juntados, #2 vuelve entre #1 y #3)
+        var at = state.frascos.length; state.frascos.some(function (f, j) { if (f.src && ord[f.src] !== undefined && ord[f.src] > ord[k]) { at = j; return true; } return false; });
+        state.frascos.splice(at, 0, { uid: uid(), src: k, sitio: L.lab, n: L.n, ex: L.ex }); if (state.bxOn === false) state.bxOn = true; changed = true;
+      }
       else if (!fr.manual && (fr.sitio !== L.lab || String(fr.n) !== String(L.n))) { fr.sitio = L.lab; fr.n = L.n; changed = true; }
+      if (fr && (fr.join || 0) !== (L.join || 0)) { if (L.join) fr.join = L.join; else delete fr.join; changed = true; }
     });
     Object.keys(off).forEach(function (k) { if (!live[k]) delete off[k]; }); // si el hallazgo deja de pedirlo, se olvida el "no quiero"
     if (orderFrascos()) changed = true;
@@ -20878,7 +20931,7 @@ document.addEventListener('endo:settings', function (e) { try { section(e.detail
 window.EndoRespaldo = { exportar: exportar, importar: importar, deshacer: deshacer, resumen: function () { return resumen(snapshotAll()); }, validar: function (x) { var v = validar(x); return v.error ? { error: v.error } : { ok: true, resumen: v.res }; } };
 
 })();}catch(e){console.error("Feature respaldo.js",e);}
-window.ENDO_VERSION="202611280030";window.ENDO_WEB_URL="https://saluvel.github.io/EndoInforme/";</script>
+window.ENDO_VERSION="202611280039";window.ENDO_WEB_URL="https://saluvel.github.io/EndoInforme/";</script>
 <script>
 if ('serviceWorker' in navigator && location.protocol.indexOf('http') === 0) { navigator.serviceWorker.register('sw.js').catch(function(){}); }
 </script>
